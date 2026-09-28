@@ -1,0 +1,46 @@
+sources:
+  rcaeval:
+    type: huggingface_dataset
+    repo_id: phamquiluan/RCAEval
+    revision: main
+    local_name: rcaeval
+    role: primary
+  lemma_rca:
+    type: huggingface_dataset
+    repo_id: Lemma-RCA-NEC/Product_Review_Original
+    revision: main
+    local_name: lemma_rca
+    role: backup
+  loghub2:
+    type: huggingface_dataset
+    repo_id: bolu61/loghub_2
+    revision: main
+    local_name: loghub2
+    role: reference
+  opseval:
+    type: huggingface_dataset
+    repo_id: Junetheriver/OpsEval
+    revision: main
+    local_name: opseval
+    role: reference
+  correlated_alerts:
+    type: huggingface_dataset
+    repo_id: mldiakhame/dataset-correlated-alerts-for-llm.jsonl
+    revision: main
+    local_name: correlated_alerts
+    role: reference
+  suricata_ctu13:
+    type: huggingface_dataset
+    repo_id: mldiakhame/suricata-alerts-ctu-13
+    revision: main
+    local_name: suricata_ctu13
+    role: reference
+  rcaeval_github:
+    type: github_repository
+    repo_url: https://github.com/phamquiluan/RCAEval.git
+    local_name: RCAEval
+    role: reference_code
+  alibaba_microservice_trace:
+    type: manifest_only
+    role: unavailable
+    notes: "Chua co URL tai chinh xac; chi ghi nhan trong manifest."

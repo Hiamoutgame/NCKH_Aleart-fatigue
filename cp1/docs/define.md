@@ -1,4 +1,4 @@
-# 📖 Giải Thích Thuật Ngữ & Từ Khóa Nghiên Cứu (Literature Review)
+﻿# 📖 Giải Thích Thuật Ngữ & Từ Khóa Nghiên Cứu (Literature Review)
 
 > **Mục tiêu**: Bảng tra cứu thuật ngữ phục vụ viết Literature Review và tổng hợp kiến thức cho đề tài: *"Gom nhóm cảnh báo (Alert Aggregation) nhằm giảm cảnh báo nhiễu trong Microservices"*.  
 > **Cấu trúc giải thích (theo chuẩn intern/fresher)**:

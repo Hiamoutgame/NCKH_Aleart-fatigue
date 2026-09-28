@@ -1,0 +1,174 @@
+\documentclass[conference]{IEEEtran}
+
+\usepackage{cite}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{enumitem}
+\usepackage{url}
+\usepackage{hyperref}
+
+% IEEE standard description style: unboxed to prevent label-body overlap
+\setlist[description]{
+  style=unboxed,
+  leftmargin=0pt,
+  font=\normalfont\bfseries,
+  itemsep=0.8ex plus 0.2ex minus 0.1ex,
+  parsep=0pt
+}
+
+\title{Alert Aggregation from Early Warning Logs to Mitigate Alert Fatigue in Microservices:\\A Tool-Calling Agent Approach}
+
+\author{
+\IEEEauthorblockN{Dang Quang Hien}
+\IEEEauthorblockA{
+Faculty of Information Technology\\
+University of Science, VNU-HCM\\
+Ho Chi Minh City, Vietnam\\
+dqhien@fit.hcmus.edu.vn
+}
+}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+In distributed microservice architectures, cascading performance degradation during pre-failure phases routinely triggers alert storms, inundating on-call engineers with early-warning-level logs. Over 70\% of these alerts are noisy or unactionable, causing severe alert fatigue and delaying critical incident remediation. Existing alert management approaches primarily target post-mortem failure stages or rely on static rule-based grouping (e.g., Prometheus Alertmanager) and semantic similarity clustering, both of which lack awareness of dynamic service call topologies and causal propagation. This paper proposes a two-stage alert aggregation framework tailored specifically for early-warning telemetry in microservices. The framework integrates a lightweight deterministic fast filter for duplicate elimination and time-window pre-grouping with an LLM agent equipped with tool-calling capabilities (\texttt{get\_related\_alerts}, \texttt{get\_service\_dependency}, and \texttt{get\_runbook}). We evaluate on the RCAEval benchmark, which provides 735 failure cases across three systems (Online Boutique, Sock Shop, and Train Ticket), of which 359 cases expose raw log telemetry. Because RCAEval does not ship a severity column, we introduce an explicit three-tier severity assignment procedure that derives early-warning alerts from raw log messages and, for systems that emit no severity token, from faulty-versus-normal template frequency shifts. The proposed framework is designed to achieve an Alert Reduction Ratio (ARR) $\ge 60\%$ while strictly preserving the root cause service alert with a Root Cause Preservation Rate (RCPR) $\ge 95\%$. The primary contributions are: (1) formalizing a four-tier taxonomy of noisy early-warning alerts (duplicate, transient, unactionable, cascading), (2) introducing an agentic tool-calling mechanism for causal pre-failure alert triage, and (3) establishing a standardized multi-metric evaluation protocol balancing alert reduction against diagnostic safety.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Alert aggregation, microservices observability, early warning logs, alert fatigue, LLM agents, tool-calling, root cause preservation
+\end{IEEEkeywords}
+
+\section{Introduction}
+Modern cloud computing has broadly adopted microservice architectures, decomposing monolithic systems into tens or hundreds of loosely coupled services interacting via network calls \cite{kuang2024cola, pham2025rcaeval}. While this architecture provides horizontal scalability and rapid deployment cycles, it fundamentally exacerbates operational complexity. Recent industry surveys reveal that enterprise operations manage an average of 101 distinct observability technologies, with 39\% of practitioners identifying cognitive overhead and informational complexity as their principal operational impediment \cite{grafana2025}. During anomalous episodes, cascading degradations—such as database connection exhaustion or downstream latency spikes—induce widespread symptom propagation across dependent services \cite{kuang2024cola, yu2025alertguardian}.
+
+This propagation triggers an \textit{alert storm}, confronting Site Reliability Engineers (SREs) with hundreds of simultaneous notifications. Consequently, engineers suffer from \textit{alert fatigue}, a cognitive state in which desensitization leads to dismissed or overlooked genuine anomalies \cite{pagerduty2020, tariq2025alertfatigue, jalalvand2024alertprioritisation}. Unmanaged downtime carries staggering economic impacts: industry surveys indicate that over two-thirds of enterprise organizations incur outage costs exceeding \$300,000 per hour \cite{pagerduty2026, itic2024downtime}.
+
+Crucially, current industrial alerting practices and academic literature suffer from two primary limitations:
+\begin{enumerate}
+    \item \textbf{Post-failure focus}: Existing Root Cause Analysis (RCA) techniques focus on post-mortem diagnosis after catastrophic failures (\texttt{ERROR} or \texttt{CRITICAL} state) have already violated Service Level Objectives (SLOs) \cite{sre-workbook-ch5, pham2025rcaeval}. Very few systems focus on the pre-failure degradation phase where telemetry manifests as \texttt{WARNING}-level logs \cite{mendes2021loglevels}.
+    \item \textbf{Causal blindness in aggregation}: Traditional grouping mechanisms, such as Prometheus Alertmanager \cite{prometheus-alertmanager}, depend on static label matching and fixed time windows. Unsupervised semantic clustering (e.g., Sentence-BERT with HDBSCAN \cite{sbert, hdbscan}) groups syntactically similar messages but cannot discern topological dependencies, frequently collapsing unrelated service symptoms into misleading clusters.
+\end{enumerate}
+
+To bridge this gap, this paper introduces an agentic tool-calling framework for warning-level alert aggregation. The system utilizes deterministic fast filtering to prune immediate duplicates, followed by an LLM-driven agent that queries runtime topologies and synthetic runbooks to make causally coherent aggregation decisions.
+
+\section{Related Work}
+\subsection{Rule-Based and Label-Centric Alert Grouping}
+Industrial alert pipelines rely predominantly on static rule engines, exemplified by Prometheus Alertmanager \cite{prometheus-alertmanager}. These systems apply label-matching configurations (\texttt{group\_by}) and temporal dampening intervals (\texttt{group\_wait}, \texttt{group\_interval}). While deterministic and computationally lightweight, rule-based systems are topology-blind; they cannot dynamically correlate alerts across upstream dependencies without manually written, fragile routing trees \cite{kuang2024cola}.
+
+\subsection{Semantic and Machine Learning-Based Aggregation}
+To overcome static rule fragility, data-driven approaches utilize log parsing techniques like Drain3 \cite{drain3} to extract log templates, subsequently generating vector representations via TF-IDF or Sentence-BERT \cite{sbert}. Unsupervised clustering algorithms such as HDBSCAN \cite{hdbscan} then cluster similar templates. While effective at lexical deduplication, semantic similarity alone is causality-blind: two independent services emitting timeout warnings will be conflated into a single group despite having completely disjoint root causes.
+
+\subsection{Knowledge-Aware and LLM-Driven AIOps}
+Recent advances explore topological graph correlation and hybrid LLM reasoning. COLA \cite{kuang2024cola} incorporates multi-source cloud knowledge for alert aggregation in large-scale cloud systems, while AlertGuardian \cite{yu2025alertguardian} implements life-cycle management across alert lifecycles. Furthermore, chain-of-thought prompting \cite{wei2022cot} has demonstrated strong diagnostic capabilities. Building upon these foundations, our approach addresses early warning logs specifically, employing constrained tool-calling to balance computational latency against causal reasoning accuracy.
+
+\section{Methodology}
+\subsection{Problem Formulation and Noise Taxonomy}
+We define an early-warning alert stream as an ordered sequence $\mathcal{A} = \{a_1, a_2, \dots, a_N\}$, where each alert $a_i = \langle t_i, s_i, m_i, \ell_i \rangle$ consists of timestamp $t_i$, emitting service $s_i$, message template $m_i$, and severity tier $\ell_i$. In accordance with SRE alerting principles \cite{google-sre-book, google-sre-ch10, google-sre-ch11}, alerts must require immediate human intervention.
+
+Because RCAEval does not expose a severity column, $\ell_i$ is \emph{assigned} by us rather than read from the dataset. We use a three-tier procedure:
+\begin{enumerate}
+    \item \textbf{Tier 1 (explicit).} For systems whose log framework emits a level token (Sock Shop and Train Ticket, both Spring Boot/log4j), parse $\ell_i$ from the message text itself; messages carrying \texttt{WARN} become \texttt{WARNING}, messages carrying \texttt{ERROR} or \texttt{SEVERE} become \texttt{ERROR}, and all others become \texttt{INFO}.
+    \item \textbf{Tier 2 (frequency-inferred).} For systems that emit no level token at all (Online Boutique), a template $m$ is treated as anomalous when its frequency in the fault window exceeds its frequency in the normal window by a ratio $R$ (default $R \ge 3$) and its absolute frequency exceeds $N_{\min}$.
+    \item \textbf{Tier 3 (ground-truth marker).} For the eight cases where RCAEval ships a \texttt{root\_cause.txt} indicator log line, that line is tagged \texttt{ROOT\_CAUSE} and used to compute an alert-level variant of RCPR.
+\end{enumerate}
+
+We further define two temporal windows from the injection timestamp $T_{\text{inject}}$, namely the normal window $[T_{\text{start}}, T_{\text{inject}})$ and the fault window $[T_{\text{inject}}, T_{\text{end}}]$. Note that the \texttt{normal\_timesteps} and \texttt{faulty\_timesteps} fields are integer counts of sample points, not timestamp lists, and therefore cannot be used directly for window assignment.
+
+We formalize noisy alerts into four categories:
+\begin{enumerate}
+    \item \textbf{Duplicate Alert}: Multiple alerts where $s_i = s_j$, $m_i = m_j$, and $|t_i - t_j| \le \Delta t_{\text{dup}}$ (with $\Delta t_{\text{dup}} = 60\text{s}$).
+    \item \textbf{Transient Alert}: An alert occurring during normal operating conditions ($t_i < T_{\text{inject}}$) whose template frequency ratio between fault and normal windows stays below a threshold $R_{\text{transient}}$, i.e., it subsides without administrative intervention.
+    \item \textbf{Unactionable Alert}: A syntactically valid warning lacking an actionable remediation procedure or runbook mapping.
+    \item \textbf{Cascading Alert}: An alert emitted by a service $s_i \neq s_{\text{root}}$ during the fault window ($t_i \ge T_{\text{inject}}$) that is reachable from $s_{\text{root}}$ in the service call graph, representing a propagated symptom rather than the originating fault.
+\end{enumerate}
+
+\subsection{Proposed Architecture: Tool-Calling Agent Framework}
+The proposed pipeline comprises two consecutive stages:
+
+\textbf{Stage 1: Deterministic Fast Filter.} Raw warning alerts first enter an online sliding-window deduplicator. Alerts sharing identical service identifiers and template hashes within a 60-second window are collapsed into a single candidate event, pruning an estimated 70--80\% of raw volume without invoking LLM inference.
+
+\textbf{Stage 2: Tool-Augmented Reasoning Agent.} Unresolved candidate clusters are presented to an LLM agent configured with Chain-of-Thought prompting \cite{wei2022cot}. The agent is empowered with three deterministic environment tools:
+\begin{itemize}
+    \item \texttt{get\_related\_alerts(service, time\_window)}: Fetches concurrent alerts across neighboring services within a temporal radius $\Delta t$.
+    \item \texttt{get\_service\_dependency(service)}: Queries the static microservice call graph $G=(V, E)$ to retrieve upstream dependencies and downstream dependents.
+    \item \texttt{get\_runbook(fault\_type)}: Retrieves synthetic troubleshooting procedures and symptom-cause mappings for the candidate anomaly.
+\end{itemize}
+To guarantee operational bounded latency and avoid cyclic execution, the agent is constrained to a hard ceiling of at most two tool invocations per grouping decision.
+
+\section{Experimental Setup}
+\subsection{Benchmark Dataset}
+Experiments utilize the public benchmark RCAEval \cite{pham2025rcaeval}, containing 735 annotated failure cases across three realistic microservice applications: Online Boutique (11 services), Sock Shop (13 services), and Train Ticket (40+ services). RCAEval provides multi-modal telemetry---logs, metrics, and distributed traces---accompanied by precise fault injection timestamps $T_{\text{inject}}$ and authoritative ground-truth root cause labels $s_{\text{root}}$.
+
+A direct inspection of the benchmark revealed three properties that constrain the experimental design. First, only \textbf{359 of the 735 cases expose raw log telemetry}; the 375 cases of suite RE1 are metric-only. Second, each log file contains exactly three columns (\texttt{timestamp}, \texttt{container\_name}, \texttt{message}) and \textbf{no severity column}, so severity must be assigned by our three-tier procedure. Third, scanning all 49{,}652{,}771 log lines yields only \textbf{9{,}738 lines carrying a \texttt{WARN} token}, distributed highly unevenly: 9{,}662 lines originate from Sock Shop, 74 from Train Ticket, and only 2 from Online Boutique. Consequently, Sock Shop serves as the primary evaluation system for warning-tier aggregation, with Train Ticket retained for the cascading case study and Online Boutique restricted to the frequency-inferred tier. Cross-system validation is designated on the LEMMA-RCA dataset \cite{zheng2024lemma}, although we note that LEMMA-RCA aggregates log lines into three-dimensional time series whose golden-signal keywords cover only \texttt{error}, \texttt{exception}, and \texttt{critical}---not \texttt{warning}---so it does not provide an independent warning tier.
+
+\subsection{Experimental Arms}
+We benchmark the proposed framework across four comparative experimental arms:
+\begin{itemize}
+    \item \textbf{Arm 1 (Rule-Based Baseline)}: Prometheus Alertmanager simulation with standard label matching on service and severity, bounded by \texttt{group\_wait} (30s) and \texttt{group\_interval} (5m) \cite{prometheus-alertmanager}.
+    \item \textbf{Arm 2 (Semantic Similarity)}: Drain3 log template extraction \cite{drain3} paired with Sentence-BERT embeddings (\texttt{all-MiniLM-L6-v2}) \cite{sbert} and HDBSCAN density clustering \cite{hdbscan}.
+    \item \textbf{Arm 3 (Temporal-Spatial Correlation)}: Sliding window correlation ($\Delta t \in \{30, 60, 120\}\text{s}$) traversing the service call dependency graph with hop distance $k \le 2$. Because RCAEval does not ship the call graph as an artifact, we derive it from the distributed traces included for 240 of the 359 log-bearing cases, falling back to the published deployment manifests of the three open-source reference applications where trace coverage is absent.
+    \item \textbf{Arm 4 (Tool-Calling Agent -- Proposed)}: Two-stage fast filter combined with the tool-calling LLM reasoning agent.
+\end{itemize}
+
+\subsection{Evaluation Metrics}
+Evaluation relies on four primary quantitative metrics:
+\begin{enumerate}
+    \item \textbf{Alert Reduction Ratio (ARR)}: Measures overall volume compression:
+    \begin{equation}
+    \text{ARR} = \left(1 - \frac{N_{\text{groups}}}{N_{\text{raw\_alerts}}}\right) \times 100\%
+    \end{equation}
+    Target: $\text{ARR} \ge 60\%$.
+    
+    \item \textbf{Root Cause Preservation Rate (RCPR)}: Ensures safety by verifying that the primary incident cluster retains the genuine root cause evidence. We define RCPR at two granularities. The \emph{service-level} variant is the primary metric and spans all cases that expose logs ($M = 359$):
+    \begin{equation}
+    \text{RCPR}_{\text{svc}} = \frac{1}{M} \sum_{k=1}^{M} \mathbb{I}\left(s_{\text{root}}^{(k)} \in g_{\text{primary}}^{(k)}\right) \times 100\%
+    \end{equation}
+    The \emph{alert-level} variant is a secondary metric restricted to the $M'$ cases for which RCAEval ships a \texttt{root\_cause.txt} indicator line that is itself a warning-tier log ($M' = 4$):
+    \begin{equation}
+    \text{RCPR}_{\text{alert}} = \frac{1}{M'} \sum_{k=1}^{M'} \mathbb{I}\left(a_{\text{root}}^{(k)} \in g_{\text{primary}}^{(k)}\right) \times 100\%
+    \end{equation}
+    Target: $\text{RCPR} \ge 95\%$ (safety threshold).
+    
+    \item \textbf{Pairwise Grouping F1-Score ($F1_p$)}: Harmonic mean of pairwise precision ($P_p$) and pairwise recall ($R_p$) over alert pairs sharing identical root causes. Target: $F1_p \ge 0.85$.
+    
+    \item \textbf{Group Purity}: Average proportion of majority-cause alerts per aggregated group. Target: $\text{Purity} \ge 0.80$.
+\end{enumerate}
+
+\section{Expected Outcomes and Analysis Plan}
+This section states the anticipated behaviour of each arm and the analysis plan. The figures below are \emph{research targets and expected trade-offs}, not measured results; no benchmark has been executed at the time of writing.
+
+\begin{itemize}
+    \item \textbf{Arm 1 (Rule-based)} is expected to achieve moderate compression ($\text{ARR}$ in the order of $40\%$) but comparatively low pairwise F1, because strict service-boundary isolation prevents downstream cascading symptoms from being aggregated.
+    \item \textbf{Arm 2 (Semantic)} is expected to deliver aggressive reduction ($\text{ARR} > 70\%$) while degrading root cause preservation, erroneously collapsing lexically similar timeout logs across unrelated microservice boundaries. A concrete case in our data illustrates both failure modes: within Train Ticket, 74 warning lines concerning lost MongoDB connections normalise into 16 distinct templates that differ only by instance name, so lexical grouping yields 16 spurious clusters whereas semantic grouping should yield one.
+    \item \textbf{Arm 3 (Temporal-Spatial)} is expected to capture cascading alerts along adjacent dependency edges but to remain brittle against fluctuating propagation delays. Because warning-tier cascading is scarce in RCAEval (74 lines, Train Ticket only), this arm will additionally be evaluated on an extended stream that includes the error tier, and the extension will be declared explicitly.
+    \item \textbf{Arm 4 (Proposed Agent)} is expected to satisfy both optimisation objectives by corroborating dependency topology and runbook logic prior to group assignment.
+\end{itemize}
+
+Ablation analysis will quantify the marginal contribution of each tool, and the paired comparison across arms will be tested for significance (paired $t$-test with Wilcoxon signed-rank as a non-parametric fallback).
+
+\section{Discussion}
+\subsection{Operational Feasibility and Latency}
+A primary challenge of LLM-based operations is inference latency and financial token expenditure. By filtering 70--80\% of high-frequency repetitive alerts at Stage 1, Stage 2 processes only structurally distinct candidates, constraining end-to-end processing latency to sub-second windows per incident window.
+
+\subsection{Threats to Validity}
+Internal validity is constrained by two factors specific to this benchmark. First, and most importantly, RCAEval carries \textbf{no severity column}, so the warning tier is not supplied by the dataset but \emph{derived} by our three-tier assignment procedure. Any conclusion is therefore conditional on that procedure; we mitigate the risk by reporting the explicit parsing rules and by validating the extracted templates against the eight cases for which RCAEval ships a ground-truth root cause indicator line. Second, synthetic fault injection patterns in RCAEval may exhibit cleaner separation than heterogeneous enterprise production logs.
+
+External validity is constrained by the scarcity of warning-tier telemetry. Warning lines are concentrated in a single system (Sock Shop accounts for 99.2\% of them), and the only observed instance of warning-tier cascading consists of 74 lines in Train Ticket. Claims about cross-system generalisation of warning-tier aggregation therefore cannot be supported by this benchmark alone. We mitigate this by (a) evaluating cascading on an explicitly declared extended stream that includes the error tier, (b) reporting the frequency-inferred tier separately for Online Boutique, and (c) cross-evaluating against LEMMA-RCA \cite{zheng2024lemma}, while noting that LEMMA-RCA likewise defines no warning golden signal.
+
+Construct validity is constrained by the fact that the \emph{unactionable} category depends on a synthetic runbook that we author ourselves, since RCAEval provides no SOP or runbook. We therefore report results both with and without the unactionable category.
+
+\section{Conclusion}
+This study presented a tool-calling LLM agent framework designed for early warning alert aggregation in microservices. By systematically targeting the pre-failure degradation phase and formalizing a four-category noise model, the framework addresses the limitations of topology-blind semantic models and rigid rule engines. Future work will investigate real-time streaming implementations and reinforcement learning feedback for dynamic tool policy optimization.
+
+\appendix
+\section*{Glossary of Terms}
+\addcontentsline{toc}{section}{Glossary of Terms}
+\input{glossary}
+
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+
+\end{document}

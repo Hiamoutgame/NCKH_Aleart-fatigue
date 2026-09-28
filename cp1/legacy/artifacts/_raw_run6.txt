@@ -1,0 +1,100 @@
+﻿
+==========================================================================
+[1] WARN THAT trong RCAEval (Sock Shop) — chung la gi?
+==========================================================================
+case chon: ['re3ss_carts_f3_4', 're3ss_carts_f1_4', 're3ss_carts_f3_3', 're3ss_carts_f1_3']
+python : Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate 
+limits and faster downloads.
+At line:1 char:202
++ ... MLINKS_WARNING="1"; python cp1/warn_samples_and_lemma.py 2>&1 | Out-F ...
++                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Warning: You ar...ster downloads.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+
+--- re3ss_carts_f3_4: 626 WARN / 85649 dong ---
+  container co WARN: {'carts': 626}
+  so template WARN duy nhat: 626
+  top template WARN:
+         1  <*>-<*>-<*> <*>:<*>:<*>  WARN [carts,,,] <*> --- [           main] o.s.c.a.ConfigurationClassPostProcessor  : Cannot enhance @Configuration bean defin
+         1  <*>-<*>-<*> <*>:<*>:<*>  WARN [carts,3182375d14ae26c0,3182375d14ae26c0,false] <*> --- [p-nio-<*>-exec-<*>] o.s.web.servlet.PageNotFound             : 
+         1  <*>-<*>-<*> <*>:<*>:<*>  WARN [carts,903dcc7d39a62f57,903dcc7d39a62f57,false] <*> --- [p-nio-<*>-exec-<*>] o.s.web.servlet.PageNotFound             : 
+         1  <*>-<*>-<*> <*>:<*>:<*>  WARN [carts,b0e7d452895d4294,b0e7d452895d4294,false] <*> --- [-nio-<*>-exec-<*>] o.s.web.servlet.PageNotFound             : R
+         1  <*>-<*>-<*> <*>:<*>:<*>  WARN [carts,a7253e0504a7c506,a7253e0504a7c506,false] <*> --- [p-nio-<*>-exec-<*>] o.s.web.servlet.PageNotFound             : 
+         1  <*>-<*>-<*> <*>:<*>:<*>  WARN [carts,87b6695bed163569,87b6695bed163569,false] <*> --- [p-nio-<*>-exec-<*>] o.s.web.servlet.PageNotFound             : 
+         1  <*>-<*>-<*> <*>:<*>:<*>  WARN [carts,d87b0bb8eaaffd65,d87b0bb8eaaffd65,false] <*> --- [-nio-<*>-exec-<*>] o.s.web.servlet.PageNotFound             : R
+         1  <*>-<*>-<*> <*>:<*>:<*>  WARN [carts,3daa3576057e4129,3daa3576057e4129,false] <*> --- [p-nio-<*>-exec-<*>] o.s.web.servlet.PageNotFound             : 
+  3 dong raw:
+    2024-11-24 13:09:18.507  WARN [carts,,,] 7 --- [           main] o.s.c.a.ConfigurationClassPostProcessor  : Cannot enhance @Configuration bean definition 'refreshScope' since its singleton instance has been created too e
+    2024-11-24 13:10:42.906  WARN [carts,3182375d14ae26c0,3182375d14ae26c0,false] 7 --- [p-nio-80-exec-6] o.s.web.servlet.PageNotFound             : Request method 'POST' not supported
+    2024-11-24 13:10:42.999  WARN [carts,903dcc7d39a62f57,903dcc7d39a62f57,false] 7 --- [p-nio-80-exec-8] o.s.web.servlet.PageNotFound             : Request method 'POST' not supported
+
+--- re3ss_carts_f1_4: 618 WARN / 85849 dong ---
+  container co WARN: {'carts': 617, 'queue-master': 1}
+  so template WARN duy nhat: 618
+  top template WARN:
+         1  <*>-<*>-<*> <*>:<*>:<*>  WARN <*> --- [enerContainer-<*>] s.a.r.l.ConditionalRejectingErrorHandler : Execution of Rabbit message listener failed.
+
+         1  <*>-<*>-<*> <*>:<*>:<*>  WARN [carts,,,] <*> --- [           main] o.s.c.a.ConfigurationClassPostProcessor  : Cannot enhance @Configuration bean defin
+         1  <*>-<*>-<*> <*>:<*>:<*>  WARN [carts,a67072fb0545bcb1,a67072fb0545bcb1,false] <*> --- [-nio-<*>-exec-<*>] o.s.web.servlet.PageNotFound             : R
+         1  <*>-<*>-<*> <*>:<*>:<*>  WARN [carts,23bbddc7095d1412,23bbddc7095d1412,false] <*> --- [p-nio-<*>-exec-<*>] o.s.web.servlet.PageNotFound             : 
+         1  <*>-<*>-<*> <*>:<*>:<*>  WARN [carts,a03bbc9f58fb2ddb,a03bbc9f58fb2ddb,false] <*> --- [-nio-<*>-exec-<*>] o.s.web.servlet.PageNotFound             : R
+         1  <*>-<*>-<*> <*>:<*>:<*>  WARN [carts,6e6c24168e586ca5,6e6c24168e586ca5,false] <*> --- [p-nio-<*>-exec-<*>] o.s.web.servlet.PageNotFound             : 
+         1  <*>-<*>-<*> <*>:<*>:<*>  WARN [carts,263e46c8981b819f,263e46c8981b819f,false] <*> --- [-nio-<*>-exec-<*>] o.s.web.servlet.PageNotFound             : R
+         1  <*>-<*>-<*> <*>:<*>:<*>  WARN [carts,84e23d45a8240aa6,84e23d45a8240aa6,false] <*> --- [p-nio-<*>-exec-<*>] o.s.web.servlet.PageNotFound             : 
+  3 dong raw:
+    2024-11-24 12:31:04.284  WARN 7 --- [enerContainer-1] s.a.r.l.ConditionalRejectingErrorHandler : Execution of Rabbit message listener failed.
+
+    2024-11-24 12:43:21.101  WARN [carts,,,] 7 --- [           main] o.s.c.a.ConfigurationClassPostProcessor  : Cannot enhance @Configuration bean definition 'refreshScope' since its singleton instance has been created too e
+    2024-11-24 12:44:46.402  WARN [carts,a67072fb0545bcb1,a67072fb0545bcb1,false] 7 --- [-nio-80-exec-27] o.s.web.servlet.PageNotFound             : Request method 'POST' not supported
+
+--- re3ss_carts_f3_3: 611 WARN / 84960 dong ---
+  container co WARN: {'carts': 611}
+  so template WARN duy nhat: 611
+  top template WARN:
+         1  <*>-<*>-<*> <*>:<*>:<*>  WARN [carts,,,] <*> --- [           main] o.s.c.a.ConfigurationClassPostProcessor  : Cannot enhance @Configuration bean defin
+         1  <*>-<*>-<*> <*>:<*>:<*>  WARN [carts,95419758710c392b,95419758710c392b,false] <*> --- [p-nio-<*>-exec-<*>] o.s.web.servlet.PageNotFound             : 
+         1  <*>-<*>-<*> <*>:<*>:<*>  WARN [carts,682ee51f82b18609,682ee51f82b18609,false] <*> --- [p-nio-<*>-exec-<*>] o.s.web.servlet.PageNotFound             : 
+         1  <*>-<*>-<*> <*>:<*>:<*>  WARN [carts,da58d6abda19ae1f,da58d6abda19ae1f,false] <*> --- [p-nio-<*>-exec-<*>] o.s.web.servlet.PageNotFound             : 
+         1  <*>-<*>-<*> <*>:<*>:<*>  WARN [carts,3a39c67c2f3fb3d4,3a39c67c2f3fb3d4,false] <*> --- [p-nio-<*>-exec-<*>] o.s.web.servlet.PageNotFound             : 
+         1  <*>-<*>-<*> <*>:<*>:<*>  WARN [carts,26414eb77f84f03d,26414eb77f84f03d,false] <*> --- [p-nio-<*>-exec-<*>] o.s.web.servlet.PageNotFound             : 
+         1  <*>-<*>-<*> <*>:<*>:<*>  WARN [carts,315e692933c35e76,315e692933c35e76,false] <*> --- [-nio-<*>-exec-<*>] o.s.web.servlet.PageNotFound             : R
+         1  <*>-<*>-<*> <*>:<*>:<*>  WARN [carts,a84cb15257a3c37a,a84cb15257a3c37a,false] <*> --- [-nio-<*>-exec-<*>] o.s.web.servlet.PageNotFound             : R
+  3 dong raw:
+    2024-11-23 19:00:35.201  WARN [carts,,,] 7 --- [           main] o.s.c.a.ConfigurationClassPostProcessor  : Cannot enhance @Configuration bean definition 'refreshScope' since its singleton instance has been created too e
+    2024-11-23 19:02:00.302  WARN [carts,95419758710c392b,95419758710c392b,false] 7 --- [p-nio-80-exec-1] o.s.web.servlet.PageNotFound             : Request method 'POST' not supported
+    2024-11-23 19:02:00.400  WARN [carts,682ee51f82b18609,682ee51f82b18609,false] 7 --- [p-nio-80-exec-3] o.s.web.servlet.PageNotFound             : Request method 'POST' not supported
+
+--- re3ss_carts_f1_3: 608 WARN / 85155 dong ---
+  container co WARN: {'carts': 607, 'queue-master': 1}
+  so template WARN duy nhat: 608
+  top template WARN:
+         1  <*>-<*>-<*> <*>:<*>:<*>  WARN <*> --- [enerContainer-<*>] s.a.r.l.ConditionalRejectingErrorHandler : Execution of Rabbit message listener failed.
+
+         1  <*>-<*>-<*> <*>:<*>:<*>  WARN [carts,,,] <*> --- [           main] o.s.c.a.ConfigurationClassPostProcessor  : Cannot enhance @Configuration bean defin
+         1  <*>-<*>-<*> <*>:<*>:<*>  WARN [carts,bd63dc4cd4a5a6b0,bd63dc4cd4a5a6b0,false] <*> --- [p-nio-<*>-exec-<*>] o.s.web.servlet.PageNotFound             : 
+         1  <*>-<*>-<*> <*>:<*>:<*>  WARN [carts,910ca2b4fbb34f47,910ca2b4fbb34f47,false] <*> --- [p-nio-<*>-exec-<*>] o.s.web.servlet.PageNotFound             : 
+         1  <*>-<*>-<*> <*>:<*>:<*>  WARN [carts,c2d902fafc22c1f2,c2d902fafc22c1f2,false] <*> --- [p-nio-<*>-exec-<*>] o.s.web.servlet.PageNotFound             : 
+         1  <*>-<*>-<*> <*>:<*>:<*>  WARN [carts,c755d43d6537c147,c755d43d6537c147,false] <*> --- [-nio-<*>-exec-<*>] o.s.web.servlet.PageNotFound             : R
+         1  <*>-<*>-<*> <*>:<*>:<*>  WARN [carts,ee63e586d61fd09b,ee63e586d61fd09b,false] <*> --- [p-nio-<*>-exec-<*>] o.s.web.servlet.PageNotFound             : 
+         1  <*>-<*>-<*> <*>:<*>:<*>  WARN [carts,2a590adc009976a2,2a590adc009976a2,false] <*> --- [-nio-<*>-exec-<*>] o.s.web.servlet.PageNotFound             : R
+  3 dong raw:
+    2024-11-23 18:22:38.840  WARN 7 --- [enerContainer-1] s.a.r.l.ConditionalRejectingErrorHandler : Execution of Rabbit message listener failed.
+
+    2024-11-23 18:34:36.702  WARN [carts,,,] 7 --- [           main] o.s.c.a.ConfigurationClassPostProcessor  : Cannot enhance @Configuration bean definition 'refreshScope' since its singleton instance has been created too e
+    2024-11-23 18:36:01.001  WARN [carts,bd63dc4cd4a5a6b0,bd63dc4cd4a5a6b0,false] 7 --- [p-nio-80-exec-1] o.s.web.servlet.PageNotFound             : Request method 'POST' not supported
+
+==========================================================================
+[2] LEMMA-RCA (backup) — co cot severity khong?
+==========================================================================
+  tong file: 6
+  ext: Counter({'.zip': 4, '': 1, '.md': 1})
+  30 file dau:
+    .gitattributes
+    20210517.zip
+    20210524.zip
+    20211203.zip
+    20220606.zip
+    README.md
+
+>> da ghi cp1/_warn_samples_out.txt

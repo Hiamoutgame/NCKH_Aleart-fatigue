@@ -1,0 +1,354 @@
+
+================================================================================
+[A] PHAN BO WARN THEO TUNG CASE (tach theo he thong)
+================================================================================
+
+--- OB: 120 case co logs ---
+  tong log        : 17,148,429
+  tong dong WARN  : 2
+  case WARN > 0   : 2/120
+  case WARN >= 10 : 0/120
+  case WARN >= 50 : 0/120
+  WARN max 1 case : 1
+  WARN median     : 0.0
+  bang chi tiet (case WARN>0):
+                    case  n_logs  n_warn  n_error
+    re3ob_adservice_f4_2   77616       1        0
+    re3ob_adservice_f5_2   70322       1        0
+
+--- SS: 120 case co logs ---
+  tong log        : 9,864,458
+  tong dong WARN  : 9,662
+  case WARN > 0   : 114/120
+  case WARN >= 10 : 98/120
+  case WARN >= 50 : 74/120
+  WARN max 1 case : 626
+  WARN median     : 54.0
+  bang chi tiet (case WARN>0):
+                        case  n_logs  n_warn  n_error
+            re3ss_carts_f3_4   85649     626     1403
+            re3ss_carts_f1_4   85849     618     1407
+            re3ss_carts_f3_3   84960     611     1400
+            re3ss_carts_f1_3   85155     608     1393
+            re3ss_carts_f1_2   85307     578     1404
+            re3ss_carts_f3_1   84162     575     1394
+            re3ss_carts_f1_1   84665     571     1402
+            re3ss_carts_f3_2   84442     570     1406
+          re2ss_carts_disk_1   88166      81     1485
+        re2ss_payment_loss_1   92962      71     1465
+         re2ss_orders_loss_1   89230      68     1460
+       re2ss_catalogue_cpu_3   87159      67     1470
+        re2ss_payment_loss_3   91786      67     1464
+         re2ss_orders_disk_2   87603      66     1393
+       re2ss_orders_socket_2   86799      66     1467
+         re2ss_payment_cpu_3   86912      65     1471
+        re2ss_payment_disk_1   89666      65     1297
+    re2ss_catalogue_socket_2   87798      64     1487
+         re2ss_payment_mem_3   87217      64     1475
+           re2ss_user_disk_2   86487      64     1464
+          re2ss_carts_loss_3   84331      64     1423
+         re2ss_payment_cpu_1   86881      63     1469
+           re2ss_carts_mem_1   87712      62     1490
+         re2ss_orders_disk_1   70374      62     1125
+         re2ss_user_socket_1   84250      62     1202
+       re2ss_orders_socket_1   89905      62     1326
+         re2ss_user_socket_2   85726      62     1453
+        re2ss_payment_disk_2   86728      61     1467
+      re2ss_catalogue_disk_2   86517      61     1467
+            re2ss_user_cpu_1   77384      60     1286
+            re2ss_user_mem_1   87131      60     1475
+           re2ss_user_disk_3   86663      59     1470
+        re2ss_payment_loss_2   91375      59     1442
+       re2ss_payment_delay_3   86799      59     1469
+          re2ss_orders_cpu_1   86534      59     1466
+       re2ss_catalogue_mem_2   86549      58     1467
+          re2ss_carts_disk_2   87449      58     1485
+           re2ss_carts_cpu_2   86451      58     1464
+      re2ss_payment_socket_2   86579      58     1467
+         re2ss_payment_cpu_2   86332      58     1467
+         re2ss_payment_mem_1   87090      58     1423
+          re2ss_user_delay_2   84386      58     1427
+      re2ss_catalogue_disk_3   86824      58     1471
+       re2ss_payment_delay_2   87147      57     1480
+            re2ss_user_mem_2   85960      57     1461
+       re2ss_orders_socket_3   86124      57     1461
+           re2ss_carts_mem_2   86086      57     1462
+        re2ss_orders_delay_2   86736      57     1470
+     re2ss_catalogue_delay_2   84632      57     1437
+        re2ss_carts_socket_3   86090      57     1461
+        re2ss_orders_delay_3   85819      56     1454
+          re2ss_orders_cpu_2   86433      56     1468
+          re2ss_user_delay_3   83728      55     1415
+       re2ss_catalogue_cpu_1   78035      55     1310
+          re2ss_carts_disk_3   87197      54     1483
+      re2ss_payment_socket_3   87216      54     1483
+         re2ss_orders_disk_3   86528      54     1469
+        re2ss_orders_delay_1   88610      54     1330
+         re2ss_orders_loss_2   87652      54     1443
+     re2ss_catalogue_delay_1   88601      54     1379
+        re2ss_carts_socket_2   86415      54     1469
+        re2ss_payment_disk_3   86149      53     1460
+           re2ss_carts_cpu_3   87020      52     1479
+          re2ss_orders_cpu_3   86788      52     1475
+       re2ss_catalogue_mem_3   86063      51     1465
+         re2ss_user_socket_3   86412      51     1468
+         re2ss_orders_loss_3   88243      51     1459
+           re2ss_carts_cpu_1   86592      50     1471
+          re2ss_orders_mem_1   86192      50     1466
+        re2ss_carts_socket_1   88689      50     1425
+       re2ss_payment_delay_1   86312      50     1261
+         re2ss_payment_mem_2   86218      50     1465
+       re2ss_catalogue_mem_1   86527      50     1471
+          re2ss_orders_mem_2   86626      50     1469
+         re2ss_carts_delay_3   82548      49     1397
+     re2ss_catalogue_delay_3   78812      49     1327
+          re2ss_carts_loss_1   84486      49     1431
+         re2ss_carts_delay_1   83040      49     1407
+            re2ss_user_mem_3   85809      48     1458
+      re2ss_catalogue_loss_3   61657      48      991
+           re2ss_carts_mem_3   86345      47     1471
+    re2ss_catalogue_socket_3   86369      46     1471
+          re2ss_carts_loss_2   84873      46     1439
+            re2ss_user_cpu_2   76709      46     1287
+            re2ss_user_cpu_3   86263      45     1468
+          re2ss_user_delay_1   81553      45     1180
+      re2ss_catalogue_disk_1   84395      45     1306
+    re2ss_catalogue_socket_1   89439      45     1395
+      re2ss_catalogue_loss_1   57320      44      920
+          re2ss_orders_mem_3   86519      43     1475
+           re2ss_user_loss_2   59052      42      947
+         re2ss_carts_delay_2   83145      41     1413
+      re2ss_payment_socket_1   85811      39     1264
+      re2ss_catalogue_loss_2   60114      37      957
+           re2ss_user_disk_1   78709      36     1126
+           re2ss_user_loss_1   53507      35      855
+       re2ss_catalogue_cpu_2   74548      34     1253
+           re2ss_user_loss_3   66602      32     1074
+           re3ss_orders_f1_2   78873       3     1307
+           re3ss_orders_f1_3   78278       2     1318
+            re3ss_carts_f4_1   84024       1     1331
+            re3ss_carts_f4_2   84555       1     1331
+        re3ss_front-end_f1_1   85513       1     1282
+        re3ss_front-end_f2_2   86678       1     1302
+            re3ss_carts_f4_3   83802       1     1316
+            re3ss_carts_f4_4   84925       1     1314
+           re3ss_orders_f1_1   79207       1     1316
+        re3ss_front-end_f3_1   46800       1      652
+           re3ss_orders_f3_1   79514       1      647
+           re3ss_orders_f3_2   79798       1      641
+           re3ss_orders_f3_3   79882       1      649
+           re3ss_orders_f4_1   51906       1      652
+           re3ss_orders_f4_2   41777       1      509
+           re3ss_orders_f4_3   51587       1      679
+
+--- TT: 119 case co logs ---
+  tong log        : 22,639,884
+  tong dong WARN  : 74
+  case WARN > 0   : 36/119
+  case WARN >= 10 : 0/119
+  case WARN >= 50 : 0/119
+  WARN max 1 case : 7
+  WARN median     : 0.0
+  bang chi tiet (case WARN>0):
+                                case  n_logs  n_warn  n_error
+        re2tt_ts-route-service_mem_1  233719       7       21
+         re2tt_ts-auth-service_mem_2  262199       5       14
+     re2tt_ts-train-service_socket_2  274621       5       11
+        re2tt_ts-train-service_cpu_2  280458       4       11
+       re2tt_ts-travel-service_mem_2  255069       4       16
+       re2tt_ts-train-service_loss_1  314211       3        8
+     re2tt_ts-order-service_socket_3  271066       3       11
+         re2tt_ts-auth-service_cpu_2  271919       2        8
+    re2tt_ts-travel-service_socket_1   59169       2        4
+        re2tt_ts-auth-service_loss_1  276063       2        7
+       re2tt_ts-auth-service_delay_1  266174       2        4
+        re2tt_ts-train-service_cpu_1  272238       2        7
+        re2tt_ts-train-service_cpu_3  273495       2        5
+     re2tt_ts-travel-service_delay_1  245246       2        5
+      re2tt_ts-travel-service_disk_3   58974       2        1
+       re2tt_ts-travel-service_cpu_2  275290       2        6
+       re2tt_ts-train-service_loss_2  265618       2        6
+       re2tt_ts-route-service_disk_1  274777       2      160
+       re2tt_ts-order-service_loss_1  270219       2        5
+        re2tt_ts-route-service_cpu_1  257658       2        6
+     re2tt_ts-travel-service_delay_3  264082       2        6
+         re2tt_ts-auth-service_cpu_3  267932       1        0
+      re2tt_ts-route-service_delay_1  238158       1        4
+       re2tt_ts-route-service_loss_1  197087       1        2
+       re2tt_ts-order-service_disk_1  272821       1       20
+        re2tt_ts-order-service_cpu_3  273099       1        3
+      re2tt_ts-auth-service_socket_3  265328       1        2
+     re2tt_ts-order-service_socket_1  269123       1        3
+     re2tt_ts-route-service_socket_1  256485       1        4
+        re2tt_ts-route-service_cpu_3   58882       1        2
+      re2tt_ts-train-service_delay_1  239017       1        2
+       re2tt_ts-train-service_disk_3  273293       1        2
+       re2tt_ts-train-service_loss_3  270421       1        2
+     re2tt_ts-travel-service_delay_2  260810       1        2
+       re2tt_ts-travel-service_mem_1  256600       1        3
+      re2tt_ts-travel-service_loss_2  291893       1        4
+
+================================================================================
+[B] CAU TRUC DUPLICATE — template tho vs da chuan hoa
+================================================================================
+
+--- re3ss_carts_f3_4  (fault=f3, root_cause=carts) ---
+  WARN=626  template tho=626  template chuan hoa=2
+  normal window=0  faulty window=626
+  container co WARN: {'carts': 626}
+  container trong case: 12
+      625 ( 99.8%)  WARN [carts,<HEX>,<HEX>,false] <N> --- <THREAD> o.s.web.servlet.PageNotFound             : Request method 'POST' not supported
+        1 (  0.2%)  WARN [carts,,,] <N> --- <THREAD> o.s.c.a.ConfigurationClassPostProcessor  : Cannot enhance @Configuration bean definition 'refreshScope' since its sin
+
+--- re3ss_carts_f1_4  (fault=f1, root_cause=carts) ---
+  WARN=618  template tho=618  template chuan hoa=3
+  normal window=1  faulty window=617
+  container co WARN: {'carts': 617, 'queue-master': 1}
+  container trong case: 13
+      616 ( 99.7%)  WARN [carts,<HEX>,<HEX>,false] <N> --- <THREAD> o.s.web.servlet.PageNotFound             : Request method 'POST' not supported
+        1 (  0.2%)  WARN <N> --- <THREAD> s.a.r.l.ConditionalRejectingErrorHandler : Execution of Rabbit message listener failed.
+        1 (  0.2%)  WARN [carts,,,] <N> --- <THREAD> o.s.c.a.ConfigurationClassPostProcessor  : Cannot enhance @Configuration bean definition 'refreshScope' since its sin
+
+--- re3ss_carts_f3_3  (fault=f3, root_cause=carts) ---
+  WARN=611  template tho=611  template chuan hoa=2
+  normal window=0  faulty window=611
+  container co WARN: {'carts': 611}
+  container trong case: 11
+      610 ( 99.8%)  WARN [carts,<HEX>,<HEX>,false] <N> --- <THREAD> o.s.web.servlet.PageNotFound             : Request method 'POST' not supported
+        1 (  0.2%)  WARN [carts,,,] <N> --- <THREAD> o.s.c.a.ConfigurationClassPostProcessor  : Cannot enhance @Configuration bean definition 'refreshScope' since its sin
+
+--- re3ss_carts_f1_3  (fault=f1, root_cause=carts) ---
+  WARN=608  template tho=608  template chuan hoa=3
+  normal window=1  faulty window=607
+  container co WARN: {'carts': 607, 'queue-master': 1}
+  container trong case: 12
+      606 ( 99.7%)  WARN [carts,<HEX>,<HEX>,false] <N> --- <THREAD> o.s.web.servlet.PageNotFound             : Request method 'POST' not supported
+        1 (  0.2%)  WARN <N> --- <THREAD> s.a.r.l.ConditionalRejectingErrorHandler : Execution of Rabbit message listener failed.
+        1 (  0.2%)  WARN [carts,,,] <N> --- <THREAD> o.s.c.a.ConfigurationClassPostProcessor  : Cannot enhance @Configuration bean definition 'refreshScope' since its sin
+
+--- re3ss_carts_f1_2  (fault=f1, root_cause=carts) ---
+  WARN=578  template tho=578  template chuan hoa=2
+  normal window=0  faulty window=578
+  container co WARN: {'carts': 578}
+  container trong case: 12
+      577 ( 99.8%)  WARN [carts,<HEX>,<HEX>,false] <N> --- <THREAD> o.s.web.servlet.PageNotFound             : Request method 'POST' not supported
+        1 (  0.2%)  WARN [carts,,,] <N> --- <THREAD> o.s.c.a.ConfigurationClassPostProcessor  : Cannot enhance @Configuration bean definition 'refreshScope' since its sin
+
+--- re3ss_carts_f3_1  (fault=f3, root_cause=carts) ---
+  WARN=575  template tho=575  template chuan hoa=2
+  normal window=0  faulty window=575
+  container co WARN: {'carts': 575}
+  container trong case: 11
+      574 ( 99.8%)  WARN [carts,<HEX>,<HEX>,false] <N> --- <THREAD> o.s.web.servlet.PageNotFound             : Request method 'POST' not supported
+        1 (  0.2%)  WARN [carts,,,] <N> --- <THREAD> o.s.c.a.ConfigurationClassPostProcessor  : Cannot enhance @Configuration bean definition 'refreshScope' since its sin
+
+--- re2ss_carts_cpu_1  (fault=cpu, root_cause=carts) ---
+  WARN=50  template tho=50  template chuan hoa=1
+  normal window=26  faulty window=24
+  container co WARN: {'carts': 50}
+  container trong case: 11
+       50 (100.0%)  WARN [carts,,,] <N> --- [tion/x-thrift})] z.r.AsyncReporter$BoundedAsyncReporter   : Dropped <N> spans due to UnknownHostException(zipkin)
+
+--- re2ss_carts_mem_1  (fault=mem, root_cause=carts) ---
+  WARN=62  template tho=62  template chuan hoa=1
+  normal window=43  faulty window=19
+  container co WARN: {'carts': 62}
+  container trong case: 11
+       62 (100.0%)  WARN [carts,,,] <N> --- [tion/x-thrift})] z.r.AsyncReporter$BoundedAsyncReporter   : Dropped <N> spans due to UnknownHostException(zipkin)
+
+--- re2ss_carts_disk_1  (fault=disk, root_cause=carts) ---
+  WARN=81  template tho=81  template chuan hoa=1
+  normal window=43  faulty window=38
+  container co WARN: {'carts': 81}
+  container trong case: 10
+       81 (100.0%)  WARN [carts,,,] <N> --- [tion/x-thrift})] z.r.AsyncReporter$BoundedAsyncReporter   : Dropped <N> spans due to UnknownHostException(zipkin)
+
+--- re2ss_carts_delay_1  (fault=delay, root_cause=carts) ---
+  WARN=49  template tho=49  template chuan hoa=1
+  normal window=18  faulty window=31
+  container co WARN: {'carts': 49}
+  container trong case: 10
+       49 (100.0%)  WARN [carts,,,] <N> --- [tion/x-thrift})] z.r.AsyncReporter$BoundedAsyncReporter   : Dropped <N> spans due to UnknownHostException(zipkin)
+
+--- re2ss_carts_loss_1  (fault=loss, root_cause=carts) ---
+  WARN=49  template tho=49  template chuan hoa=1
+  normal window=26  faulty window=23
+  container co WARN: {'carts': 49}
+  container trong case: 11
+       49 (100.0%)  WARN [carts,,,] <N> --- [tion/x-thrift})] z.r.AsyncReporter$BoundedAsyncReporter   : Dropped <N> spans due to UnknownHostException(zipkin)
+
+--- re2ss_carts_socket_1  (fault=socket, root_cause=carts) ---
+  WARN=50  template tho=50  template chuan hoa=1
+  normal window=25  faulty window=25
+  container co WARN: {'carts': 50}
+  container trong case: 10
+       50 (100.0%)  WARN [carts,,,] <N> --- [tion/x-thrift})] z.r.AsyncReporter$BoundedAsyncReporter   : Dropped <N> spans due to UnknownHostException(zipkin)
+
+--- re3ss_carts_f1_1  (fault=f1, root_cause=carts) ---
+  WARN=571  template tho=571  template chuan hoa=3
+  normal window=1  faulty window=570
+  container co WARN: {'carts': 570, 'queue-master': 1}
+  container trong case: 13
+      569 ( 99.6%)  WARN [carts,<HEX>,<HEX>,false] <N> --- <THREAD> o.s.web.servlet.PageNotFound             : Request method 'POST' not supported
+        1 (  0.2%)  WARN <N> --- <THREAD> s.a.r.l.ConditionalRejectingErrorHandler : Execution of Rabbit message listener failed.
+        1 (  0.2%)  WARN [carts,,,] <N> --- <THREAD> o.s.c.a.ConfigurationClassPostProcessor  : Cannot enhance @Configuration bean definition 'refreshScope' since its sin
+
+--- re3ss_carts_f4_1  (fault=f4, root_cause=carts) ---
+  WARN=1  template tho=1  template chuan hoa=1
+  normal window=0  faulty window=1
+  container co WARN: {'carts': 1}
+  container trong case: 12
+        1 (100.0%)  WARN [carts,,,] <N> --- <THREAD> o.s.c.a.ConfigurationClassPostProcessor  : Cannot enhance @Configuration bean definition 'refreshScope' since its sin
+
+================================================================================
+[B2] BANG TONG HOP DUPLICATE
+================================================================================
+                case  fault root_cause  n_warn  n_tpl_raw  n_tpl_norm  top1_share_pct  warn_normal  warn_faulty  pct_normal  n_containers_warn  n_containers_case
+    re3ss_carts_f3_4     f3      carts     626        626           2            99.8            0          626         0.0                  1                 12
+    re3ss_carts_f1_4     f1      carts     618        618           3            99.7            1          617         0.2                  2                 13
+    re3ss_carts_f3_3     f3      carts     611        611           2            99.8            0          611         0.0                  1                 11
+    re3ss_carts_f1_3     f1      carts     608        608           3            99.7            1          607         0.2                  2                 12
+    re3ss_carts_f1_2     f1      carts     578        578           2            99.8            0          578         0.0                  1                 12
+    re3ss_carts_f3_1     f3      carts     575        575           2            99.8            0          575         0.0                  1                 11
+   re2ss_carts_cpu_1    cpu      carts      50         50           1           100.0           26           24        52.0                  1                 11
+   re2ss_carts_mem_1    mem      carts      62         62           1           100.0           43           19        69.4                  1                 11
+  re2ss_carts_disk_1   disk      carts      81         81           1           100.0           43           38        53.1                  1                 10
+ re2ss_carts_delay_1  delay      carts      49         49           1           100.0           18           31        36.7                  1                 10
+  re2ss_carts_loss_1   loss      carts      49         49           1           100.0           26           23        53.1                  1                 11
+re2ss_carts_socket_1 socket      carts      50         50           1           100.0           25           25        50.0                  1                 10
+    re3ss_carts_f1_1     f1      carts     571        571           3            99.6            1          570         0.2                  2                 13
+    re3ss_carts_f4_1     f4      carts       1          1           1           100.0            0            1         0.0                  1                 12
+
+================================================================================
+[C] MOI CASE CHUA LOG CUA BAO NHIEU SERVICE?
+================================================================================
+  (n_containers = so service xuat hien trong logs.parquet cua 1 case)
+      count       mean       std   min   25%   50%   75%   max
+sys2                                                          
+OB    120.0  10.016667  0.223920   9.0  10.0  10.0  10.0  11.0
+SS    120.0  11.000000  0.809606  10.0  10.0  11.0  11.0  15.0
+TT    119.0  45.184874  2.497342  39.0  45.0  45.0  47.0  49.0
+
+  so case chi co 1 service: 0/359
+
+================================================================================
+[D] WARN THEO LOAI FAULT — normal vs faulty window (mau SS)
+================================================================================
+                 case fault  n_warn  normal  faulty  pct_normal
+     re3ss_carts_f3_4    f3     626       0     626         0.0
+     re3ss_carts_f1_4    f1     618       1     617         0.2
+     re3ss_carts_f3_3    f3     611       0     611         0.0
+     re3ss_carts_f1_3    f1     608       1     607         0.2
+     re3ss_carts_f1_2    f1     578       0     578         0.0
+     re3ss_carts_f3_1    f3     575       0     575         0.0
+     re3ss_carts_f1_1    f1     571       1     570         0.2
+     re3ss_carts_f3_2    f3     570       0     570         0.0
+   re2ss_carts_disk_1  disk      81      43      38        53.1
+ re2ss_payment_loss_1  loss      71      40      31        56.3
+  re2ss_orders_loss_1  loss      68      35      33        51.5
+re2ss_catalogue_cpu_3   cpu      67      31      36        46.3
+ re2ss_payment_loss_3  loss      67      34      33        50.7
+  re2ss_orders_disk_2  disk      66      26      40        39.4
+
+  -> case fault CODE-LEVEL (f1/f3): WARN gan nhu 100% trong FAULTY window
+  -> case fault HA TANG (cpu/disk/loss/mem): WARN chia ~50/50 normal & faulty

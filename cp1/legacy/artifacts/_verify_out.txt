@@ -1,0 +1,206 @@
+
+========================================================================
+[1] CONFIG 'cases' — schema cap case
+========================================================================
+total cases            : 735
+features               : ['case', 'dataset', 'suite', 'system', 'system_name', 'root_cause_service', 'fault', 'fault_description', 'repetition', 'inject_time', 'n_metrics', 'n_timesteps', 'time_start', 'time_end', 'duration_minutes', 'normal_timesteps', 'faulty_timesteps', 'has_logs', 'n_logs', 'has_traces', 'n_traces', 'has_root_cause_file']
+
+kieu du lieu tung field (lay tu 1 case dau):
+  case                     str       re1ob_adservice_cpu_1
+  dataset                  str       RE1-OB
+  suite                    str       RE1
+  system                   str       ob
+  system_name              str       Online Boutique
+  root_cause_service       str       adservice
+  fault                    str       cpu
+  fault_description        str       CPU stress
+  repetition               int       1
+  inject_time              int       1685202688
+  n_metrics                int       49
+  n_timesteps              int       4201
+  time_start               int       1685200588
+  time_end                 int       1685204788
+  duration_minutes         float     70.0
+  normal_timesteps         int       2100
+  faulty_timesteps         int       2101
+  has_logs                 bool      False
+  n_logs                   int       0
+  has_traces               bool      False
+  n_traces                 int       0
+  has_root_cause_file      bool      False
+
+dtype pandas (toan bo cases):
+  case                     str
+  dataset                  str
+  suite                    str
+  system                   str
+  system_name              str
+  root_cause_service       str
+  fault                    str
+  fault_description        str
+  repetition               int64
+  inject_time              int64
+  n_metrics                int64
+  n_timesteps              int64
+  time_start               int64
+  time_end                 int64
+  duration_minutes         float64
+  normal_timesteps         int64
+  faulty_timesteps         int64
+  has_logs                 bool
+  n_logs                   int64
+  has_traces               bool
+  n_traces                 int64
+  has_root_cause_file      bool
+
+========================================================================
+[2] INVENTORY file trong repo HF
+========================================================================
+tong so file           : 2080
+  inject_time.txt      735
+  metrics.parquet      735
+  logs.parquet         359
+  traces.parquet       240
+  root_cause.txt       8
+
+case co logs.parquet   : 359
+case co traces.parquet : 240
+case co root_cause.txt : 8
+
+CAC LOAI CONFIG TRONG HF DATASET (load_dataset khong truyen config):
+
+========================================================================
+[3] PHAN BO cac field quan trong
+========================================================================
+has_logs=True          : 359/735
+has_traces=True        : 240/735
+has_root_cause_file    : 8/735
+
+system_name x has_logs:
+has_logs         False  True 
+system_name                  
+Online Boutique    125    120
+Sock Shop          125    120
+Train Ticket       126    119
+
+fault types (case co has_logs=True):
+fault
+delay     45
+disk      45
+loss      45
+mem       45
+socket    45
+cpu       44
+f3        26
+f1        26
+f4        19
+f2        13
+f5         6
+
+so case co logs theo (system, fault):
+fault   cpu  delay  disk  f1  f2  f3  f4  f5  loss  mem  socket
+system                                                         
+ob       15     15    15   9   3   6   6   6    15   15      15
+ss       15     15    15  10   3  10   7   0    15   15      15
+tt       14     15    15   7   7  10   6   0    15   15      15
+
+n_logs min/max/mean    : 17025 / 314211 / 138308
+
+========================================================================
+[4] LOG SCHEMA — file logs.parquet cua tung case
+========================================================================
+lay mau 5 case dau co logs: ['re2ob_checkoutservice_cpu_1', 're2ob_checkoutservice_cpu_2', 're2ob_checkoutservice_cpu_3', 're2ob_checkoutservice_delay_1', 're2ob_checkoutservice_delay_2']
+
+--- re2ob_checkoutservice_cpu_1 ---
+  rows    : 171322
+  columns : ['timestamp', 'container_name', 'message']
+  dtypes  : {'timestamp': 'Int64', 'container_name': 'string', 'message': 'string'}
+  head(5):
+    timestamp   container_name                        message
+0  1705353846  currencyservice  conversion request successful
+1  1705353846  currencyservice  conversion request successful
+2  1705353846         frontend                request started
+3  1705353846         frontend           serving product page
+4  1705353846  currencyservice  conversion request successful
+
+--- re2ob_checkoutservice_cpu_2 ---
+  rows    : 110067
+  columns : ['timestamp', 'container_name', 'message']
+  dtypes  : {'timestamp': 'Int64', 'container_name': 'string', 'message': 'string'}
+  head(5):
+    timestamp   container_name                                                               message
+0  1708474641      cartservice  GetCartAsync called with userId=8a217b1d-507e-4916-83b0-4e8c4c55c098
+1  1708474641      cartservice  GetCartAsync called with userId=de3564be-ad8e-4452-8bd0-f2dd592f5d48
+2  1708474641  currencyservice                                         conversion request successful
+3  1708474641  currencyservice                                         conversion request successful
+4  1708474641  currencyservice                                         conversion request successful
+
+--- re2ob_checkoutservice_cpu_3 ---
+  rows    : 178461
+  columns : ['timestamp', 'container_name', 'message']
+  dtypes  : {'timestamp': 'Int64', 'container_name': 'string', 'message': 'string'}
+  head(5):
+    timestamp         container_name                                                                                                        message
+0  1705622819               frontend                                                                                                request started
+1  1705622819               frontend                                                                                                 view user cart
+2  1705622819        currencyservice                                                                                Getting supported currencies...
+3  1705622819            cartservice                                           GetCartAsync called with userId=9aa00767-22fc-44cf-9aac-284695d6cfcc
+4  1705622819  recommendationservice  [Recv ListRecommendations] product_ids=['6E92ZMYYFZ', '1YMWWN1N4O', '0PUK6V6EV0', 'LS4PSXUNUM', '9SIQT8TOJO']
+
+--- re2ob_checkoutservice_delay_1 ---
+  rows    : 177868
+  columns : ['timestamp', 'container_name', 'message']
+  dtypes  : {'timestamp': 'Int64', 'container_name': 'string', 'message': 'string'}
+  head(5):
+    timestamp   container_name                                                                           message
+0  1705665791         frontend  Detected Google metadata server: [169.254.169.254], setting ENV_PLATFORM to GCP.
+1  1705665791         frontend                                                              ENV_PLATFORM is: gcp
+2  1705665791        adservice                                            received ad request (context_words=[])
+3  1705665791  currencyservice                                                     conversion request successful
+4  1705665791         frontend                                                                  request complete
+
+--- re2ob_checkoutservice_delay_2 ---
+  rows    : 175563
+  columns : ['timestamp', 'container_name', 'message']
+  dtypes  : {'timestamp': 'Int64', 'container_name': 'string', 'message': 'string'}
+  head(5):
+    timestamp container_name                                                                                                 message
+0  1705668201      adservice                                                           received ad request (context_words=[kitchen])
+1  1705668201       frontend                                                                                        request complete
+2  1705668201       frontend                                                                                         request started
+3  1705668201       frontend                                                                                          adding to cart
+4  1705668201    cartservice  AddItemAsync called with userId=7099408c-c9ad-4249-abfd-d9235d324230, productId=6E92ZMYYFZ, quantity=3
+
+
+========================================================================
+[4b] CO field timestamp / service / message / severity khong?
+========================================================================
+  timestamp  -> FOUND: ['timestamp']
+  service    -> NOT FOUND
+  message    -> FOUND: ['message']
+  severity   -> NOT FOUND
+
+========================================================================
+[5] WARNING LEVEL — co log WARNING khong?
+========================================================================
+--- re2ob_checkoutservice_cpu_1 ---
+  khong tim thay cot level/severity
+--- re2ob_checkoutservice_cpu_2 ---
+  khong tim thay cot level/severity
+--- re2ob_checkoutservice_cpu_3 ---
+  khong tim thay cot level/severity
+--- re2ob_checkoutservice_delay_1 ---
+  khong tim thay cot level/severity
+--- re2ob_checkoutservice_delay_2 ---
+  khong tim thay cot level/severity
+
+========================================================================
+[6] QUY MO WARNING tren 40 case (uoc luong)
+========================================================================
+
+========================================================================
+KET QUA JSON (raw)
+========================================================================
+{
+  "n_warning_sample_rows": []
+}

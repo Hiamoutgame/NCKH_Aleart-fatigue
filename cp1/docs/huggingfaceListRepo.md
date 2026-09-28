@@ -22,6 +22,8 @@
 
 ### Schema (Parquet fields per case)
 
+> Đây là schema của **config `cases`** (bảng chỉ mục 735 dòng). **Log KHÔNG nằm ở đây** — xem phần dưới.
+
 ```
 case, dataset, suite, system, system_name,
 root_cause_service, fault, fault_description,
@@ -31,12 +33,25 @@ normal_timesteps, faulty_timesteps,
 has_logs, n_logs, has_traces, n_traces, has_root_cause_file
 ```
 
+### Schema của log (đã kiểm chứng 2026-09-28)
+
+Log nằm ở **file riêng `<case>/logs.parquet`**. Chỉ **359/735 case** có file này.
+
+```
+timestamp       Int64    epoch giây
+container_name  string   tên service  <-- đây chính là "service"
+message         string   nội dung log thô
+```
+
+**Không có cột `severity` / `level`.** Mức log phải parse từ `message`.
+Ngoài ra: `inject_time.txt` (735 case), `metrics.parquet` (735), `traces.parquet` (240), `root_cause.txt` (8 case).
+
 ### Lý do chọn làm dataset chính
-- **735 ca lỗi** từ 3 microservice thật (public, tái lập được)
+- **735 ca lỗi** từ 3 microservice thật (public, tái lập được) — **nhưng chỉ 359 case có log**, suite RE1 (375 case) là metric-only
 - Có **log + metric + trace + nhãn root cause** → đa modal, đủ cho agent tool-calling
 - Paper đi kèm có **15 baseline** (bao gồm rule-based, graph-based, RL) → dễ so sánh
 - License MIT → không cản trở publish
-- 3 hệ thống benchmark đều là **microservice mẫu phổ biến** (Online Boutique của Google, Sock Shop của Weaveworks, Train Ticket) → topology đã public, build được dependency table cho tool-2
+- 3 hệ thống benchmark đều là **microservice mẫu phổ biến** (Online Boutique của Google, Sock Shop của Weaveworks, Train Ticket) → dựng được dependency table cho tool-2, **có thể lấy trực tiếp từ `traces.parquet` (240 case) thay vì phải dựa vào repo ngoài**
 
 ---
 
@@ -114,12 +129,14 @@ Trong microservices, hệ thống monitoring (Prometheus, Grafana, ELK...) sinh 
 
 ## 2. Phân biệt các cấp độ log
 
+> ⚠️ **ĐÃ KIỂM CHỨNG 2026-09-28**: RCAEval **KHÔNG có cột `severity`/`level`**. Bảng log chỉ có 3 cột `timestamp`, `container_name`, `message`. Mức log (nếu có) **nằm bên trong nội dung `message`** và **chỉ có ở Sock Shop và Train Ticket** (định dạng log4j của Spring Boot); Online Boutique **hoàn toàn không có mức log**. Xem `cp1/docs/data_schema_notes.md`.
+
 | Cấp độ | Mô tả | Hệ thống | Trạng thái |
 |---|---|---|---|
 | **INFO** | Hoạt động bình thường | Chạy đúng | Không cần alert |
-| **WARNING** | Dấu hiệu bất thường sớm | **Chưa sập** | ⭐ **Focus của đề tài** |
-| **ERROR** | Lỗi chức năng | **Đã hỏng** | Ngoài scope |
-| **FATAL/CRITICAL** | Hệ thống crash | **Sập hoàn toàn** | Ngoài scope |
+| **WARNING / WARN** | Dấu hiệu bất thường sớm | **Chưa sập** | ⭐ **Focus của đề tài** — 9.738 dòng trên toàn dataset |
+| **ERROR** | Lỗi chức năng | **Đã hỏng** | Dùng làm mở rộng cho Cascading — 167.309 dòng |
+| **FATAL/CRITICAL** | Hệ thống crash | **Sập hoàn toàn** | Ngoài scope — **0 dòng** trong toàn dataset |
 
 > **Novelty**: Đề tài tập trung vào WARNING-level — cảnh báo sớm khi hệ thống **chưa sập**. Đây là gap mà literature hiện có phần lớn bỏ qua (COLA, AlertGuardian, rule-based đều tập trung error/failure).
 
@@ -177,35 +194,58 @@ Purity = (Số alert trong group đúng là cùng root cause) / (Tổng số ale
 | RCAEval Field | Mapping sang Noisy Alert Definition |
 |---|---|
 | fault + fault_description | Loại fault → xác định root cause service |
-| root_cause_service | Ground truth → đánh giá RCPR |
-| n_logs + has_logs | Nguồn sinh alert warning (parse từ log) |
-| normal_timesteps vs faulty_timesteps | Alert trong normal period → nhiều khả năng là noisy (transient/cascading) |
-| inject_time | Timestamp fault injection → xác định time window cho aggregation |
+| root_cause_service | Ground truth → đánh giá RCPR (mức service, 359 case) |
+| n_logs + has_logs | Nguồn sinh alert cảnh báo sớm (**chỉ 359/735 case có log**) |
+| **`timestamp` (cột trong `logs.parquet`)** | **Cửa sổ thời gian — dùng `timestamp < inject_time` cho normal window** |
+| `normal_timesteps` / `faulty_timesteps` | ⚠️ **KHÔNG dùng** — đây là **số nguyên** (số điểm), **không phải danh sách timestamp** |
+| inject_time | Timestamp fault injection → mốc chia cửa sổ bình thường / suy thoái |
 | system (Online Boutique/Sock Shop/Train Ticket) | Topology → build dependency table cho tool-2 |
+| `container_name` (cột trong `logs.parquet`) | Chính là **service name** — dataset không có cột tên `service` |
 
-## 6. Quy trình sinh alert warning từ RCAEval
+## 6. Quy trình sinh alert cảnh báo sớm từ RCAEval (đã sửa theo dữ liệu thật)
+
+> ⚠️ Log **không nằm trong config `cases`**. Mỗi case có file riêng `logs.parquet` với 3 cột `timestamp`, `container_name`, `message`. Chỉ **359/735 case** có file này.
 
 ```
-Step 1: Load cases có has_logs=True từ RCAEval
-Step 2: Parse log → extract entries có level=WARNING
-Step 3: Map mỗi warning log → 1 alert object:
-        {alert_id, service, timestamp, message_template, severity="warning"}
-Step 4: Label mỗi alert là "noisy" hay "signal" dựa trên:
-        - Timestamp nằm trong normal_timesteps → "noisy" (transient)
-        - Service == root_cause_service + timestamp trong faulty_timesteps → "signal"
-        - Service != root_cause_service + timestamp trong faulty_timesteps → "cascading/noisy"
-Step 5: Áp dụng aggregation → đo ARR và RCPR
+Step 1: Load cases có has_logs=True (359 case)
+Step 2: Với mỗi case, tải <case>/logs.parquet
+Step 3: Sinh alert object từ mỗi dòng log:
+        {alert_id, service=container_name, timestamp, message_template, severity}
+        - message_template: chuẩn hoá message (bỏ timestamp, UUID, trace-id, số)
+        - severity: gán theo 3 tầng
+            T1: parse mức từ message (Sock Shop, Train Ticket) -> WARNING/ERROR/INFO
+            T2: suy diễn theo tần suất faulty/normal (Online Boutique, vì không có mức)
+            T3: đánh dấu ROOT_CAUSE nếu dòng nằm trong root_cause.txt (8 case)
+Step 4: Gán nhãn noisy/signal (dùng inject_time, KHÔNG dùng normal_timesteps):
+        - timestamp <  inject_time                          -> "noisy" (transient)
+        - service == root_cause_service                    -> "signal"
+        - service != root_cause_service + timestamp >= inject_time
+          + có đường đi trong call graph từ root_cause      -> "cascading/noisy"
+Step 5: Áp dụng aggregation -> đo ARR, RCPR, Pairwise F1, Group Purity
 ```
+
+**Số liệu thực tế để đối chiếu khi chạy pipeline:**
+
+| Chỉ số | Giá trị đã kiểm chứng |
+|---|---|
+| Case có log | 359 |
+| Tổng dòng log | 49.652.771 |
+| Dòng `WARN` | 9.738 (Sock Shop 9.662 · Train Ticket 74 · Online Boutique 2) |
+| Dòng `ERROR` | 167.309 |
+| Dòng `FATAL`/`CRITICAL` | 0 |
 
 ---
 
 ## 7. Checklist CP1
 
 - [x] RCAEval: đã verify trên HF + arXiv + GitHub
+- [x] RCAEval: **đã kiểm chứng schema và log thật** (`cp1/docs/data_schema_notes.md`)
 - [x] LEMMA-RCA: đã verify trên HF (CC-BY-NC-4.0, non-commercial)
 - [x] loghub_2: đã verify trên HF
-- [x] Định nghĩa "noisy alert warning" — 4 loại (duplicate, transient, unactionable, cascading)
-- [x] Metric đo lường: ARR, RCPR, Group Purity
-- [x] Baseline: rule-based (Prometheus), time-window only, no-aggregation
+- [x] Định nghĩa "noisy alert" — 4 loại (duplicate, transient, unactionable, cascading), **rule đã viết được**
+- [x] Metric đo lường: ARR, RCPR (định nghĩa kép), Pairwise F1, Group Purity
+- [x] Baseline: rule-based (Prometheus), semantic-only, temporal-spatial, no-aggregation
 - [x] Mapping sang RCAEval fields
-- [x] Quy trình sinh alert warning từ RCAEval
+- [x] Quy trình sinh alert cảnh báo sớm từ RCAEval
+- [x] Kết luận Go/No-go: **CONDITIONAL GO** — chốt dùng RCAEval, thực nghiệm chính trên Sock Shop
+- [ ] CP3: chạy pipeline thật để sinh `alerts.csv` và đếm số alert/group

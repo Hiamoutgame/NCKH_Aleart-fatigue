@@ -1,0 +1,68 @@
+Tong case co logs.parquet: 359
+  ...25/359 done
+  ...50/359 done
+  ...75/359 done
+  ...100/359 done
+  ...125/359 done
+  ...150/359 done
+  ...175/359 done
+  ...200/359 done
+  ...225/359 done
+  ...250/359 done
+  ...275/359 done
+  ...300/359 done
+  ...325/359 done
+  ...350/359 done
+  ...359/359 done
+
+==============================================================================
+TONG HOP TOAN BO 359 CASE
+==============================================================================
+case quet duoc        : 359
+tong log              : 49,652,771
+tong dong chua WARN   : 9,738
+tong dong chua ERROR  : 167,309
+tong dong chua INFO   : 23,361,674
+tong dong co log4j lvl: 23,538,631
+
+THEO HE THONG:
+        cases      logs  warn   error      info     log4j  pct_warn  pct_log4j
+system                                                                        
+tt        359  49652771  9738  167309  23361674  23538631   0.01961      47.41
+
+CASE CO NHIEU WARN NHAT (top 25):
+                    case system  n_logs  n_warn  n_error  n_info
+        re3ss_carts_f3_4     tt   85649     626     1403   14499
+        re3ss_carts_f1_4     tt   85849     618     1407   14804
+        re3ss_carts_f3_3     tt   84960     611     1400   14400
+        re3ss_carts_f1_3     tt   85155     608     1393   14562
+        re3ss_carts_f1_2     tt   85307     578     1404   14357
+        re3ss_carts_f3_1     tt   84162     575     1394   13576
+        re3ss_carts_f1_1     tt   84665     571     1402   14247
+        re3ss_carts_f3_2     tt   84442     570     1406   14135
+      re2ss_carts_disk_1     tt   88166      81     1485   13365
+    re2ss_payment_loss_1     tt   92962      71     1465   10213
+     re2ss_orders_loss_1     tt   89230      68     1460   12557
+   re2ss_catalogue_cpu_3     tt   87159      67     1470   13230
+    re2ss_payment_loss_3     tt   91786      67     1464   10537
+     re2ss_orders_disk_2     tt   87603      66     1393   12714
+   re2ss_orders_socket_2     tt   86799      66     1467   13203
+     re2ss_payment_cpu_3     tt   86912      65     1471   13239
+    re2ss_payment_disk_1     tt   89666      65     1297   11057
+      re2ss_carts_loss_3     tt   84331      64     1423   12789
+re2ss_catalogue_socket_2     tt   87798      64     1487   13383
+     re2ss_payment_mem_3     tt   87217      64     1475   13275
+       re2ss_user_disk_2     tt   86487      64     1464   13176
+     re2ss_payment_cpu_1     tt   86881      63     1469   13221
+       re2ss_carts_mem_1     tt   87712      62     1490   13415
+     re2ss_orders_disk_1     tt   70374      62     1125   10694
+   re2ss_orders_socket_1     tt   89905      62     1326   12077
+
+case co n_warn > 0    : 152/359
+case co n_warn >= 10  : 98/359
+case co n_warn >= 100 : 8/359
+
+WARN phan bo theo he thong (chi case >0):
+        count       mean         std  min  25%   50%   75%    max
+system                                                           
+tt      152.0  64.065789  128.179183  1.0  2.0  49.0  58.0  626.0

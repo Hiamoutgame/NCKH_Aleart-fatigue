@@ -1,0 +1,10 @@
+# CP1 - Environment setup
+datasets>=2.14.0
+pandas>=2.0.0
+sentence-transformers>=2.2.0
+scikit-learn>=1.3.0
+hdbscan>=0.8.29
+drain3>=1.0.0
+numpy>=1.24.0
+tqdm>=4.65.0
+pyyaml>=6.0

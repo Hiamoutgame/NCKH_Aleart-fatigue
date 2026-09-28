@@ -1,0 +1,49 @@
+﻿SUITE x SYSTEM:
+        cases      logs  warn   error      info     log4j  cases_warn_gt0  warn_max  pct_warn
+sys                                                                                          
+re2-OB     90  15053223     0       0         0         0               0         0   0.00000
+re2-SS     90   7566220  4886  125180   1116905   1246938              90        81   0.06458
+re2-TT     89  21012021    74     464  20334633  20335171              36         7   0.00035
+re3-OB     30   2095206     2       0         0         0               2         1   0.00010
+re3-SS     30   2298238  4776   34024    389323    428113              24       626   0.20781
+re3-TT     30   1627863     0    7641   1520813   1528409               0         0   0.00000
+
+CHI THEO HE THONG (ob/ss/tt):
+      cases      logs  warn   error  cases_warn_gt0  warn_mean  warn_max  pct_warn
+sys2                                                                              
+OB      120  17148429     2       0               2   0.016667         1   0.00001
+SS      120   9864458  9662  159204             114  80.516667       626   0.09795
+TT      119  22639884    74    8105              36   0.621849         7   0.00033
+
+TONG:
+  logs=49,652,771 warn=9,738 error=167,309 cases_warn_gt0=152/359
+
+TOP 20 CASE NHIEU WARN (da gan nhan dung):
+                    case    sys  n_logs  n_warn  n_error
+        re3ss_carts_f3_4 re3-SS   85649     626     1403
+        re3ss_carts_f1_4 re3-SS   85849     618     1407
+        re3ss_carts_f3_3 re3-SS   84960     611     1400
+        re3ss_carts_f1_3 re3-SS   85155     608     1393
+        re3ss_carts_f1_2 re3-SS   85307     578     1404
+        re3ss_carts_f3_1 re3-SS   84162     575     1394
+        re3ss_carts_f1_1 re3-SS   84665     571     1402
+        re3ss_carts_f3_2 re3-SS   84442     570     1406
+      re2ss_carts_disk_1 re2-SS   88166      81     1485
+    re2ss_payment_loss_1 re2-SS   92962      71     1465
+     re2ss_orders_loss_1 re2-SS   89230      68     1460
+   re2ss_catalogue_cpu_3 re2-SS   87159      67     1470
+    re2ss_payment_loss_3 re2-SS   91786      67     1464
+     re2ss_orders_disk_2 re2-SS   87603      66     1393
+   re2ss_orders_socket_2 re2-SS   86799      66     1467
+     re2ss_payment_cpu_3 re2-SS   86912      65     1471
+    re2ss_payment_disk_1 re2-SS   89666      65     1297
+      re2ss_carts_loss_3 re2-SS   84331      64     1423
+re2ss_catalogue_socket_2 re2-SS   87798      64     1487
+     re2ss_payment_mem_3 re2-SS   87217      64     1475
+
+PHAN BO n_warn:
+    0-0   : 207 case
+    1-9   :  54 case
+   10-49  :  24 case
+   50-99  :  66 case
+  100-999 :   8 case

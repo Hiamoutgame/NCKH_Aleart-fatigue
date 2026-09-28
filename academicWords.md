@@ -1,4 +1,4 @@
-﻿# 📖 Academic & Technical Words — Dự án NCKH Alert Aggregation
+# 📖 Academic & Technical Words — Dự án NCKH Alert Aggregation
 
 > Ghi chú thuật ngữ cho dự án: "Tác động của cơ chế gom nhóm cảnh báo (Alert Aggregation) lên việc giảm tỷ lệ cảnh báo nhiễu trong microservices"
 > Cập nhật: 2026-09-18
@@ -47,6 +47,12 @@
 - **EN**: System topology / Service topology
 - **VN**: Cấu trúc liên kết hệ thống
 - **Giải thích**: Bản đồ mô tả các service kết nối với nhau như thế nào: service nào gọi service nào, qua giao thức gì.
+
+### Semantic Similarity
+- **EN**: Semantic similarity
+- **VN**: Độ tương đồng ngữ nghĩa
+- **Giải thích**: Mức độ hai message có cùng ý nghĩa, kể cả khi dùng từ khác nhau. Trong đề tài, Sentence-BERT biến log template thành vector và cosine similarity đo độ gần nhau của các vector đó.
+- **Lưu ý**: Chỉ dựa vào nghĩa của message nên có thể gom nhầm alert từ hai service độc lập; phương pháp này không tự suy ra quan hệ nhân quả.
 
 ---
 
@@ -110,6 +116,17 @@
 - **EN**: Time window
 - **VN**: Cửa sổ thời gian
 - **Giải thích**: Khoảng thời gian dùng để gom alert. Ví dụ: gom tất cả alert trong 5 phút thành 1 nhóm.
+
+### Semantic-only Aggregation
+- **EN**: Semantic-only aggregation
+- **VN**: Gom nhóm chỉ dựa trên ngữ nghĩa
+- **Giải thích**: Baseline dùng log template, Sentence-BERT và thuật toán clustering để gom các message giống nghĩa, nhưng không dùng service topology.
+- **Hạn chế**: Causality-blind — có thể gộp hai alert không liên quan chỉ vì message tương tự.
+
+### Temporal-Spatial Aggregation
+- **EN**: Temporal-spatial correlation aggregation
+- **VN**: Gom nhóm theo thời gian và topology
+- **Giải thích**: Chỉ tương quan alert khi chúng xuất hiện gần nhau về thời gian và các service có đường phụ thuộc trong call graph. Cách này nhắm đến cascading alerts nhưng nhạy với ngưỡng thời gian.
 
 ---
 
@@ -178,6 +195,11 @@
 - **VN**: Sổ tay vận hành
 - **Giải thích**: Tài liệu chứa các bước xử lý sự cố cụ thể. Trong đề tài, runbook được tạo synthetically (tổng hợp) cho từng fault type.
 
+### Runbook Reasoning
+- **EN**: Runbook reasoning
+- **VN**: Suy luận theo runbook/SOP
+- **Giải thích**: Agent đọc synthetic runbook để xác định alert nào có hành động khắc phục rõ ràng, alert nào chỉ là noise hoặc cần escalation.
+
 ---
 
 ## Thu thuật ngữ về đánh giá (Evaluation)
@@ -186,7 +208,7 @@
 - **EN**: Benchmark
 - **VN**: Chuẩn đánh giá / Điểm chuẩn
 - **Giải thích**: Bộ dữ liệu + tiêu chí đánh giá chuẩn để so sánh nhiều phương pháp khác nhau trên cùng điều kiện.
-- **Trong đề tài**: RCAEval là benchmark với 735 failure cases và 15 baseline.
+- **Trong đề tài**: RCAEval là benchmark với 735 failure cases và 15 baseline. **Lưu ý (đã kiểm chứng 2026-09-28)**: chỉ **359/735 case có log**; suite RE1 (375 case) là metric-only.
 
 ### Baseline
 - **EN**: Baseline
@@ -220,7 +242,10 @@
 ### RCPR — Root Cause Preservation Rate
 - **EN**: Root Cause Preservation Rate
 - **VN**: Tỷ lệ bảo toàn nguyên nhân gốc
-- **Công thức**: RCPR = (Số group chứa đúng root cause) / (Tổng số fault cases)
+- **Công thức (định nghĩa kép — cập nhật 2026-09-28)**:
+  - **Mức service (metric chính)**: RCPR_svc = (Số case mà nhóm chính chứa service gốc) / (Số case có log) — mẫu số **359 case**.
+  - **Mức alert (metric phụ)**: RCPR_alert = (Số case mà nhóm chính chứa đúng dòng alert gốc) / (Số case có `root_cause.txt` là dòng WARNING) — mẫu số chỉ **4 case**.
+- **Vì sao phải định nghĩa kép**: RCAEval **không có root-cause alert** cho mọi case. Chỉ **8 case** có file `root_cause.txt`, và chỉ **4 case** trong đó có dòng chỉ định là log mức `WARNING`. Nếu chỉ đo ở mức alert thì mẫu số quá nhỏ, không kết luận thống kê được.
 - **Giải thích**: Gom nhóm xong có còn giữ được thông tin quan trọng không? Root cause có bị "nuốt mất" không?
 - **Target**: ≥ 95%.
 
@@ -229,6 +254,12 @@
 - **VN**: Độ tinh khiết của nhóm
 - **Công thức**: Purity = (Alert cùng root cause trong group) / (Tổng alert trong group)
 - **Giải thích**: Group có "sạch" không? Hay gom nhầm alert không liên quan?
+
+### Pairwise F1
+- **EN**: Pairwise grouping F1-score
+- **VN**: F1 trên từng cặp cảnh báo
+- **Công thức**: $F1_p = 2P_pR_p / (P_p + R_p)$, với $P_p$ là precision và $R_p$ là recall trên các cặp alert.
+- **Giải thích**: Đánh giá quyết định gom hoặc không gom từng cặp alert có đúng theo root cause hay không.
 
 ---
 
@@ -322,11 +353,14 @@
 ### RCAEval (WWW 2025)
 - **EN**: RCAEval: A Benchmark for Root Cause Analysis of Microservice Systems with Telemetry Data
 - **Paper**: arXiv:2412.17015
-- **Vai trò**: Benchmark chính — 735 failure cases, 3 microservice, 15 baselines.
+- **Vai trò**: Benchmark chính — 735 failure cases, 3 microservice, 15 baselines. **Nhưng chỉ 359 case có log**, và **không có cột `severity`** → phải tự gán mức (xem `cp1/data_schema_notes.md`).
 
 ### LEMMA-RCA
 - **EN**: LEMMA-RCA: A Large Multi-modal Multi-domain Dataset for Root Cause Analysis
+- **Paper**: arXiv:2406.05375 (CIKM 2026)
+- **License**: CC-BY-NC-4.0 (kiểm chứng trên HuggingFace 2026-09-28)
 - **Vai trò**: Dataset backup — multi-modal (log + metric) từ Product Review Microservice.
+- **⚠️ Cảnh báo**: log của dataset này đã được **tổng hợp thành time-series 3 chiều**, và bộ golden-signal keywords của chính dataset **chỉ gồm `error`, `exception`, `critical` — không có `warning`**. Nghĩa là LEMMA-RCA **không cứu được** scope cảnh báo sớm nếu RCAEval thất bại.
 
 ### Google SRE Book
 - **EN**: Site Reliability Engineering (Google SRE Book)
