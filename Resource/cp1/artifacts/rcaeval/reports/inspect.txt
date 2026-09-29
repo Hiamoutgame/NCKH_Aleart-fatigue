@@ -1,0 +1,6 @@
+path: F:\study\NCKH\cp1\raw_data\huggingface\rcaeval
+files: 2080
+bytes: 3442007684
+cases_with_logs: 359
+case_metadata_rows: 735
+case_metadata_columns: case, dataset, suite, system, system_name, root_cause_service, fault, fault_description, repetition, inject_time, n_metrics, n_timesteps, time_start, time_end, duration_minutes, normal_timesteps, faulty_timesteps, has_logs, n_logs, has_traces, n_traces, has_root_cause_file

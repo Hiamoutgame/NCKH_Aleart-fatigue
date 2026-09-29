@@ -1,0 +1,12 @@
+RCAEval warning scan
+cases_with_logs: 359
+total_logs: 49652771
+total_warn: 9773
+cases_warn_gt_zero: 155
+
+system breakdown:
+        n_logs  n_warn  n_error
+sys2                           
+OB    17148429       5    23419
+SS     9864458    9694   513332
+TT    22639884      74    17121

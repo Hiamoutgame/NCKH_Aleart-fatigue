@@ -1,0 +1,6 @@
+source_id,source_type,repo_id,revision,local_path,fetched_at,notes
+loghub2,huggingface_dataset,bolu61/loghub_2,4a98d3eb30522891b340609d17fa34709a1d44d2,F:\study\NCKH\cp1\raw_data\huggingface\loghub2,2026-09-29T07:04:42.968871+00:00,
+opseval,huggingface_dataset,Junetheriver/OpsEval,fb7630c77a60b26ea1ceb8c86d5909b920a2f057,F:\study\NCKH\cp1\raw_data\huggingface\opseval,2026-09-29T07:08:22.755905+00:00,
+rcaeval,huggingface_dataset,phamquiluan/RCAEval,afeacb11bcc94dadfd1c8f483ee4377b2b8b614e,F:\study\NCKH\cp1\raw_data\huggingface\rcaeval,2026-09-29T06:54:13.775746+00:00,
+rcaeval_github,github_repository,https://github.com/phamquiluan/RCAEval.git,7600283af1ea5e2e9fff6f07124951d0e989de42,F:\study\NCKH\cp1\external_repos\github\RCAEval,2026-09-29T06:54:17.437593+00:00,
+suricata_ctu13,huggingface_dataset,mldiakhame/suricata-alerts-ctu-13,6e3c25e17d43e57bbc22b2d181d5030a3181df47,F:\study\NCKH\cp1\raw_data\huggingface\suricata_ctu13,2026-09-29T07:39:58.757903+00:00,

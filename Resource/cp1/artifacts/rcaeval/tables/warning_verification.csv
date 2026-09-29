@@ -1,0 +1,7 @@
+case,fault,root_cause_service,n_warn,n_templates_raw,n_templates_normalized,warn_normal,warn_faulty,n_containers_warn,n_containers_case
+re3ss_carts_f3_4,f3,carts,626,626,2,0,626,1,12
+re3ss_carts_f1_4,f1,carts,618,618,3,1,617,2,13
+re3ss_carts_f3_3,f3,carts,611,611,2,0,611,1,11
+re3ss_carts_f1_3,f1,carts,608,608,3,1,607,2,12
+re3ss_carts_f1_2,f1,carts,578,578,2,0,578,1,12
+re3ss_carts_f3_1,f3,carts,575,575,2,0,575,1,11

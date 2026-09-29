@@ -33,7 +33,8 @@ tt        359  49652771  9738  167309  23361674  23538631   0.01961      47.41
 CASE CO NHIEU WARN NHAT (top 25):
                     case system  n_logs  n_warn  n_error  n_info
         re3ss_carts_f3_4     tt   85649     626     1403   14499
-        re3ss_carts_f1_4     tt   85849     618     1407   14804
+        
+             tt   85849     618     1407   14804
         re3ss_carts_f3_3     tt   84960     611     1400   14400
         re3ss_carts_f1_3     tt   85155     608     1393   14562
         re3ss_carts_f1_2     tt   85307     578     1404   14357
