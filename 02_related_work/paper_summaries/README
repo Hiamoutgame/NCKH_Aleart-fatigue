@@ -1,0 +1,105 @@
+# Glossary — Thuật ngữ trong các Paper
+
+> Nơi tập hợp các thuật ngữ tiếng Anh khó hiểu xuất hiện trong các paper summary. Format: `Term: tiếng Anh — nghĩa tiếng Việt đơn giản — tại sao liên quan paper này`.
+
+---
+
+## Từ Paper 01 — Intelligent Logging and Monitoring Strategies
+
+1. **microservices**: kiến trúc chia ứng dụng thành nhiều service nhỏ, độc lập, giao tiếp qua network — paper nói về logging/monitoring trong kiến trúc này.
+2. **Log4j**: thư viện logging phổ biến cho Java — paper dùng làm nền tảng ghi log.
+3. **rule-based**: xác định trước các điều kiện if/else để phát hiện sự cố — paper so sánh phương pháp truyền thống này với ML.
+4. **Structured logging**: ghi log có cấu trúc (JSON/key-value) thay vì plain text, dễ parse và query — paper yêu cầu log chất lượng cao cho ML.
+5. **Machine Learning (ML)**: máy học — paper áp dụng ML để phân tích log patterns.
+6. **Clustering**: phân cụm không giám sát — gom log giống nhau vào cùng nhóm mà không cần nhãn trước — paper dùng để nhóm log patterns.
+7. **Classification**: phân loại có giám sát — gán nhãn cho log (bình thường/bất thường) — paper dùng để phát hiện anomaly.
+8. **Time-series analysis**: phân tích chuỗi thời gian — xem giá trị thay đổi theo thời gian để dự đoán xu hướng — paper dùng cho log analysis.
+9. **Centralized log management**: quản lý log tập trung — gom log từ nhiều service về một nơi (ELK/EFK stack) — paper đề xuất để aggregated analysis.
+10. **real-time dashboards**: bảng điều khiển thời gian thực — hiển thị metric/log trực quan cho SRE.
+11. **Anomaly detection accuracy**: độ chính xác phát hiện bất thường — % log bị flag đúng là anomaly — metric đánh giá paper.
+12. **Mean Time To Resolution (MTTR)**: thời gian trung bình để khắc phục sự cố — từ alert đến fix xong — metric quan trọng cho SRE.
+13. **System reliability**: độ tin cậy hệ thống — uptime, error rate — metric đánh giá.
+14. **adaptive learning**: học thích ứng — mô hình tự cập nhật khi hành vi hệ thống thay đổi, không cần retrain thủ công — paper claim là ưu điểm.
+15. **Drain3**: thuật toán parse log online phổ biến (template extraction) — paper không so sánh với baseline này.
+16. **alert aggregation**: gom nhóm cảnh báo — gộp nhiều alert liên quan thành 1 nhóm để giảm noise — đề tài hiện tại tập trung vào bài toán này.
+17. **early-warning level**: mức cảnh báo sớm — cảnh báo trước khi sự cố nghiêm trọng (thường level WARNING) — đề tài dùng early-warning logs.
+18. **alert stream**: luồng cảnh báo — dòng alert liên tục từ hệ thống — input của bài toán alert aggregation.
+19. **noisy alerts**: cảnh báo nhiễu — alert không cần xử lý (duplicate, transient, unactionable, cascading) — mục tiêu giảm thiểu.
+20. **topology service**: sơ đồ phụ thuộc service — ai gọi ai, quan hệ upstream/downstream — dùng để phát hiện cascading alerts.
+21. **cascading alerts**: cảnh báo dây chuyền — alert lan truyền từ service gốc lỗi sang các service downstream.
+22. **Root Cause Preservation Rate (RCPR)**: tỷ lệ bảo toàn nguyên nhân gốc — % alert gốc của root cause vẫn còn sau khi gom nhóm — metric đề tài.
+23. **root cause**: nguyên nhân gốc — lý do thực sự gây ra sự cố, khác với symptom/triệu chứng.
+
+---
+
+## Từ Paper 02 — Nezha (ESEC/FSE 2023)
+
+24. **unsupervised**: không giám sát — không cần dữ liệu đã gắn nhãn trước để học — Nezha không cần training data có label root cause.
+25. **Root Cause Analysis (RCA)**: phân tích nguyên nhân gốc — tìm lý do thực sự gây ra sự cố — bài toán chính của paper.
+26. **multi-modal observability data**: dữ liệu quan sát đa phương thức — kết hợp metrics + traces + logs — Nezha dùng cả 3 nguồn.
+27. **metrics**: chỉ số định kỳ — CPU%, latency, error rate, throughput... — một modality trong observability.
+28. **traces**: dấu vết phân tán — theo dõi một request đi qua nhiều service, có trace ID và span ID — modality quan trọng nhất cho Nezha.
+29. **logs**: nhật ký sự kiện — log message có gắn trace ID/span ID — modality thứ 3.
+30. **coarse-grained**: thô — chỉ xác định ở mức service, không đi sâu vào bên trong — hạn chế của các phương pháp trước.
+31. **fine-grained**: chi tiết — xác định đến mức code region/resource type — mục tiêu của Nezha.
+32. **interpretability**: tính dễ hiểu — kết quả kèm lý do, SRE thấy được tại sao kết luận đó — Nezha nhấn mạnh điểm này.
+33. **Site Reliability Engineer (SRE)**: kỹ sư phụ trách độ tin cậy, vận hành production — người dùng kết quả RCA.
+34. **code region**: vùng code — hàm/file cụ thể gây lỗi — output granularity của Nezha.
+35. **resource type**: loại tài nguyên — CPU, memory, network, disk — output granularity của Nezha.
+36. **execution context**: bối cảnh thực thi — luồng request đi qua các service nào, gọi hàm nào, bao lâu — trace giúp giữ context này.
+37. **fault-free phase**: giai đoạn bình thường — không có fault inject — baseline để so sánh pattern.
+38. **fault-suffering phase**: giai đoạn có fault — đang inject lỗi — phase cần phát hiện pattern khác biệt.
+39. **event**: sự kiện — đơn vị thống nhất (what, where, when) sau khi transform metrics/traces/logs.
+40. **event graph**: đồ thị sự kiện — node là event, edge là quan hệ trước/sau hoặc gọi/gọi ngược — core data structure của Nezha.
+41. **execution pattern**: mẫu thực thi — chuỗi event lặp lại đặc trưng cho một loại request — Nezha mine pattern này.
+42. **expected pattern**: pattern kỳ vọng — pattern bình thường nên có — so sánh với actual pattern.
+43. **actual pattern**: pattern thực tế — pattern xuất hiện khi có fault — khác expected pattern là dấu hiệu lỗi.
+44. **root-cause candidate**: ứng viên nguyên nhân gốc — danh sách ranked output của Nezha.
+45. **fault injection**: tiêm lỗi — chủ động gây ra lỗi vào hệ thống để tạo ground truth — Nezha tự tạo dataset bằng cách này.
+46. **OnlineBoutique**: hệ thống e-commerce microservices (Google demo) — testbed 1 của Nezha.
+47. **TrainTicket**: hệ thống đặt vé tàu microservices (Fudan demo) — testbed 2 của Nezha.
+48. **Kubernetes**: hệ điều phối container — quản lý deploy, scaling, network cho microservices — môi trường chạy testbed.
+49. **observability**: khả năng quan sát — metrics + traces + logs — 3 pillars.
+50. **OpenTelemetry**: framework vendor-neutral thu thập telemetry data — dùng để instrument testbed.
+51. **resource issues**: vấn đề tài nguyên — CPU contention, memory leak, network jam... — loại fault inject.
+52. **code defects**: lỗi code — exception, error return, logic bug... — loại fault inject.
+53. **CPU contention**: đ쟁 CPU — nhiều process争夺 CPU — fault type cụ thể.
+54. **network jam**: tắc nghẽn mạng — fault type cụ thể.
+55. **error return**: trả về lỗi — fault type cụ thể.
+56. **exception**: ngoại lệ — fault type cụ thể.
+57. **Top-k accuracy**: độ chính xác top-k — kết quả đúng có nằm trong top-k candidate không — metric chính của Nezha.
+58. **service level**: mức service — xác định service nào bị lỗi — granularity thô.
+59. **inner-service level**: mức bên trong service — code region hoặc resource type — granularity mहीn.
+60. **baseline**: phương pháp so sánh — phương pháp hiện có dùng làm mốc so sánh (MicroScope, MicroRCA, etc.).
+61. **ablation study**: thử nghiệm loại bỏ — bỏ từng thành phần để xem đóng góp của nó — Nezha làm để chứng minh multi-modal hữu ích.
+62. **anomaly detector**: bộ phát hiện bất thường — module quyết định có fault hay không trước khi chạy RCA — Nezha phụ thuộc vào nó.
+63. **observable pattern**: mẫu quan sát được — pattern thay đổi trong metrics/traces/logs khi có fault.
+64. **request type**: loại request — ví dụ: login, checkout, search... — fault-free data cần đủ các loại này.
+65. **noise**: nhiễu — dữ liệu không liên quan, ngẫu nhiên trong log/metric/trace.
+66. **Alert Reduction Rate (ARR)**: tỷ lệ giảm cảnh báo — (số alert trước - số alert sau) / số alert trước — metric đề tài.
+67. **Root Cause Preservation Rate (RCPR)**: tỷ lệ bảo toàn nguyên nhân gốc — % alert gốc của root cause vẫn còn sau khi gom nhóm — metric đề tài.
+68. **Pairwise F1**: F1-score cặp — đo độ chính xác gom cặp alert: precision/recall trên từng cặp alert có cùng group không — metric đề tài.
+69. **Group Purity**: độ tinh khiết nhóm — % alert trong một group thực sự thuộc cùng một root cause — metric đề tài.
+70. **fault propagation**: lan truyền lỗi — lỗi từ service A gây lỗi service B, C... — trace/topology giúp phát hiện.
+71. **propagated symptom**: triệu chứng lan truyền — alert ở service downstream do service upstream lỗi, không phải gốc.
+72. **root-cause signal**: tín hiệu nguyên nhân gốc — alert chứa thông tin về root cause.
+73. **alert groups**: nhóm alert — kết quả sau khi gom nhóm (output của đề tài).
+74. **reduced alerts**: alert đã gom nhóm, giảm số lượng — output của đề tài.
+75. **semantic-only**: chỉ dùng độ tương đồng ngữ nghĩa log — baseline Arm 2 của đề tài.
+76. **semantic similarity**: độ tương đồng ngữ nghĩa — so sánh embedding log text — dùng trong Arm 2.
+77. **temporal**: thời gian — dùng trong Arm 3 (temporal-spatial).
+78. **service topology**: tổ chức mạng service — ai gọi ai — dùng trong Arm 3 và Arm 4.
+79. **Large Language Model (LLM)**: mô hình ngôn ngữ lớn — dùng trong Arm 4 (agent tool-calling).
+80. **trade-off**: sự đánh đổi — giữa ARR và RCPR (giảm nhiều alert có thể mất root cause signal).
+81. **ground truth**: nhãn thật — root cause thực tế đã biết trước khi inject fault — Nezha có nhờ fault injection.
+82. **Augmented-OnlineBoutique**: phiên bản OnlineBoutique đã tăng cường observability — Nezha công khai repo này.
+83. **Augmented-TrainTicket**: phiên bản TrainTicket đã tăng cường observability — Nezha công khai repo này.
+84. **root-cause-preserving constraint**: ràng buộc bảo toàn nguyên nhân gốc — khi gom nhóm, bắt buộc giữ alert gốc của root cause — ý tưởng improvement cho đề tài.
+85. **case khó**: trường hợp khó — semantic similarity, temporal signal và topology đưa ra kết luận mâu thuẫn — khi nào nên dùng LLM.
+86. **MicroScope**: baseline RCA method (metrics-based) — so sánh với Nezha.
+87. **MicroRCA**: baseline RCA method (metrics-based) — so sánh với Nezha.
+88. **SBLD**: baseline RCA method (log-based) — so sánh với Nezha.
+89. **LogFaultFlagger**: baseline RCA method (log-based) — so sánh với Nezha.
+90. **MicroRank**: baseline RCA method (trace-based) — so sánh với Nezha.
+91. **TraceAnomaly**: baseline RCA method (trace-based) — so sánh với Nezha.
+92. **PDiagnose**: baseline RCA method (multi-modal, transform to time-series) — so sánh với Nezha.
