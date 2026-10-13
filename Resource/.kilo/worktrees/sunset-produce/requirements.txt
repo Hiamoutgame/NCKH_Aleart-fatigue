@@ -1,0 +1,9 @@
+# CP1 runtime
+datasets>=2.14.0
+huggingface_hub>=0.23.0
+pandas>=2.0.0
+pyarrow>=14.0.0
+PyYAML>=6.0
+
+# CP1 tests
+pytest>=8.0.0

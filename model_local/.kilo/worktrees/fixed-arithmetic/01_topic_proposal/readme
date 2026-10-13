@@ -1,0 +1,61 @@
+# Bước 1 — Lĩnh vực ứng dụng và đề xuất đề tài
+
+## 1. Thông tin đề tài
+
+- **Tên đề tài dự kiến:** Gom nhóm cảnh báo từ log cảnh báo sớm trong kiến trúc microservices nhằm giảm cảnh báo nhiễu.
+- **Lĩnh vực ứng dụng:** Vận hành hệ thống phần mềm (SRE/DevOps), giám sát hệ thống microservices.
+- **Đối tượng người dùng:** Kỹ sư trực hệ thống (on-call engineer), kỹ sư SRE, DevOps engineer và đội vận hành hệ thống microservices.
+
+## 2. Vấn đề thực tế
+
+Khi một hệ thống microservices có bất thường, nhiều service có thể đồng thời sinh log `WARN`/`WARNING`. Kỹ sư vận hành phải đọc nhiều cảnh báo rời rạc, kể cả các cảnh báo lặp lại hoặc chỉ là hậu quả lan truyền của cùng một lỗi gốc. Điều này tạo ra **alert fatigue** (quá tải vì cảnh báo), làm chậm việc xác định và xử lý nguyên nhân gốc.
+
+## 3. Lý do cần tích hợp AI
+
+Các cách gom cảnh báo theo rule tĩnh chỉ dựa vào nhãn hoặc thuộc tính cố định, nên khó hiểu hai log khác chữ nhưng cùng ngữ nghĩa, hoặc mối quan hệ giữa các service.
+
+AI được dự kiến sử dụng để:
+
+- nhận diện các log có nội dung tương tự sau khi chuẩn hóa;
+- kết hợp thời điểm log xuất hiện và quan hệ phụ thuộc giữa service;
+- hỗ trợ suy luận nhóm cảnh báo nào có liên quan đến cùng một nguyên nhân gốc.
+
+## 4. Model AI dự kiến
+
+- **Pipeline semantic-only dự kiến:** `Drain3 → Sentence-BERT → HDBSCAN`.
+  - Drain3: rút log thành template.
+  - Sentence-BERT: biến nội dung log thành vector ngữ nghĩa.
+  - HDBSCAN: gom các vector tương tự thành cụm.
+- **Hướng nâng cao dự kiến:** LLM agent có tool-calling để tra cứu alert liên quan, quan hệ phụ thuộc service và runbook tổng hợp.
+
+> Chưa chọn model LLM/API cụ thể và chưa có code chạy AI trong `src`.
+
+## 5. Kết quả mong muốn
+
+- Giảm số lượng alert cần xử lý, với mục tiêu **ARR ≥ 60%**.
+- Không làm mất tín hiệu service gây lỗi gốc, với mục tiêu **RCPR ≥ 95%**.
+- Đánh giá chất lượng gom nhóm bằng **Pairwise F1 ≥ 0.85** và **Group Purity ≥ 0.80**.
+
+## 6. Những phần pipeline đã có trong `Resource/cp1/src`
+
+- Registry nguồn dữ liệu tại `config/sources.yaml`.
+- Tải dataset từ Hugging Face, clone repository tham khảo và lưu manifest phiên bản dữ liệu.
+- Đọc log local và metadata của RCAEval.
+- Quét, đếm log `WARN`/`WARNING`, `ERROR`, `INFO`, `DEBUG` theo từng case.
+- Suy luận severity từ nội dung message vì RCAEval không có cột severity chuẩn.
+- Chuẩn hóa timestamp, UUID, thread ID, hexadecimal ID và số thay đổi trong message để phục vụ gom nhóm sau này.
+- Tách warning trước/sau thời điểm inject lỗi.
+- Xuất bảng CSV và báo cáo kiểm chứng dataset.
+- Có unit test cho parsing warning, normalization, path và source registry.
+
+## 7. Những phần chưa có
+
+- Sinh alert chuẩn từ log WARNING.
+- Các baseline gom nhóm rule-based, semantic-only và temporal-spatial chạy thật.
+- Service dependency/topology graph.
+- LLM agent, tool-calling và runbook.
+- Tính các metric ARR, RCPR, Pairwise F1, Group Purity.
+
+## 8. Kết luận trạng thái Bước 1
+
+Nội dung đề xuất đề tài, lĩnh vực, vấn đề, người dùng, lý do dùng AI và kết quả kỳ vọng đã được xác định. Pipeline mã nguồn hiện mới hoàn thành phần **kiểm chứng và tiền xử lý dữ liệu**; phần **AI gom nhóm cảnh báo** vẫn là các bước triển khai tiếp theo.

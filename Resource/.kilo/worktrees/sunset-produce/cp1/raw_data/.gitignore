@@ -1,0 +1,9 @@
+# Raw datasets can be large and should be reproducible from the source.
+*
+!.gitignore
+!README.md
+!manifest.csv
+!huggingface/
+!huggingface/.gitkeep
+!samples/
+!samples/**

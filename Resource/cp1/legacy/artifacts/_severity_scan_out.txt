@@ -1,0 +1,211 @@
+
+==========================================================================
+[A] SEVERITY FORMAT — xem raw message cua ca 3 he thong
+==========================================================================
+--- ob: re2ob_checkoutservice_cpu_1  rows=171322 ---
+  columns: ['timestamp', 'container_name', 'message']
+  dtypes : {'timestamp': 'Int64', 'container_name': 'string', 'message': 'string'}
+  null message: 0
+  message duy nhat: 12337
+  --- 20 message DAI NHAT (thuong chua level) ---
+     PaymentService#Charge invoked with request {"amount":{"currency_code":"JPY","units":"247380","nanos":620965827},"credit_card":{"credit_card_number":"4432-8015-6152-0454","credit_card_cvv":672,"credit_
+     PaymentService#Charge invoked with request {"amount":{"currency_code":"JPY","units":"212554","nanos":374172821},"credit_card":{"credit_card_number":"4432-8015-6152-0454","credit_card_cvv":672,"credit_
+     PaymentService#Charge invoked with request {"amount":{"currency_code":"JPY","units":"166616","nanos":555507258},"credit_card":{"credit_card_number":"4432-8015-6152-0454","credit_card_cvv":672,"credit_
+     PaymentService#Charge invoked with request {"amount":{"currency_code":"JPY","units":"524055","nanos":182665487},"credit_card":{"credit_card_number":"4432-8015-6152-0454","credit_card_cvv":672,"credit_
+     PaymentService#Charge invoked with request {"amount":{"currency_code":"JPY","units":"163636","nanos":847414163},"credit_card":{"credit_card_number":"4432-8015-6152-0454","credit_card_cvv":672,"credit_
+     PaymentService#Charge invoked with request {"amount":{"currency_code":"JPY","units":"132366","nanos":124723983},"credit_card":{"credit_card_number":"4432-8015-6152-0454","credit_card_cvv":672,"credit_
+     PaymentService#Charge invoked with request {"amount":{"currency_code":"JPY","units":"129176","nanos":215834259},"credit_card":{"credit_card_number":"4432-8015-6152-0454","credit_card_cvv":672,"credit_
+     PaymentService#Charge invoked with request {"amount":{"currency_code":"JPY","units":"178468","nanos":302522234},"credit_card":{"credit_card_number":"4432-8015-6152-0454","credit_card_cvv":672,"credit_
+     PaymentService#Charge invoked with request {"amount":{"currency_code":"JPY","units":"122333","nanos":509068076},"credit_card":{"credit_card_number":"4432-8015-6152-0454","credit_card_cvv":672,"credit_
+     PaymentService#Charge invoked with request {"amount":{"currency_code":"JPY","units":"612916","nanos":451132831},"credit_card":{"credit_card_number":"4432-8015-6152-0454","credit_card_cvv":672,"credit_
+     PaymentService#Charge invoked with request {"amount":{"currency_code":"JPY","units":"189299","nanos":233969407},"credit_card":{"credit_card_number":"4432-8015-6152-0454","credit_card_cvv":672,"credit_
+     PaymentService#Charge invoked with request {"amount":{"currency_code":"JPY","units":"116587","nanos":647944578},"credit_card":{"credit_card_number":"4432-8015-6152-0454","credit_card_cvv":672,"credit_
+     PaymentService#Charge invoked with request {"amount":{"currency_code":"JPY","units":"107210","nanos":232640982},"credit_card":{"credit_card_number":"4432-8015-6152-0454","credit_card_cvv":672,"credit_
+     PaymentService#Charge invoked with request {"amount":{"currency_code":"JPY","units":"112797","nanos":325078175},"credit_card":{"credit_card_number":"4432-8015-6152-0454","credit_card_cvv":672,"credit_
+     PaymentService#Charge invoked with request {"amount":{"currency_code":"JPY","units":"203172","nanos":486511884},"credit_card":{"credit_card_number":"4432-8015-6152-0454","credit_card_cvv":672,"credit_
+     PaymentService#Charge invoked with request {"amount":{"currency_code":"JPY","units":"185890","nanos":179568226},"credit_card":{"credit_card_number":"4432-8015-6152-0454","credit_card_cvv":672,"credit_
+     PaymentService#Charge invoked with request {"amount":{"currency_code":"JPY","units":"125646","nanos":407785023},"credit_card":{"credit_card_number":"4432-8015-6152-0454","credit_card_cvv":672,"credit_
+     PaymentService#Charge invoked with request {"amount":{"currency_code":"JPY","units":"268501","nanos":328618127},"credit_card":{"credit_card_number":"4432-8015-6152-0454","credit_card_cvv":672,"credit_
+     PaymentService#Charge invoked with request {"amount":{"currency_code":"JPY","units":"100157","nanos":325078302},"credit_card":{"credit_card_number":"4432-8015-6152-0454","credit_card_cvv":672,"credit_
+     PaymentService#Charge invoked with request {"amount":{"currency_code":"JPY","units":"266886","nanos":807609058},"credit_card":{"credit_card_number":"4432-8015-6152-0454","credit_card_cvv":672,"credit_
+
+--- ss: re2ss_carts_cpu_1  rows=86592 ---
+  columns: ['timestamp', 'container_name', 'message']
+  dtypes : {'timestamp': 'Int64', 'container_name': 'string', 'message': 'string'}
+  null message: 1572
+  message duy nhat: 66138
+  --- 20 message DAI NHAT (thuong chua level) ---
+     Order response: {"statusCode":201,"body":{"id":"65a954593d088f0007e152f2","customerId":"65a95448d63d6a0001fb8a60","customer":{"id":null,"firstName":"TuNcrjhVvLyVGSK","lastName":"TuNcrjhVvLyVGSK","user
+     Order response: {"statusCode":201,"body":{"id":"65a9547b3d088f0007e15310","customerId":"65a95465d63d6a0001fb8aaa","customer":{"id":null,"firstName":"TckxMTFlwBujibF","lastName":"TckxMTFlwBujibF","user
+     Order response: {"statusCode":201,"body":{"id":"65a954963d088f0007e1532e","customerId":"65a95480d63d6a0001fb8b09","customer":{"id":null,"firstName":"jRipOlBFRKbyOBK","lastName":"jRipOlBFRKbyOBK","user
+     Order response: {"statusCode":201,"body":{"id":"65a954973d088f0007e15330","customerId":"65a95486d63d6a0001fb8b15","customer":{"id":null,"firstName":"RhGMrwuSthHLolo","lastName":"RhGMrwuSthHLolo","user
+     Order response: {"statusCode":201,"body":{"id":"65a954b63d088f0007e15350","customerId":"65a954a3d63d6a0001fb8b6a","customer":{"id":null,"firstName":"xbStGTUdylHxpLe","lastName":"xbStGTUdylHxpLe","user
+     Order response: {"statusCode":201,"body":{"id":"65a955ac3d088f0007e1544a","customerId":"65a95595d63d6a0001fb8e4d","customer":{"id":null,"firstName":"wOasMxEiXdBzpcp","lastName":"wOasMxEiXdBzpcp","user
+     Order response: {"statusCode":201,"body":{"id":"65a955db3d088f0007e15478","customerId":"65a955c5d63d6a0001fb8ee7","customer":{"id":null,"firstName":"JbVBsGIZUeaaMQJ","lastName":"JbVBsGIZUeaaMQJ","user
+     Order response: {"statusCode":201,"body":{"id":"65a955f03d088f0007e1548e","customerId":"65a955dfd63d6a0001fb8f34","customer":{"id":null,"firstName":"aaIqNHeuCcITCVz","lastName":"aaIqNHeuCcITCVz","user
+     Order response: {"statusCode":201,"body":{"id":"65a956a13d088f0007e15540","customerId":"65a9568bd63d6a0001fb9144","customer":{"id":null,"firstName":"dFBoiRvdRLodEgI","lastName":"dFBoiRvdRLodEgI","user
+     Order response: {"statusCode":201,"body":{"id":"65a956d23d088f0007e15571","customerId":"65a956bfd63d6a0001fb91db","customer":{"id":null,"firstName":"ATaHqKvyqFRPJKh","lastName":"ATaHqKvyqFRPJKh","user
+     Order response: {"statusCode":201,"body":{"id":"65a956f83d088f0007e1559b","customerId":"65a956e2d63d6a0001fb9242","customer":{"id":null,"firstName":"oYguRDAHMEmnIhX","lastName":"oYguRDAHMEmnIhX","user
+     Order response: {"statusCode":201,"body":{"id":"65a957613d088f0007e1560a","customerId":"65a9574ed63d6a0001fb9394","customer":{"id":null,"firstName":"QNvsOJvJzxgPRnx","lastName":"QNvsOJvJzxgPRnx","user
+     Order response: {"statusCode":201,"body":{"id":"65a957b13d088f0007e1565d","customerId":"65a9579fd63d6a0001fb9498","customer":{"id":null,"firstName":"QHFsrRcpVeLJsnq","lastName":"QHFsrRcpVeLJsnq","user
+     Order response: {"statusCode":201,"body":{"id":"65a957c83d088f0007e15674","customerId":"65a957b0d63d6a0001fb94d0","customer":{"id":null,"firstName":"OAEcKqTsdRZbyzX","lastName":"OAEcKqTsdRZbyzX","user
+     Order response: {"statusCode":201,"body":{"id":"65a953613d088f0007e151f8","customerId":"65a9534dd63d6a0001fb8763","customer":{"id":null,"firstName":"fYdtSfRSXyRYgm","lastName":"fYdtSfRSXyRYgm","userna
+     Order response: {"statusCode":201,"body":{"id":"65a953923d088f0007e1522a","customerId":"65a9537bd63d6a0001fb87f7","customer":{"id":null,"firstName":"LxeuuoZUsaKicv","lastName":"LxeuuoZUsaKicv","userna
+     Order response: {"statusCode":201,"body":{"id":"65a953e23d088f0007e15276","customerId":"65a953cfd63d6a0001fb88e9","customer":{"id":null,"firstName":"QdhAGTGFafMhZx","lastName":"QdhAGTGFafMhZx","userna
+     Order response: {"statusCode":201,"body":{"id":"65a9548a3d088f0007e15324","customerId":"65a95477d63d6a0001fb8aea","customer":{"id":null,"firstName":"MBgRlYtaBbMzpM","lastName":"MBgRlYtaBbMzpM","userna
+     Order response: {"statusCode":201,"body":{"id":"65a9553e3d088f0007e153d7","customerId":"65a95528d63d6a0001fb8cfc","customer":{"id":null,"firstName":"JZRkyznnqKRaCd","lastName":"JZRkyznnqKRaCd","userna
+     Order response: {"statusCode":201,"body":{"id":"65a955e03d088f0007e1547c","customerId":"65a955cad63d6a0001fb8ef4","customer":{"id":null,"firstName":"VqrKpcQOoBVDkq","lastName":"VqrKpcQOoBVDkq","userna
+
+--- tt: re2tt_ts-auth-service_cpu_2  rows=271919 ---
+  columns: ['timestamp', 'container_name', 'message']
+  dtypes : {'timestamp': 'Int64', 'container_name': 'string', 'message': 'string'}
+  null message: 16
+  message duy nhat: 269818
+  --- 20 message DAI NHAT (thuong chua level) ---
+     2024-01-23 15:38:31.234  INFO 1 --- [o-18898-exec-13] seat.service.SeatServiceImpl             : Get Order tickets result is : <200,Response(status=1, msg=Success, data=LeftTicketInfo{soldTickets=[Tic
+     2024-01-23 15:38:31.312  INFO 1 --- [io-18898-exec-5] seat.service.SeatServiceImpl             : Get Order tickets result is : <200,Response(status=1, msg=Success, data=LeftTicketInfo{soldTickets=[Tic
+     2024-01-23 15:38:42.126  INFO 1 --- [o-18898-exec-13] seat.service.SeatServiceImpl             : Get Order tickets result is : <200,Response(status=1, msg=Success, data=LeftTicketInfo{soldTickets=[Tic
+     2024-01-23 15:38:43.603  INFO 1 --- [o-18898-exec-12] seat.service.SeatServiceImpl             : Get Order tickets result is : <200,Response(status=1, msg=Success, data=LeftTicketInfo{soldTickets=[Tic
+     2024-01-23 15:38:47.141  INFO 1 --- [io-18898-exec-3] seat.service.SeatServiceImpl             : Get Order tickets result is : <200,Response(status=1, msg=Success, data=LeftTicketInfo{soldTickets=[Tic
+     2024-01-23 15:38:47.211  INFO 1 --- [io-18898-exec-9] seat.service.SeatServiceImpl             : Get Order tickets result is : <200,Response(status=1, msg=Success, data=LeftTicketInfo{soldTickets=[Tic
+     2024-01-23 15:38:35.794  INFO 1 --- [io-18898-exec-5] seat.service.SeatServiceImpl             : Get Order tickets result is : <200,Response(status=1, msg=Success, data=LeftTicketInfo{soldTickets=[Tic
+     2024-01-23 15:38:35.863  INFO 1 --- [o-18898-exec-16] seat.service.SeatServiceImpl             : Get Order tickets result is : <200,Response(status=1, msg=Success, data=LeftTicketInfo{soldTickets=[Tic
+     2024-01-23 15:38:42.204  INFO 1 --- [io-18898-exec-5] seat.service.SeatServiceImpl             : Get Order tickets result is : <200,Response(status=1, msg=Success, data=LeftTicketInfo{soldTickets=[Tic
+     2024-01-23 15:38:43.674  INFO 1 --- [io-18898-exec-9] seat.service.SeatServiceImpl             : Get Order tickets result is : <200,Response(status=1, msg=Success, data=LeftTicketInfo{soldTickets=[Tic
+     2024-01-23 15:38:14.576  INFO 1 --- [io-18898-exec-2] seat.service.SeatServiceImpl             : Get Order tickets result is : <200,Response(status=1, msg=Success, data=LeftTicketInfo{soldTickets=[Tic
+     2024-01-23 15:38:14.855  INFO 1 --- [o-18898-exec-15] seat.service.SeatServiceImpl             : Get Order tickets result is : <200,Response(status=1, msg=Success, data=LeftTicketInfo{soldTickets=[Tic
+     2024-01-23 15:38:14.932  INFO 1 --- [io-18898-exec-8] seat.service.SeatServiceImpl             : Get Order tickets result is : <200,Response(status=1, msg=Success, data=LeftTicketInfo{soldTickets=[Tic
+     2024-01-23 15:38:14.500  INFO 1 --- [io-18898-exec-9] seat.service.SeatServiceImpl             : Get Order tickets result is : <200,Response(status=1, msg=Success, data=LeftTicketInfo{soldTickets=[Tic
+     2024-01-23 15:38:00.127  INFO 1 --- [o-18898-exec-11] seat.service.SeatServiceImpl             : Get Order tickets result is : <200,Response(status=1, msg=Success, data=LeftTicketInfo{soldTickets=[Tic
+     2024-01-23 15:38:13.612  INFO 1 --- [o-18898-exec-16] seat.service.SeatServiceImpl             : Get Order tickets result is : <200,Response(status=1, msg=Success, data=LeftTicketInfo{soldTickets=[Tic
+     2024-01-23 15:38:13.645  INFO 1 --- [o-18898-exec-10] seat.service.SeatServiceImpl             : Get Order tickets result is : <200,Response(status=1, msg=Success, data=LeftTicketInfo{soldTickets=[Tic
+     2024-01-23 15:38:13.685  INFO 1 --- [io-18898-exec-6] seat.service.SeatServiceImpl             : Get Order tickets result is : <200,Response(status=1, msg=Success, data=LeftTicketInfo{soldTickets=[Tic
+     2024-01-23 15:38:13.720  INFO 1 --- [io-18898-exec-7] seat.service.SeatServiceImpl             : Get Order tickets result is : <200,Response(status=1, msg=Success, data=LeftTicketInfo{soldTickets=[Tic
+     2024-01-23 15:38:14.056  INFO 1 --- [o-18898-exec-11] seat.service.SeatServiceImpl             : Get Order tickets result is : <200,Response(status=1, msg=Success, data=LeftTicketInfo{soldTickets=[Tic
+
+
+==========================================================================
+[B] DEM CHINH XAC keyword severity (3 case dau moi he thong, khong gioi han)
+==========================================================================
+--- re2ob_checkoutservice_cpu_1  n_logs=171322 ---
+    WARN_token            0  (0.0%)
+    log4j_style           0  (0.0%)
+    bracket_level         0  (0.0%)
+    level_eq              0  (0.0%)
+    severity_eq           0  (0.0%)
+    ERROR_token           0  (0.0%)
+    FATAL_token           0  (0.0%)
+    exception             0  (0.0%)
+    timeout               0  (0.0%)
+    failed                0  (0.0%)
+
+--- re2ob_checkoutservice_cpu_2  n_logs=110067 ---
+    WARN_token            0  (0.0%)
+    log4j_style           0  (0.0%)
+    bracket_level         0  (0.0%)
+    level_eq              0  (0.0%)
+    severity_eq           0  (0.0%)
+    ERROR_token           0  (0.0%)
+    FATAL_token           0  (0.0%)
+    exception             0  (0.0%)
+    timeout               0  (0.0%)
+    failed                1  (0.0009%)
+
+--- re2ob_checkoutservice_cpu_3  n_logs=178461 ---
+    WARN_token            0  (0.0%)
+    log4j_style           0  (0.0%)
+    bracket_level         0  (0.0%)
+    level_eq              0  (0.0%)
+    severity_eq           0  (0.0%)
+    ERROR_token           0  (0.0%)
+    FATAL_token           0  (0.0%)
+    exception             0  (0.0%)
+    timeout               0  (0.0%)
+    failed                0  (0.0%)
+
+--- re2ss_carts_cpu_1  n_logs=86592 ---
+    WARN_token           50  (0.0577%)
+    log4j_style       11768  (13.5902%)
+    bracket_level         0  (0.0%)
+    level_eq              0  (0.0%)
+    severity_eq           0  (0.0%)
+    ERROR_token        1471  (1.6988%)
+    FATAL_token           0  (0.0%)
+    exception          1571  (1.8143%)
+    timeout               0  (0.0%)
+    failed                0  (0.0%)
+
+--- re2ss_carts_cpu_2  n_logs=86451 ---
+    WARN_token           58  (0.0671%)
+    log4j_style       11704  (13.5383%)
+    bracket_level         0  (0.0%)
+    level_eq              0  (0.0%)
+    severity_eq           0  (0.0%)
+    ERROR_token        1464  (1.6934%)
+    FATAL_token           0  (0.0%)
+    exception          1579  (1.8265%)
+    timeout               0  (0.0%)
+    failed                1  (0.0012%)
+
+--- re2ss_carts_cpu_3  n_logs=87020 ---
+    WARN_token           52  (0.0598%)
+    log4j_style       11832  (13.5969%)
+    bracket_level         0  (0.0%)
+    level_eq              0  (0.0%)
+    severity_eq           0  (0.0%)
+    ERROR_token        1479  (1.6996%)
+    FATAL_token           0  (0.0%)
+    exception          1583  (1.8191%)
+    timeout               0  (0.0%)
+    failed                0  (0.0%)
+
+--- re2tt_ts-auth-service_cpu_2  n_logs=271919 ---
+    WARN_token            2  (0.0007%)
+    log4j_style      263814  (97.0193%)
+    bracket_level         0  (0.0%)
+    level_eq              0  (0.0%)
+    severity_eq           0  (0.0%)
+    ERROR_token           8  (0.0029%)
+    FATAL_token           0  (0.0%)
+    exception            22  (0.0081%)
+    timeout               0  (0.0%)
+    failed                8  (0.0029%)
+
+--- re2tt_ts-auth-service_cpu_3  n_logs=267932 ---
+    WARN_token            1  (0.0004%)
+    log4j_style      260939  (97.39%)
+    bracket_level         0  (0.0%)
+    level_eq              0  (0.0%)
+    severity_eq           0  (0.0%)
+    ERROR_token           0  (0.0%)
+    FATAL_token           0  (0.0%)
+    exception             0  (0.0%)
+    timeout               0  (0.0%)
+    failed                0  (0.0%)
+
+--- re2tt_ts-auth-service_delay_1  n_logs=266174 ---
+    WARN_token            2  (0.0008%)
+    log4j_style      258558  (97.1387%)
+    bracket_level         0  (0.0%)
+    level_eq              0  (0.0%)
+    severity_eq           0  (0.0%)
+    ERROR_token           4  (0.0015%)
+    FATAL_token           0  (0.0%)
+    exception            10  (0.0038%)
+    timeout               0  (0.0%)
+    failed                4  (0.0015%)
+
+
+==========================================================================
+[C] TONG HOP 9 CASE
+==========================================================================
+  WARN_token     tong=      165   case>0: 6/9
+  log4j_style    tong=   818615   case>0: 6/9
+  bracket_level  tong=        0   case>0: 0/9
+  level_eq       tong=        0   case>0: 0/9
+  severity_eq    tong=        0   case>0: 0/9
+  ERROR_token    tong=     4426   case>0: 5/9
+  FATAL_token    tong=        0   case>0: 0/9
+  exception      tong=     4765   case>0: 5/9
+  timeout        tong=        0   case>0: 0/9
+  failed         tong=       14   case>0: 4/9

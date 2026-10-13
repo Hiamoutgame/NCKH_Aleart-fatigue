@@ -1,0 +1,14 @@
+case,fault,root_cause_service,n_logs,n_warn,warn_normal,warn_faulty,pct_warn_normal,n_containers_warn
+re3ss_carts_f3_4,f3,carts,85649,626,0,626,0.0,1
+re3ss_carts_f1_4,f1,carts,85849,618,1,617,0.2,2
+re3ss_carts_f3_3,f3,carts,84960,611,0,611,0.0,1
+re3ss_carts_f1_3,f1,carts,85155,608,1,607,0.2,2
+re3ss_carts_f1_2,f1,carts,85307,578,0,578,0.0,1
+re3ss_carts_f3_1,f3,carts,84162,575,0,575,0.0,1
+re3ss_carts_f1_1,f1,carts,84665,571,1,570,0.2,2
+re3ss_carts_f3_2,f3,carts,84442,570,0,570,0.0,1
+re2ss_orders_disk_1,disk,orders,70374,94,32,62,34.0,9
+re2ss_carts_disk_1,disk,carts,88166,81,43,38,53.1,1
+re2ss_carts_cpu_1,cpu,carts,86592,50,26,24,52.0,1
+re2tt_ts-auth-service_cpu_2,cpu,ts-auth-service,271919,2,0,2,0.0,2
+re2ob_checkoutservice_cpu_1,cpu,checkoutservice,171322,0,0,0,0.0,0

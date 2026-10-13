@@ -1,0 +1,112 @@
+
+==============================================================================
+[1] XAC NHAN cua so thoi gian tu inject_time
+==============================================================================
+case mau: re1ob_adservice_cpu_1
+  time_start          = 1685200588
+  inject_time         = 1685202688
+  time_end            = 1685204788
+  n_timesteps         = 4201
+  normal_timesteps    = 2100  <- SO LUONG, khong phai list
+  faulty_timesteps    = 2101
+  inject - start      = 2100
+  end - inject        = 2100
+
+  => normal_timesteps/faulty_timesteps la SO DIEM (int), KHONG phai danh sach timestamp.
+  => Cua so phai suy tu (time_start, inject_time, time_end).
+
+==============================================================================
+[2] WARN roi vao normal hay faulty window?  (cac case Sock Shop nhieu WARN)
+==============================================================================
+                       case  n_logs  n_warn  warn_normal  warn_faulty  pct_warn_normal  warn_first_ts  inject_time  warn_before_inject_s  n_containers_warn root_cause_service                      warn_containers
+           re3ss_carts_f3_4   85649     626            0          626              0.0     1732453759   1732453719                   -40                  1              carts                                carts
+           re3ss_carts_f1_4   85849     618            1          617              0.2     1732451464   1732452160                   696                  2              carts                   carts,queue-master
+           re3ss_carts_f3_3   84960     611            0          611              0.0     1732388435   1732388394                   -41                  1              carts                                carts
+           re3ss_carts_f1_3   85155     608            1          607              0.2     1732386159   1732386836                   677                  2              carts                   carts,queue-master
+           re3ss_carts_f1_2   85307     578            0          578              0.0     1732254187   1732254135                   -52                  1              carts                                carts
+           re3ss_carts_f3_1   84162     575            0          575              0.0     1732244817   1732244765                   -52                  1              carts                                carts
+           re3ss_carts_f1_1   84665     571            1          570              0.2     1732242512   1732243203                   691                  2              carts                   carts,queue-master
+           re3ss_carts_f3_2   84442     570            0          570              0.0     1732255744   1732255694                   -50                  1              carts                                carts
+         re2ss_carts_disk_1   88166      81           43           38             53.1     1705817238   1705817948                   710                  1              carts                                carts
+       re2ss_payment_loss_1   92962      71           40           31             56.3     1705611090   1705611754                   664                  1            payment                                carts
+          re2ss_carts_cpu_1   86592      50           26           24             52.0     1705595461   1705596179                   718                  1              carts                                carts
+re2tt_ts-auth-service_cpu_2  271919       2            0            2              0.0     1706024069   1706023611                  -458                  2    ts-auth-service ts-station-service,ts-travel-service
+re2ob_checkoutservice_cpu_1  171322       0            0            0              0.0             -1   1705354566                    -1                  0    checkoutservice                                     
+
+==============================================================================
+[3] root_cause.txt (README: 'root cause indicator e.g. specific log')
+==============================================================================
+case co root_cause.txt: 8 -> ['re3ss_carts_f1_1', 're3ss_carts_f1_2', 're3ss_carts_f3_1', 're3ss_carts_f3_2', 're3ss_front-end_f1_1', 're3ss_front-end_f1_2', 're3ss_front-end_f2_1', 're3ss_front-end_f2_2']
+--- re3ss_carts_f1_1 ---
+  02:51,1732243919404637792,carts,"2024-11-22 02:51:59.404  WARN [carts,37dd0e6423df9dc9,37dd0e6423df9dc9,false] 7 --- [-nio-80-exec-17] o.s.web.servlet.PageNotFound             : Request method 'POST' not supported",carts-7f4f67d778-nfbfj,ip-192-168-83-253.ap-southeast-2.compute.internal
+
+--- re3ss_carts_f1_2 ---
+  05:44,1732254296787524588,carts,"2024-11-22 05:44:56.787  WARN [carts,4f69084c4e2a939e,4f69084c4e2a939e,false] 7 --- [p-nio-80-exec-1] o.s.web.servlet.PageNotFound             : Request method 'POST' not supported",carts-7f4f67d778-dfqfr,ip-192-168-83-253.ap-southeast-2.compute.internal
+
+--- re3ss_carts_f3_1 ---
+  03:18,1732245482795985472,carts,"2024-11-22 03:18:02.795  WARN [carts,c7673864b99361fc,c7673864b99361fc,false] 7 --- [p-nio-80-exec-9] o.s.web.servlet.PageNotFound             : Request method 'POST' not supported",carts-5dcddf678d-s8kwk,ip-192-168-83-253.ap-southeast-2.compute.internal
+--- re3ss_carts_f3_2 ---
+  06:10,1732255854787760753,carts,"2024-11-22 06:10:54.787  WARN [carts,624bcc719cdd8d43,624bcc719cdd8d43,false] 7 --- [-nio-80-exec-27] o.s.web.servlet.PageNotFound             : Request method 'POST' not supported",carts-5dcddf678d-49lxk,ip-192-168-83-253.ap-southeast-2.compute.internal
+
+--- re3ss_front-end_f1_1 ---
+  04:07,1732248456701393810,front-end,POST /cart 500 54.305 ms - 70,front-end-ccbbfbf7f-szg8d,ip-192-168-83-253.ap-southeast-2.compute.internal
+
+--- re3ss_front-end_f1_2 ---
+  07:12,1732259527185682844,front-end,POST /cart 500 38.805 ms - 70,front-end-ccbbfbf7f-n76w9,ip-192-168-83-253.ap-southeast-2.compute.internal
+--- re3ss_front-end_f2_1 ---
+  04:24,1732249469108847787,front-end,POST /cart 500 72.969 ms - 70,front-end-5f6d88487b-fxxk8,ip-192-168-83-253.ap-southeast-2.compute.internal
+
+--- re3ss_front-end_f2_2 ---
+  04:24,1732249469108847787,front-end,POST /cart 500 72.969 ms - 70,front-end-5f6d88487b-fxxk8,ip-192-168-83-253.ap-southeast-2.compute.internal
+
+
+==============================================================================
+[4] Chi tiet 1 case Sock Shop: WARN theo thoi gian
+==============================================================================
+case=re3ss_carts_f3_4  root_cause=carts  fault=f3
+  time_start=1732452999  inject=1732453719  time_end=1732454439  duration=1440s
+  tong WARN=626
+  WARN theo container:
+container_name
+carts    626
+  WARN theo giay tuong doi so voi inject (top 15 moc):
+rel_s
+40     1
+124    8
+125    2
+129    1
+130    1
+132    1
+133    1
+134    1
+135    4
+136    1
+137    2
+140    3
+142    1
+143    2
+144    1
+  message WARN duy nhat (template rut gon, top 10):
+      339  <*>-<*>-<*> <*>:<*>:<*>  WARN [carts,<*>,<*>,false] <*> --- [-nio-<*>-exec-<*>] o.s.web.servlet.PageNotFound             : Request method 'POST' not supported
+      286  <*>-<*>-<*> <*>:<*>:<*>  WARN [carts,<*>,<*>,false] <*> --- [p-nio-<*>-exec-<*>] o.s.web.servlet.PageNotFound             : Request method 'POST' not supported
+        1  <*>-<*>-<*> <*>:<*>:<*>  WARN [carts,,,] <*> --- [           main] o.s.c.a.ConfigurationClassPostProcessor  : Cannot enhance @Configuration bean definition 'refreshScope'
+
+==============================================================================
+[5] Kiem tra cac dong log KHONG phai WARN nhung la tin hieu fault (trong faulty window)
+==============================================================================
+  log trong faulty window : 42805
+  log trong normal window : 42844
+  template xuat hien NHIEU HON trong faulty window (top 12):
+    faulty=   339 normal=     0 ratio= 340.0  <*>-<*>-<*> <*>:<*>:<*>  WARN [carts,<*>,<*>,false] <*> --- [-nio-<*>-exec-<*>] o.s.web.servlet.PageNotFound            
+    faulty=   286 normal=     0 ratio= 287.0  <*>-<*>-<*> <*>:<*>:<*>  WARN [carts,<*>,<*>,false] <*> --- [p-nio-<*>-exec-<*>] o.s.web.servlet.PageNotFound           
+    faulty=   742 normal=    34 ratio=  21.2  POST /cart <*> <*> ms - <*>
+    faulty=     8 normal=     1 ratio=   4.5  <*>-<*>-<*> <*>:<*>:<*>  INFO [carts,<*>,<*>,false] <*> --- [-nio-<*>-exec-<*>] w.w.s.cart.controllers.CartsController  
+    faulty=     8 normal=     1 ratio=   4.5  <*>-<*>-<*> <*>:<*>:<*>  INFO [carts,<*>,<*>,false] <*> --- [p-nio-<*>-exec-<*>] w.w.s.cart.controllers.CartsController 
+    faulty=    89 normal=    19 ratio=   4.5  <*>-<*>-<*> <*>:<*>:<*> ERROR [orders,,,] <*> --- [p-nio-<*>-exec-<*>] o.a.c.c.C.[.[.[/].[dispatcherServlet]    : Servle
+    faulty=   118 normal=    27 ratio=   4.2  Order response: {"statusCode":<*>,"body":{"timestamp":<*>,"status":<*>,"error":"Internal Server Error","exception":"java
+    faulty=   118 normal=    27 ratio=   4.2  Order response: {"timestamp":<*>,"status":<*>,"error":"Internal Server Error","exception":"java.lang.IllegalStateExcepti
+    faulty=   118 normal=    27 ratio=   4.2  org.springframework.web.client.HttpServerErrorException: <*> Service Unavailable
+	at org.springframework.web.client.Defa
+    faulty=    29 normal=     8 ratio=   3.3  <*>-<*>-<*> <*>:<*>:<*> ERROR [orders,,,] <*> --- [-nio-<*>-exec-<*>] o.a.c.c.C.[.[.[/].[dispatcherServlet]    : Servlet
+    faulty=     7 normal=     2 ratio=   2.7  <*>-<*>-<*> <*>:<*>:<*>  INFO [carts,<*>,<*>,false] <*> --- [p-nio-<*>-exec-<*>] w.w.s.cart.controllers.CartsController 
+    faulty=     7 normal=     2 ratio=   2.7  <*>-<*>-<*> <*>:<*>:<*>  INFO [carts,<*>,<*>,false] <*> --- [p-nio-<*>-exec-<*>] w.w.s.cart.controllers.CartsController 

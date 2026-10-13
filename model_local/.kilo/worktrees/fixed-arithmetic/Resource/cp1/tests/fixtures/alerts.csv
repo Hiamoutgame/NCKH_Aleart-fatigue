@@ -1,0 +1,4 @@
+case,timestamp,container_name,message,scenario
+re3ss_carts_f3_4,1732453720,carts,2024-11-01 10:00:00.123 WARN 1 --- [http-nio-1-exec-2] PageNotFound POST 42 not supported,duplicate
+re2ss_carts_cpu_1,1705817238,carts,WARN 1 --- [main] Dropped 12 spans due to UnknownHostException(zipkin),transient
+re2tt_ts-route-service_mem_1,1705818000,ts-route-service,WARN 1 --- [main] Got socket exception to ts-route-mongo:27017,cascading

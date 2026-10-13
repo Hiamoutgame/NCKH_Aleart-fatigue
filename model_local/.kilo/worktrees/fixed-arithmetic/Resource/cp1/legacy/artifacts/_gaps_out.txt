@@ -1,0 +1,128 @@
+
+================================================================================
+[#3] 375 case KHONG co log — co dung bang suite RE1 khong?
+================================================================================
+cross-tab suite x has_logs:
+has_logs  False  True  All
+suite                     
+RE1         375     0  375
+RE2           1   269  270
+RE3           0    90   90
+All         376   359  735
+
+cross-tab dataset x has_logs:
+has_logs  False  True  All
+dataset                   
+RE1-OB      125     0  125
+RE1-SS      125     0  125
+RE1-TT      125     0  125
+RE2-OB        0    90   90
+RE2-SS        0    90   90
+RE2-TT        1    89   90
+RE3-OB        0    30   30
+RE3-SS        0    30   30
+RE3-TT        0    30   30
+All         376   359  735
+
+case khong co log: 376
+  trong do suite == RE1 : 375
+  trong do suite != RE1 : 1
+  cac case ngoai le (khong co log nhung khong phai RE1):
+                         case dataset suite  system_name fault
+  re2tt_ts-auth-service_cpu_1  RE2-TT   RE2 Train Ticket   cpu
+
+dataset nao THIEU 1 case (RE2-TT chi 89):
+dataset  has_logs
+RE1-OB   False       125
+RE1-SS   False       125
+RE1-TT   False       125
+RE2-OB   True         90
+RE2-SS   True         90
+RE2-TT   False         1
+         True         89
+RE3-OB   True         30
+RE3-SS   True         30
+RE3-TT   True         30
+
+================================================================================
+[#2] 74 dong WARN cua Train Ticket la gi?
+================================================================================
+so case TT co WARN>0: 36, tong WARN: 74
+
+CAC TEMPLATE WARN DUY NHAT TRONG TOAN BO TRAIN TICKET (sau chuan hoa):
+    10  WARN <N> --- <[]> org.mongodb.driver.connection : Got socket exception on connection <[]> to ts-route-mongo:<N>. All connections to ts-route-mongo:<N> will be closed.
+     9  WARN <N> --- <[]> org.mongodb.driver.connection : Got socket exception on connection <[]> to ts-train-mongo:<N>. All connections to ts-train-mongo:<N> will be closed.
+     7  WARN <N> --- <[]> org.mongodb.driver.connection : Got socket exception on connection <[]> to ts-order-other-mongo:<N>. All connections to ts-order-other-mongo:<N> will be
+     7  WARN <N> --- <[]> org.mongodb.driver.connection : Got socket exception on connection <[]> to ts-config-mongo:<N>. All connections to ts-config-mongo:<N> will be closed.
+     6  WARN <N> --- <[]> org.mongodb.driver.connection : Got socket exception on connection <[]> to ts-travel2-mongo:<N>. All connections to ts-travel2-mongo:<N> will be closed.
+     6  WARN <N> --- <[]> org.mongodb.driver.connection : Got socket exception on connection <[]> to ts-station-mongo:<N>. All connections to ts-station-mongo:<N> will be closed.
+     5  WARN <N> --- <[]> org.mongodb.driver.connection : Got socket exception on connection <[]> to ts-price-mongo:<N>. All connections to ts-price-mongo:<N> will be closed.
+     5  WARN <N> --- <[]> org.mongodb.driver.connection : Got socket exception on connection <[]> to ts-order-mongo:<N>. All connections to ts-order-mongo:<N> will be closed.
+     5  WARN <N> --- <[]> org.mongodb.driver.connection : Got socket exception on connection <[]> to ts-travel-mongo:<N>. All connections to ts-travel-mongo:<N> will be closed.
+     4  WARN <N> --- <[]> org.mongodb.driver.connection : Got socket exception on connection <[]> to ts-contacts-mongo:<N>. All connections to ts-contacts-mongo:<N> will be close
+     3  WARN <N> --- <[]> org.mongodb.driver.connection : Got socket exception on connection <[]> to ts-auth-mongo:<N>. All connections to ts-auth-mongo:<N> will be closed.
+     2  WARN <N> --- <[]> org.mongodb.driver.connection : Got socket exception on connection <[]> to ts-user-mongo:<N>. All connections to ts-user-mongo:<N> will be closed.
+     2  WARN <N> --- <[]> org.mongodb.driver.connection : Got socket exception on connection <[]> to ts-consign-mongo:<N>. All connections to ts-consign-mongo:<N> will be closed.
+     1  WARN <N> --- <[]> org.mongodb.driver.connection : Got socket exception on connection <[]> to ts-inside-payment-mongo:<N>. All connections to ts-inside-payment-mongo:<N> w
+     1  WARN <N> --- <[]> org.mongodb.driver.connection : Got socket exception on connection <[]> to ts-security-mongo:<N>. All connections to ts-security-mongo:<N> will be close
+     1  WARN <N> --- <[]> org.mongodb.driver.connection : Got socket exception on connection <[]> to ts-food-map-mongo:<N>. All connections to ts-food-map-mongo:<N> will be close
+
+tong so template WARN duy nhat (TT): 16
+
+10 dong WARN RAW dau tien cua TT:
+  2024-01-25 10:46:16.202  WARN 1 --- [io-12340-exec-3] org.mongodb.driver.connection            : Got socket exception on connection [connectionId{localValue:4, serverValue:5}] to ts-auth-mongo:27017. All connections to ts-auth-mongo:27017 will be closed.
+  2024-01-25 10:46:18.129  WARN 1 --- [io-11178-exec-7] org.mongodb.driver.connection            : Got socket exception on connection [connectionId{localValue:7, serverValue:10}] to ts-route-mongo:27017. All connections to ts-route-mongo:27017 will be closed.
+  2024-01-25 10:46:18.130  WARN 1 --- [o-11178-exec-12] org.mongodb.driver.connection            : Got socket exception on connection [connectionId{localValue:12, serverValue:11}] to ts-route-mongo:27017. All connections to ts-route-mongo:27017 will be closed.
+  2024-01-25 10:46:39.558  WARN 1 --- [o-14567-exec-13] org.mongodb.driver.connection            : Got socket exception on connection [connectionId{localValue:2, serverValue:2}] to ts-train-mongo:27017. All connections to ts-train-mongo:27017 will be closed.
+  2024-01-25 10:46:50.339  WARN 1 --- [io-16579-exec-2] org.mongodb.driver.connection            : Got socket exception on connection [connectionId{localValue:5, serverValue:5}] to ts-price-mongo:27017. All connections to ts-price-mongo:27017 will be closed.
+  2024-01-25 10:47:02.038  WARN 1 --- [io-12032-exec-1] org.mongodb.driver.connection            : Got socket exception on connection [connectionId{localValue:5, serverValue:5}] to ts-order-other-mongo:27017. All connections to ts-order-other-mongo:27017 will be
+  2024-01-25 10:48:59.955  WARN 1 --- [io-16346-exec-3] org.mongodb.driver.connection            : Got socket exception on connection [connectionId{localValue:6, serverValue:6}] to ts-travel2-mongo:27017. All connections to ts-travel2-mongo:27017 will be closed.
+  2024-01-23 16:37:47.997  WARN 1 --- [io-12031-exec-6] org.mongodb.driver.connection            : Got socket exception on connection [connectionId{localValue:3, serverValue:4}] to ts-order-mongo:27017. All connections to ts-order-mongo:27017 will be closed.
+  2024-01-23 16:44:15.065  WARN 1 --- [o-15679-exec-10] org.mongodb.driver.connection            : Got socket exception on connection [connectionId{localValue:4, serverValue:5}] to ts-config-mongo:27017. All connections to ts-config-mongo:27017 will be closed.
+  2024-01-23 16:47:00.932  WARN 1 --- [io-14567-exec-1] org.mongodb.driver.connection            : Got socket exception on connection [connectionId{localValue:6, serverValue:7}] to ts-train-mongo:27017. All connections to ts-train-mongo:27017 will be closed.
+
+case nao phat WARN (container):
+                            case  n_warn                                                                                                   containers  n_tpl_norm
+    re2tt_ts-route-service_mem_1       7 ts-auth-service,ts-order-other-service,ts-price-service,ts-route-service,ts-train-service,ts-travel2-service           6
+     re2tt_ts-auth-service_mem_2       5                  ts-config-service,ts-order-other-service,ts-order-service,ts-route-service,ts-train-service           5
+ re2tt_ts-train-service_socket_2       5                                ts-contacts-service,ts-order-other-service,ts-train-service,ts-travel-service           4
+    re2tt_ts-train-service_cpu_2       4                                 ts-contacts-service,ts-order-other-service,ts-price-service,ts-train-service           4
+   re2tt_ts-travel-service_mem_2       4                                  ts-order-other-service,ts-route-service,ts-station-service,ts-train-service           4
+   re2tt_ts-train-service_loss_1       3                                                            ts-order-service,ts-train-service,ts-user-service           3
+ re2tt_ts-order-service_socket_3       3                                                       ts-price-service,ts-station-service,ts-travel2-service           3
+     re2tt_ts-auth-service_cpu_2       2                                                                         ts-station-service,ts-travel-service           2
+re2tt_ts-travel-service_socket_1       2                                                                           ts-config-service,ts-route-service           2
+    re2tt_ts-auth-service_loss_1       2                                                                          ts-price-service,ts-travel2-service           2
+   re2tt_ts-auth-service_delay_1       2                                                                  ts-config-service,ts-inside-payment-service           2
+    re2tt_ts-train-service_cpu_1       2                                                                           ts-config-service,ts-price-service           2
+    re2tt_ts-train-service_cpu_3       2                                                                          ts-route-service,ts-travel2-service           2
+ re2tt_ts-travel-service_delay_1       2                                                                        ts-config-service,ts-security-service           2
+  re2tt_ts-travel-service_disk_3       2                                                                           ts-auth-service,ts-consign-service           2
+   re2tt_ts-travel-service_cpu_2       2                                                                           ts-order-service,ts-travel-service           2
+   re2tt_ts-train-service_loss_2       2                                                                           ts-order-service,ts-travel-service           2
+   re2tt_ts-route-service_disk_1       2                                                                        ts-contacts-service,ts-travel-service           2
+   re2tt_ts-order-service_loss_1       2                                                                          ts-route-service,ts-travel2-service           2
+    re2tt_ts-route-service_cpu_1       2                                                                            ts-route-service,ts-train-service           2
+ re2tt_ts-travel-service_delay_3       2                                                                          ts-order-service,ts-station-service           2
+     re2tt_ts-auth-service_cpu_3       1                                                                                              ts-auth-service           1
+  re2tt_ts-route-service_delay_1       1                                                                                           ts-station-service           1
+   re2tt_ts-route-service_loss_1       1                                                                                       ts-order-other-service           1
+   re2tt_ts-order-service_disk_1       1                                                                                           ts-consign-service           1
+    re2tt_ts-order-service_cpu_3       1                                                                                       ts-order-other-service           1
+  re2tt_ts-auth-service_socket_3       1                                                                                             ts-route-service           1
+ re2tt_ts-order-service_socket_1       1                                                                                            ts-config-service           1
+ re2tt_ts-route-service_socket_1       1                                                                                           ts-station-service           1
+    re2tt_ts-route-service_cpu_3       1                                                                                            ts-config-service           1
+  re2tt_ts-train-service_delay_1       1                                                                                          ts-contacts-service           1
+   re2tt_ts-train-service_disk_3       1                                                                                          ts-food-map-service           1
+   re2tt_ts-train-service_loss_3       1                                                                                              ts-user-service           1
+ re2tt_ts-travel-service_delay_2       1                                                                                             ts-route-service           1
+   re2tt_ts-travel-service_mem_1       1                                                                                           ts-travel2-service           1
+  re2tt_ts-travel-service_loss_2       1                                                                                             ts-train-service           1
+
+================================================================================
+[TONG KET] So ho WARNING tim duoc tren ca dataset
+================================================================================
+  Ho 1 (RE3 code-level, SS carts): PageNotFound 'POST' not supported  -> DUPLICATE
+  Ho 2 (RE2 ha tang, SS carts)   : Dropped spans UnknownHostException(zipkin) -> TRANSIENT/UNACTIONABLE
+  Ho 3 (TT)                      : 16 template, xem danh sach tren

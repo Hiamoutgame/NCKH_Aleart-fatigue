@@ -1,0 +1,15 @@
+# Local Python environment
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Large, reproducible external inputs
+cp1/raw_data/huggingface/**
+!cp1/raw_data/huggingface/.gitkeep
+cp1/external_repos/github/**
+!cp1/external_repos/github/.gitkeep
+
+# Tool-local download metadata
+cp1/raw_data/huggingface/.cache/
+

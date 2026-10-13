@@ -1,0 +1,52 @@
+<aside>
+➡️
+
+Tìm hiểu về chủ đề tác động của cơ chế gom nhóm (aleart aggreation) lên việc giảm tỷ lệ cảnh báo nhiễu trong môi trường microservices.
+
+Thời gian hiện tại của tớ là time line trong khoản 8 tuần. mỗi ngày dành ít nhất tầm 2 tiếng để research nghiên cứu khoa học 1 cách điều đặng. Scope của tớ không quá lớn.
+
+Scope hiện tại của tớ là về log trong microservices thay vì tập trung tất cả log. tớ sẽ tập trung về log warning thay vì log danger vì lúc này thể thống đã đừng lại do hư rồi.
+
+</aside>
+
+### Tính cấp thiết của đề tài
+
+### Timeline đề xuất
+
+**Tuần 1 — Chốt dataset, vấn đề và scope nghiên cứu**
+
+Rà soát nhanh các dataset log trên Hugging Face và chốt dataset chính thức, ưu tiên RCAEval/RE2 hoặc RE3; nếu dataset chính gặp vấn đề sau một buổi thử thì chuyển sang LEMMA-RCA. Đọc các phần cần thiết của SRE Book ch. 6 + ch. 10 và lướt "My Philosophy on Alerting". Chốt định nghĩa "noisy warning alert", research question, giả thuyết sơ bộ, scope loại trừ và tiêu chí đánh giá. Hoàn thành bản định hướng 1 trang để gửi thầy Long xác nhận.
+
+**Tuần 2 — Literature review, gap analysis và thiết kế thí nghiệm**
+
+Đọc COLA, AlertGuardian và các bài liên quan; lập gap analysis ngắn gọn: mỗi công trình giải quyết gì, còn hạn chế gì, dùng dữ liệu/phương pháp nào. So sánh các hướng rule-based, temporal-spatial, semantic similarity và LLM-based. Chốt research gap, baseline rule-based, metric, thiết kế thí nghiệm và các trường hợp cần kiểm thử. Gửi checkpoint cho thầy Long sớm trong tuần để có thời gian điều chỉnh.
+
+**Tuần 3 — Parse dataset và sinh alert warning stream**
+
+Kiểm tra format, timestamp, service, message, level/severity và root-cause label. Viết pipeline parse, lọc log warning bằng pattern/regex và tạo alert stream có timestamp, service, message, severity cùng root cause nếu dataset hỗ trợ. Kiểm thử trên sample dataset, ghi lại vấn đề dữ liệu và hoàn thành nháp phần Data/Methodology. Cuối tuần phải chốt được dataset, schema và sample output.
+
+**Tuần 4 — Build MVP agent và baseline**
+
+Thiết kế và code MVP agent có thể phân tích alert mẫu, bắt đầu với tool `get_related_alerts(service, time_window)`. Cài baseline gom nhóm theo service + time-window để so sánh công bằng. Nếu làm nhanh, bổ sung bảng service dependency tĩnh và tool `get_service_dependency(service)`. Giới hạn tối đa 2 lượt gọi tool cho mỗi quyết định gom nhóm để tránh loop và kiểm soát chi phí.
+
+**Tuần 5 — Chạy toàn bộ, đánh giá và phân tích failure cases**
+
+Hoàn thiện logic gom nhóm và chạy agent trên toàn bộ alert stream với cùng điều kiện như baseline. Tạo bảng so sánh số alert đầu vào, số nhóm sau aggregation, alert reduction ratio và các trường hợp gom sai. Đánh giá khả năng giữ đúng root cause label từ RCAEval, phân tích failure cases và chạy lại các trường hợp cần thiết. Chỉ thêm `get_runbook(fault_type)` nếu các phần chính đã ổn; runbook phải ghi rõ là synthetic, không phải SOP production.
+
+**Tuần 6 — Viết báo cáo, nhận phản hồi và dành buffer để test**
+
+Hoàn thiện Methodology, Related Work, Experiment, Results, Discussion, Limitations và Conclusion. Kiểm tra tính nhất quán giữa research question–gap–agent–metric–conclusion, bảng/hình, trích dẫn và khả năng tái lập. Gửi bản nháp cho thầy Long sớm, dành phần thời gian còn lại để test bổ sung, sửa failure cases, chạy lại thí nghiệm nhỏ và hoàn thiện bản cuối.
+
+### Checkpoint
+
+| # | Thời điểm | Sản phẩm cụ thể | Loại | Tiêu chí đạt (go) / cần chỉnh (no-go) |
+| --- | --- | --- | --- | --- |
+| **CP1** | Cuối tuần 1 | Định nghĩa các từ khoá, 
+Danh sách dataset HF đã chốt (RCAEval chính, LEMMA-RCA backup) + ½ trang định nghĩa "noisy alert warning" đo lường được | [Tự kiểm] | Go: định nghĩa đủ cụ thể để tuần 3 biến thành rule code. No-go: còn mơ hồ → viết lại trước khi qua tuần 2. |
+| **CP2** | Cuối tuần 2 | 1 trang gap analysis (đã giải quyết gì / chưa giải quyết gì trong COLA, AlertGuardian, rule-based) | **[Gửi thầy Long]** | Go: thầy xác nhận "warning-level + agent tool-calling" là hướng hợp lệ. No-go: đổi góc → sửa trước khi đầu tư code tuần 3-6. **Gửi sớm nhất có thể trong tuần, vì đây là checkpoint bạn không kiểm soát được tốc độ phản hồi.** |
+| **CP3/4** | Cuối tuần 3 | Parse xong log RCAEval + alert warning stream thực tế (CSV/JSON, ≥1 service) | [Tự kiểm] | Go: rule sinh alert hợp lý, không spam/không rỗng. No-go: log RCAEval quá lộn xộn sau ~1 buổi thử → **chuyển ngay sang LEMMA-RCA**, đừng cố gỡ quá 1 buổi. |
+| **CP4b** *(mới)* | Đầu tuần 4 | Bảng service dependency (static) + synthetic runbook cho các fault type trong dataset | [Tự kiểm] | Go: đủ dữ liệu cho tool `get_service_dependency` và `get_runbook`. No-go: nếu tốn quá 1 ngày → cắt runbook, giữ lại dependency table (ưu tiên thấp hơn, xem CP6). |
+| **CP5** *(mới, thay cho CP5 cũ)* | Cuối tuần 5 | Agent MVP chạy được với tối thiểu 2 tool (`get_related_alerts` + `get_service_dependency`), có bảng so sánh baseline rule-based vs agent | [Tự kiểm] | Go: có số liệu cụ thể (alert count trước/sau). No-go: agent loop gọi tool quá nhiều/không hội tụ → giới hạn cứng "tối đa 2 lượt gọi tool/quyết định". |
+| **CP6** | Giữa tuần 6 | Kết quả đánh giá agent: alert reduction ratio + kiểm tra giữ đúng root cause (dùng nhãn RCAEval). Tool `get_runbook` chỉ thêm nếu còn thời gian | **[Gửi thầy Long]**, đặc biệt nếu có deadline giữa kỳ | Go: kết quả đủ để "kể chuyện" khác biệt rõ. No-go: nếu 3 tool chưa xong → **báo cáo với 2 tool là đủ hợp lệ**, đừng cố nhồi tool thứ 3 vào phút chót. |
+| **CP7** | Ngày 4 của tuần 6 | Bản nháp Methodology + Related Work (đã thành văn, không chỉ bullet) | [Tự kiểm], có thể gửi thầy nháp sớm | Go: 2 phần viết xong. No-go: chưa viết được → cắt bớt phần thí nghiệm mở rộng ở tuần 8. |
+| **CP8** | Ngày 5-6 của tuần 6 | Bản báo cáo hoàn chỉnh | **[Gửi thầy Long]** | Chừa 1-2 ngày buffer cuối, không nộp sát deadline. |
