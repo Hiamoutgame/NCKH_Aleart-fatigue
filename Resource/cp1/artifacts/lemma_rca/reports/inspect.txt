@@ -1,0 +1,3 @@
+path: /run/media/outgame/New Volume/coding/NCKH_Aleart-fatigue/Resource/cp1/raw_data/huggingface/lemma_rca
+files: 6
+bytes: 49892476

@@ -1,0 +1,3 @@
+# Root requirements file
+# Chuyen huong den Resource/explore_datasets/requirements.txt
+-r Resource/explore_datasets/requirements.txt

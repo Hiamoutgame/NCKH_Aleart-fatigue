@@ -1,53 +1,38 @@
-# CP1 — Dataset verification workspace
+# CP1 — kiểm chứng RCAEval, LEMMA-RCA và Nezha
 
-CP1 kiểm chứng khả năng dùng các dataset log cho đề tài alert aggregation. Code
-mới chỉ đọc dữ liệu đã tải local; raw data không bị thay đổi trong lúc phân tích.
+CP1 đọc dữ liệu local trong `raw_data/`, ghi thống kê/report vào `artifacts/`.
+Xem [bản đồ Resource](../README.md) cho cấu trúc toàn bộ workspace.
 
-## Setup một lần
+Từ root repository, dùng Python local:
 
-Từ root `NCKH`:
-
-```powershell
-.\setup.ps1
+```bash
+Resource/explore_datasets/.venv/bin/python Resource/cp1/src/main_RCAEval.py --help
+Resource/explore_datasets/.venv/bin/python Resource/cp1/src/main_RCAEval.py inspect
+Resource/explore_datasets/.venv/bin/python Resource/cp1/src/main_RCAEval.py scan-warnings
+Resource/explore_datasets/.venv/bin/python Resource/cp1/src/main_RCAEval.py timing
+Resource/explore_datasets/.venv/bin/python Resource/cp1/src/main_RCAEval.py verify
+Resource/explore_datasets/.venv/bin/python Resource/cp1/src/main_LEMMA_RCA.py inspect
+Resource/explore_datasets/.venv/bin/python Resource/cp1/src/main_Nezha.py inspect
 ```
 
-Lệnh này tạo `.venv` tại root và cài dependency. Nó không tải dataset.
+Các lệnh trên ghi lại report/bảng tương ứng. `fetch` và `all` của RCAEval/LEMMA có
+bước tải dữ liệu. Nezha chỉ hỗ trợ `inspect` với `fault_list.json` và CSV đã đặt local.
+Muốn chỉ xem thông tin ba adapter mà không ghi artifact: `bash run_datasets.sh inspect all`.
 
-## Chạy RCAEval
+`config/sources.yaml` hiện gồm ba dataset và `rcaeval_github` là repo code tham khảo,
+không phải dataset thứ tư. `source_registry.py` ánh xạ chúng vào raw/external_repos.
+`explore_datasets/src/shared/infrastructure/` giữ rule normalization/severity dùng chung;
+`cp1_core` giữ các export tương thích và logic phân tích CP1.
 
-```powershell
-.\.venv\Scripts\python cp1\src\main_RCAEval.py fetch
-.\.venv\Scripts\python cp1\src\main_RCAEval.py inspect
-.\.venv\Scripts\python cp1\src\main_RCAEval.py scan-warnings
-.\.venv\Scripts\python cp1\src\main_RCAEval.py timing
-.\.venv\Scripts\python cp1\src\main_RCAEval.py verify
-.\.venv\Scripts\python cp1\src\main_RCAEval.py all
-```
+- `raw_data/`: nguồn local, không sửa trong quá trình phân tích.
+- `artifacts/`: kết quả kiểm chứng; số liệu cũ có thể thuộc phạm vi raw khác.
+- `external_repos/`: đích clone repo tham khảo RCAEval.
+- `docs/`: phạm vi nghiên cứu, thuật ngữ, schema notes, migration.
+- `legacy/`: script/output lịch sử được giữ để đối chiếu dữ liệu chính.
+- `tests/`: kiểm tra registry, rule, paths, analysis và case log local.
 
-`fetch` tải Hugging Face RCAEval vào `raw_data/huggingface/rcaeval` và clone
-repository tham khảo vào `external_repos/github/RCAEval`. `all` chạy toàn bộ
-chuỗi trên sau khi tải xong.
+Dataset phụ đã chuyển sang [archive](../archive/README.md). Báo cáo và định hướng cũ
+được giữ như lịch sử; lệnh và đường dẫn hiện hành nằm trong README này.
 
-## Dataset phụ
-
-Mỗi dataset có lệnh độc lập với `fetch`, `inspect` và `all`:
-
-```powershell
-.\.venv\Scripts\python cp1\src\main_LEMMA_RCA.py fetch
-.\.venv\Scripts\python cp1\src\main_LogHub2.py inspect
-.\.venv\Scripts\python cp1\src\main_OpsEval.py all
-.\.venv\Scripts\python cp1\src\main_CorrelatedAlerts.py fetch
-.\.venv\Scripts\python cp1\src\main_Suricata_CTU13.py fetch
-```
-
-Danh sách URL, revision và local path nằm tại `config/sources.yaml`.
-
-## Quy ước thư mục
-
-- `raw_data/`: file dataset nguyên gốc tải từ nguồn; không chỉnh sửa.
-- `external_repos/`: repository GitHub clone để tham khảo; không tự chạy code.
-- `artifacts/`: bảng CSV và report do source mới sinh ra.
-- `docs/`: định hướng, kiểm chứng schema và thuật ngữ CP1.
-- `legacy/`: script/output cũ được giữ để đối chiếu, không dùng cho workflow mới.
-
-Xem [migration note](docs/MIGRATION.md) để đối chiếu lệnh cũ và mới.
+Windows: chạy `Resource/setup.ps1` để tạo `Resource/.venv` bằng Python 3.12 và cài
+`Resource/requirements.txt`; dùng Python trong môi trường đó với đường dẫn script trên.

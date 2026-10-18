@@ -1,3 +1,7 @@
+> Tài liệu khảo sát lịch sử. Registry đang dùng chỉ giữ RCAEval, LEMMA-RCA và Nezha;
+> nguồn phụ bên dưới là thông tin tham khảo, không còn là workflow đang chạy.
+> Xem [CP1 README](../README.md).
+
 ﻿# Danh sách Dataset HuggingFace — Đã Chốt
 
 > Cập nhật: 2026-09-18 | CP1 — Tuần 1

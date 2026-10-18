@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+for candidate in \
+    "$SCRIPT_DIR/Resource/explore_datasets/.venv/bin/python" \
+    "$SCRIPT_DIR/Resource/.venv/bin/python" \
+    "$SCRIPT_DIR/.venv/bin/python"; do
+    if [ -x "$candidate" ]; then
+        exec "$candidate" "$SCRIPT_DIR/Resource/explore_datasets/run_datasets.py" "$@"
+    fi
+done
+exec python3 "$SCRIPT_DIR/Resource/explore_datasets/run_datasets.py" "$@"

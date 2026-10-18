@@ -1,0 +1,29 @@
+# LEMMA-RCA dataset configuration
+slug: lemma_rca
+display_name: "LEMMA-RCA"
+role: backup
+
+source:
+  type: huggingface_dataset
+  repo_id: "Lemma-RCA-NEC/Product_Review_Original"
+  revision: main
+  local_path: "Resource/cp1/raw_data/huggingface/lemma_rca"
+  format: "log (Elasticsearch JSON) + metric (Prometheus) + trace (Jaeger)"
+
+incident:
+  unit: case / scenario
+  time_column: timestamp
+  service_column: service
+  message_column: message
+  severity_column: level
+  root_cause_column: root_cause
+
+exploration:
+  head_n: 10
+  value_count_columns: [service, level, log_type]
+
+notes:
+  - "Format log la Elasticsearch scroll JSON export (10,000 records/file)."
+  - "Cot level goc la unknown, duoc phan tich trich xuat tu regex message (DEBUG, INFO, WARN, ERROR, glog I/W/E/F)."
+  - "He thong thu nghiem: Book-Info va Sock-Shop tren Red Hat OpenShift OKD."
+  - "Ground Truth: DDoS OOM (2022-06-06), JMeter stress (2021-05-17), Storage failure (2021-12-03), Noisy neighbor (2021-05-24)."

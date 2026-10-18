@@ -43,7 +43,7 @@ def _record_fetch(source: Source, revision: str, local_path: Path, notes: str = 
         "notes": notes or source.notes or "",
     }
     with manifest.open("w", newline="", encoding="utf-8") as handle:
-        writer = csv.DictWriter(handle, fieldnames=MANIFEST_COLUMNS)
+        writer = csv.DictWriter(handle, fieldnames=MANIFEST_COLUMNS, lineterminator="\n")
         writer.writeheader()
         writer.writerows(records[key] for key in sorted(records))
 
@@ -87,6 +87,11 @@ def fetch_source(source: Source) -> Path:
         return fetch_huggingface_dataset(source)
     if source.type == "github_repository":
         return fetch_github_repository(source)
+    if source.type == "local_directory":
+        raise RuntimeError(
+            f"{source.source_id} dung du lieu local tai {source.local_path}. "
+            "Dat du lieu vao thu muc nay va chay inspect; chua co downloader tu dong."
+        )
     raise RuntimeError(
         f"{source.source_id} chi la manifest-only: {source.notes or 'chua co URL tai hop le'}"
     )
@@ -95,6 +100,11 @@ def fetch_source(source: Source) -> Path:
 def require_local(source: Source) -> Path:
     path = source.local_path
     if not path or not path.exists():
+        if source.type == "local_directory":
+            raise FileNotFoundError(
+                f"Chua co du lieu local cho '{source.source_id}'. "
+                f"Dat file dataset vao {path}; dataset nay chua co downloader tu dong."
+            )
         raise FileNotFoundError(
             f"Chua co du lieu local cho '{source.source_id}'. Hay chay entrypoint "
             "tuong ung voi lenh 'fetch'."

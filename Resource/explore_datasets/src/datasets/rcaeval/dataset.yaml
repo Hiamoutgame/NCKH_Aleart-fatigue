@@ -1,0 +1,26 @@
+# Sinh tu registry. Kiem tra lai truoc khi dung.
+slug: rcaeval
+display_name: "RCAEval"
+role: primary
+
+source:
+  type: huggingface_dataset
+  repo_id: "phamquiluan/RCAEval"
+  revision: main
+  local_path: "Resource/cp1/raw_data/huggingface/rcaeval"
+  format: "logs.parquet (3 cot) trong tung case"
+
+incident:
+  unit: case
+  time_column: timestamp
+  service_column: container_name
+  message_column: message
+  severity_column: null
+  root_cause_column: root_cause_service
+
+exploration:
+  head_n: 10
+  value_count_columns: [container_name, message]
+
+notes:
+  - "Cap nhat sau khi kiem chung schema thuc te."

@@ -13,14 +13,15 @@ from .source_registry import get_source
 
 
 def run_dataset_cli(source_id: str, display_name: str, argv: list[str] | None = None) -> int:
+    source = get_source(source_id)
     parser = argparse.ArgumentParser(description=f"CP1 entrypoint for {display_name}")
-    parser.add_argument("command", nargs="?", choices=["fetch", "inspect", "all"], help="Task to run")
+    commands = ["inspect"] if source.type == "local_directory" else ["fetch", "inspect", "all"]
+    parser.add_argument("command", nargs="?", choices=commands, help="Task to run")
     args = parser.parse_args(argv)
     if not args.command:
         parser.print_help()
         return 0
 
-    source = get_source(source_id)
     try:
         if args.command in {"fetch", "all"}:
             path = fetch_source(source)

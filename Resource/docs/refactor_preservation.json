@@ -1,0 +1,52 @@
+{
+  "date": "2026-10-18",
+  "scope": "Raw dataset files (excluding tool cache), existing primary artifacts and normalized Parquet outputs",
+  "unchanged_files_sha256": {
+    "Resource/cp1/raw_data/huggingface/rcaeval/cases.parquet": "c49a288920dbba2e8e724679a14636d5c7eb2b45426bba14007ef79a6c0ab1bb",
+    "Resource/cp1/raw_data/huggingface/rcaeval/re2ss_carts_cpu_1/logs.parquet": "e1cdf34912a1a00b5a612594917c1d5f4aaf82714bed08731f216d53000b913d",
+    "Resource/cp1/raw_data/huggingface/rcaeval/re2tt_ts-route-service_mem_1/logs.parquet": "de50ddbf0f583a556acdb826d2bf9952e21d4815b972cb69e8ddcddb0ab99cdc",
+    "Resource/cp1/raw_data/huggingface/rcaeval/re3ss_carts_f3_4/logs.parquet": "ca88dcd1763fadc369b1f93688920fcb41e22b476c339b91cee45a0871c5490c",
+    "Resource/cp1/raw_data/huggingface/lemma_rca/LEMMA_RCA_20220606_Scenario_GroundTruth.pptx": "4bada37bc6c777d1ccb0f04f408c69be2fbb2e4a1f6407a0200d82d48a7efb29",
+    "Resource/cp1/raw_data/huggingface/lemma_rca/README.md": "a5bd402b8381ed335dfd081faaea3c2f1200d14736cbaf4e0fdd1197d323c2dc",
+    "Resource/cp1/raw_data/huggingface/lemma_rca/pod_topology/all_pod_after.txt": "8b3b4a34654a59f0876a96a3590ea0ccbd00292248b02580e3af9fe816504c43",
+    "Resource/cp1/raw_data/huggingface/lemma_rca/pod_topology/all_pod_before.txt": "0167d495e071689b4874b2a87706a5ec732077940fec1f19b488db472cd9705b",
+    "Resource/cp1/raw_data/huggingface/lemma_rca/sample/app-000174log20210517_132254.json": "0a279d29c113ef0c94db7d252b071cb90fd2795e197337c6a79d76173e495f48",
+    "Resource/cp1/raw_data/huggingface/lemma_rca/sample/infra-000185log20210517_211114.json": "870cb6977710b8e2d8df954733fb977012eaf8b3d3625d87a1d6d1a21fccfe27",
+    "Resource/cp1/raw_data/nezha/03_53_log.csv": "ccd174df3cf23f97a4b19396d2286e44cdb8e4b92a10f762c1e0cd13b59c2f6e",
+    "Resource/cp1/raw_data/nezha/fault_list.json": "26c723cd2f70eaa7973e6c7575981296bfb9c821219d7d630c85800066a6fccd",
+    "Resource/datasets/normalized/lemma_rca/ground_truth.parquet": "f1d0cbf5cf097e71264c0ea9f8363391b2f9c77bd1ceb2b521e59a6b5d74ce7d",
+    "Resource/datasets/normalized/lemma_rca/incidents.parquet": "c12102930be83227d7b14505c71b2238e9a80adf30d1192301184cb8a1e9704d",
+    "Resource/datasets/normalized/lemma_rca/log_events.parquet": "5d15b4c866fe4101ac9c671a7a2b349ad01c32b96f9ca87d3a813ae0273560bf",
+    "Resource/datasets/normalized/nezha/ground_truth.parquet": "741babdc16d6abf27d0a4cc5093ae2750405a5205e64af42167b63ccb3f3a415",
+    "Resource/datasets/normalized/nezha/incidents.parquet": "07c28b5af5fdee70c984e296db8a5cc8056b8ab2e58f4a9bce718dd957001cc6",
+    "Resource/datasets/normalized/nezha/log_events.parquet": "a7b00518c6a8f2124740420d499f1ea8c911d027b681b887ceb9dd29a8475916",
+    "Resource/datasets/normalized/rcaeval/ground_truth.parquet": "ae837adea25cabf5203ee1d4ef0607a7ca008d73ac7065848f55e3f4acd094fe",
+    "Resource/datasets/normalized/rcaeval/incidents.parquet": "fe6632480f6e937a380ce387e716a3ff7378ddd04b30af2cbbddc95e5042df84",
+    "Resource/datasets/normalized/rcaeval/log_events.parquet": "a32adc4588134df8740471848724d5116f0a1fd6a818dcbf5b08e1a167abe8ac",
+    "Resource/cp1/artifacts/rcaeval/reports/inspect.txt": "791696c1c07873670567fbd17e93f79a2dc238f88ea87c8a1bcabcbb1c38eece",
+    "Resource/cp1/artifacts/rcaeval/reports/scan_warnings.txt": "663a99eb2c38868feb17c09a6ee87128a554a3e63adb7b1df0d166c833bd4828",
+    "Resource/cp1/artifacts/rcaeval/tables/warning_per_case.csv": "e03d62108517e56da240316e626399cbca5bbeb1f46c9159702a4ea1ee3ffa9a",
+    "Resource/cp1/artifacts/rcaeval/tables/warning_timing.csv": "bac95df7b66b65587953038791d8bccb94321f269b0fa0bb961e06ca962ed537",
+    "Resource/cp1/artifacts/rcaeval/tables/warning_verification.csv": "be66546d1108261de6ca75ebbcee40e751ab6238d751216659c0dd6c7d788a49",
+    "Resource/cp1/artifacts/lemma_rca/reports/inspect.txt": "eddc2d143667a6175a350fef12c2cbe0371d587a44a3c02f68912e4195d73dc9"
+  },
+  "identical_duplicates_consolidated": [
+    {
+      "removed": "Resource/datasets/normalized/lemma/ground_truth.parquet",
+      "kept": "Resource/datasets/normalized/lemma_rca/ground_truth.parquet",
+      "sha256": "f1d0cbf5cf097e71264c0ea9f8363391b2f9c77bd1ceb2b521e59a6b5d74ce7d"
+    },
+    {
+      "removed": "Resource/datasets/normalized/lemma/incidents.parquet",
+      "kept": "Resource/datasets/normalized/lemma_rca/incidents.parquet",
+      "sha256": "c12102930be83227d7b14505c71b2238e9a80adf30d1192301184cb8a1e9704d"
+    },
+    {
+      "removed": "Resource/datasets/normalized/lemma/log_events.parquet",
+      "kept": "Resource/datasets/normalized/lemma_rca/log_events.parquet",
+      "sha256": "5d15b4c866fe4101ac9c671a7a2b349ad01c32b96f9ca87d3a813ae0273560bf"
+    }
+  ],
+  "removed_looping_symlink": "Resource/datasets/normalized/lemma_rca/lemma -> lemma",
+  "regenerated_output_comparison": "All columns match previous tables except source_file, now repository-relative or data_root-relative for external inputs."
+}

@@ -3,6 +3,7 @@
 __pycache__/
 *.py[cod]
 .pytest_cache/
+.cache/
 
 # Large, reproducible external inputs
 cp1/raw_data/huggingface/**
@@ -13,3 +14,5 @@ cp1/external_repos/github/**
 # Tool-local download metadata
 cp1/raw_data/huggingface/.cache/
 
+# Archived external data stays local; archive code and provenance remain reviewable.
+archive/excluded_datasets/gaia/raw_data/

@@ -2,6 +2,10 @@
 
 **Research project** — 8-week timeline, supervised by Prof. Long
 
+Dataset workspace: **RCAEval, LEMMA-RCA, Nezha**. See the current
+[Resource map](Resource/README.md) and [validation report](Resource/docs/validation_report.md).
+Other dataset code/data is retained under `Resource/archive/`.
+
 ---
 
 ## 🎯 Research Objective
@@ -71,72 +75,37 @@ graph TB
 
 ## 📁 Repository Structure
 
-```
-F:\study\NCKH\
-├── README.md                    ← this file
-├── PROJECT_MINDMAP.md           ← visual overview (some numbers outdated)
-├── academicWords.md             ← academic terminology reference
-├── IEEE_template/               ← LaTeX template for paper
-├── PDF_NCKH/                    ← reference chapters (VN)
-├── Resource/
-│   ├── README                   ← original 8-week plan (VN)
-│   ├── requirements.txt         ← Python dependencies
-│   ├── PROJECT_MINDMAP.md       ← duplicate of root
-│   ├── report/                  ← paper draft (LaTeX + docx)
-│   │   ├── main.tex
-│   │   ├── glossary.tex
-│   │   ├── references.bib
-│   │   └── *.docx
-│   ├── cp1/                     ← Dataset Verification Workspace
-│   │   ├── README.md            ← CP1 quickstart
-│   │   ├── config/sources.yaml  ← HF dataset registry
-│   │   ├── src/
-│   │   │   ├── main_RCAEval.py  ← CLI: fetch/inspect/scan-warnings/timing/verify/all
-│   │   │   ├── main_LEMMA_RCA.py
-│   │   │   ├── main_LogHub2.py
-│   │   │   ├── main_OpsEval.py
-│   │   │   ├── main_CorrelatedAlerts.py
-│   │   │   ├── main_Suricata_CTU13.py
-│   │   │   └── cp1_core/        ← shared library
-│   │   │       ├── analysis.py
-│   │   │       ├── normalization.py
-│   │   │       ├── severity.py
-│   │   │       ├── dataset_io.py
-│   │   │       ├── dataset_entrypoint.py
-│   │   │       ├── fetchers.py
-│   │   │       ├── paths.py
-│   │   │       ├── reporting.py
-│   │   │       └── source_registry.py
-│   │   ├── docs/
-│   │   │   ├── CP1_Ban_Dinh_Huong.md     ← 1-page direction for Prof. Long (VN)
-│   │   ├── data_schema_notes.md  ← empirical verification on RCAEval
-│   │   └── MIGRATION.md          ← old vs new CLI mapping
-│   │   ├── tests/                ← pytest suite
-│   │   ├── raw_data/             ← downloaded datasets (gitignored)
-│   │   ├── external_repos/       ← cloned reference repos
-│   │   ├── artifacts/            ← generated tables/reports
-│   │   └── legacy/               ← deprecated scripts (kept for history)
-│   └── cp2/
-│       ├── CP2_Gap_Analysis.md   ← 1-page gap analysis for Prof. Long (VN)
-│       └── _research_raw.md      ← raw literature notes (908 lines)
+```text
+Resource/
+├── README.md                  # Current folder graph and data flow
+├── cp1/                       # Raw data, dataset verification, historical artifacts
+├── explore_datasets/          # 3 dataset adapters, CLI and shared paths/log helpers
+├── datasets/normalized/       # Three canonical Parquet tables per dataset
+├── docs/                      # Schema audit and current validation report
+├── archive/                   # Excluded datasets, retained outside the active workflow
+├── report/                    # LaTeX and DOCX research drafts
+├── requirement/               # Research proposal and fact check
+└── note/                      # Research notes
+run_datasets.sh                # list / inspect / normalize, selects local Python
+run_lemma_rca.sh               # Detailed LEMMA exploration CLI
 ```
 
----
+## ⚡ Quick Start
 
-## ⚡ Quick Start (CP1 — Dataset Verification)
+Run from the repository root after installing `requirements.txt` into the local
+Python environment described in [Resource/README.md](Resource/README.md):
 
-```powershell
-# From repo root (F:\study\NCKH)
-.\setup.ps1                          # creates .venv, installs deps
-
-# RCAEval — primary dataset
-.\.venv\Scripts\python cp1\src\main_RCAEval.py fetch
-.\.venv\Scripts\python cp1\src\main_RCAEval.py inspect
-.\.venv\Scripts\python cp1\src\main_RCAEval.py scan-warnings
-.\.venv\Scripts\python cp1\src\main_RCAEval.py timing
-.\.venv\Scripts\python cp1\src\main_RCAEval.py verify
-.\.venv\Scripts\python cp1\src\main_RCAEval.py all              # runs full chain
+```bash
+bash run_datasets.sh list
+bash run_datasets.sh inspect all
+bash run_lemma_rca.sh logs --service productpage --limit 5
+bash run_datasets.sh normalize all --output-root /tmp/normalized-preview
+Resource/explore_datasets/.venv/bin/python -m pytest -c Resource/pytest.ini -q
 ```
+
+The empirical findings below are historical research results. The current local
+snapshot has logs for three RCAEval cases; see the validation report for sample
+coverage and existing incident-label limitations.
 
 ---
 
@@ -207,7 +176,7 @@ F:\study\NCKH\
 ## 📄 Key Documents (Read in Order)
 
 1. **`Resource/cp1/docs/CP1_Ban_Dinh_Huong.md`** — 1-page direction (VN), updated after empirical verification
-2. **`Resource/cp2/CP2_Gap_Analysis.md`** — 1-page gap analysis (VN), FACT/INFERENCE/UNVERIFIED labeled
+2. **`Resource/docs/validation_report.md`** — current dataset coverage, validation and known limitations
 3. **`Resource/cp1/docs/data_schema_notes.md`** — Full empirical verification log (49.6M lines scanned)
 4. **`Resource/PROJECT_MINDMAP.md`** — Visual overview (some numbers outdated, see banner)
 

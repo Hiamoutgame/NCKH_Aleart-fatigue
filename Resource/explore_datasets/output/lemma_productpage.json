@@ -1,0 +1,502 @@
+[
+  {
+    "timestamp": "2021-05-15T06:18:05.069451+00:00",
+    "service": "productpage",
+    "level": "DEBUG",
+    "message": "DEBUG:urllib3.connectionpool:http://details:9080 \"GET /details/0 HTTP/1.1\" 200 178",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  },
+  {
+    "timestamp": "2021-05-15T06:18:05.069451+00:00",
+    "service": "productpage",
+    "level": "DEBUG",
+    "message": "DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): reviews:9080",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  },
+  {
+    "timestamp": "2021-05-15T06:18:05.069451+00:00",
+    "service": "productpage",
+    "level": "DEBUG",
+    "message": "DEBUG:urllib3.connectionpool:http://reviews:9080 \"GET /reviews/0 HTTP/1.1\" 200 295",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  },
+  {
+    "timestamp": "2021-05-15T06:18:05.069451+00:00",
+    "service": "productpage",
+    "level": "DEBUG",
+    "message": "DEBUG:urllib3.connectionpool:http://reviews:9080 \"GET /reviews/0 HTTP/1.1\" 200 379",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  },
+  {
+    "timestamp": "2021-05-15T06:18:05.069451+00:00",
+    "service": "productpage",
+    "level": "INFO",
+    "message": "INFO:werkzeug:127.0.0.1 - - [15/May/2021 06:18:04] \"GET /productpage HTTP/1.1\" 200 -",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  },
+  {
+    "timestamp": "2021-05-15T06:18:05.069451+00:00",
+    "service": "productpage",
+    "level": "DEBUG",
+    "message": "DEBUG:urllib3.connectionpool:http://details:9080 \"GET /details/0 HTTP/1.1\" 200 178",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  },
+  {
+    "timestamp": "2021-05-15T06:18:05.069451+00:00",
+    "service": "productpage",
+    "level": "DEBUG",
+    "message": "DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): reviews:9080",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  },
+  {
+    "timestamp": "2021-05-15T06:18:05.069451+00:00",
+    "service": "productpage",
+    "level": "DEBUG",
+    "message": "DEBUG:urllib3.connectionpool:http://reviews:9080 \"GET /reviews/0 HTTP/1.1\" 200 375",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  },
+  {
+    "timestamp": "2021-05-15T06:18:05.069451+00:00",
+    "service": "productpage",
+    "level": "INFO",
+    "message": "INFO:werkzeug:127.0.0.1 - - [15/May/2021 06:18:04] \"GET /productpage?u=test HTTP/1.1\" 200 -",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  },
+  {
+    "timestamp": "2021-05-15T06:18:05.069451+00:00",
+    "service": "productpage",
+    "level": "DEBUG",
+    "message": "DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): details:9080",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  },
+  {
+    "timestamp": "2021-05-15T06:18:05.069451+00:00",
+    "service": "productpage",
+    "level": "DEBUG",
+    "message": "DEBUG:urllib3.connectionpool:http://details:9080 \"GET /details/0 HTTP/1.1\" 200 178",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  },
+  {
+    "timestamp": "2021-05-15T06:18:05.069451+00:00",
+    "service": "productpage",
+    "level": "DEBUG",
+    "message": "DEBUG:urllib3.connectionpool:http://details:9080 \"GET /details/0 HTTP/1.1\" 200 178",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  },
+  {
+    "timestamp": "2021-05-15T06:18:05.069577+00:00",
+    "service": "productpage",
+    "level": "DEBUG",
+    "message": "DEBUG:urllib3.connectionpool:http://reviews:9080 \"GET /reviews/0 HTTP/1.1\" 200 375",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  },
+  {
+    "timestamp": "2021-05-15T06:18:05.069577+00:00",
+    "service": "productpage",
+    "level": "DEBUG",
+    "message": "DEBUG:urllib3.connectionpool:http://details:9080 \"GET /details/0 HTTP/1.1\" 200 178",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  },
+  {
+    "timestamp": "2021-05-15T06:18:05.069577+00:00",
+    "service": "productpage",
+    "level": "DEBUG",
+    "message": "DEBUG:urllib3.connectionpool:http://details:9080 \"GET /details/0 HTTP/1.1\" 200 178",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  },
+  {
+    "timestamp": "2021-05-15T06:18:05.069577+00:00",
+    "service": "productpage",
+    "level": "DEBUG",
+    "message": "DEBUG:urllib3.connectionpool:http://details:9080 \"GET /details/0 HTTP/1.1\" 200 178",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  },
+  {
+    "timestamp": "2021-05-15T06:18:05.069577+00:00",
+    "service": "productpage",
+    "level": "DEBUG",
+    "message": "DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): reviews:9080",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  },
+  {
+    "timestamp": "2021-05-15T06:18:05.069577+00:00",
+    "service": "productpage",
+    "level": "DEBUG",
+    "message": "DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): details:9080",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  },
+  {
+    "timestamp": "2021-05-15T06:18:05.069577+00:00",
+    "service": "productpage",
+    "level": "DEBUG",
+    "message": "DEBUG:urllib3.connectionpool:http://reviews:9080 \"GET /reviews/0 HTTP/1.1\" 200 379",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  },
+  {
+    "timestamp": "2021-05-15T06:18:05.069577+00:00",
+    "service": "productpage",
+    "level": "INFO",
+    "message": "INFO:werkzeug:127.0.0.1 - - [15/May/2021 06:18:04] \"GET /productpage?u=test HTTP/1.1\" 200 -",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  },
+  {
+    "timestamp": "2021-05-15T06:18:05.069577+00:00",
+    "service": "productpage",
+    "level": "INFO",
+    "message": "INFO:werkzeug:127.0.0.1 - - [15/May/2021 06:18:04] \"GET /productpage?u=test HTTP/1.1\" 200 -",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  },
+  {
+    "timestamp": "2021-05-15T06:18:05.069577+00:00",
+    "service": "productpage",
+    "level": "DEBUG",
+    "message": "DEBUG:urllib3.connectionpool:http://reviews:9080 \"GET /reviews/0 HTTP/1.1\" 200 295",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  },
+  {
+    "timestamp": "2021-05-15T06:18:05.069577+00:00",
+    "service": "productpage",
+    "level": "DEBUG",
+    "message": "DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): details:9080",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  },
+  {
+    "timestamp": "2021-05-15T06:18:05.069577+00:00",
+    "service": "productpage",
+    "level": "DEBUG",
+    "message": "DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): details:9080",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  },
+  {
+    "timestamp": "2021-05-15T06:18:05.069577+00:00",
+    "service": "productpage",
+    "level": "DEBUG",
+    "message": "DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): reviews:9080",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  },
+  {
+    "timestamp": "2021-05-15T06:18:05.069577+00:00",
+    "service": "productpage",
+    "level": "DEBUG",
+    "message": "DEBUG:urllib3.connectionpool:http://reviews:9080 \"GET /reviews/0 HTTP/1.1\" 200 375",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  },
+  {
+    "timestamp": "2021-05-15T06:18:06.069919+00:00",
+    "service": "productpage",
+    "level": "DEBUG",
+    "message": "DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): details:9080",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  },
+  {
+    "timestamp": "2021-05-15T06:18:06.069919+00:00",
+    "service": "productpage",
+    "level": "DEBUG",
+    "message": "DEBUG:urllib3.connectionpool:http://details:9080 \"GET /details/0 HTTP/1.1\" 200 178",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  },
+  {
+    "timestamp": "2021-05-15T06:18:06.069919+00:00",
+    "service": "productpage",
+    "level": "DEBUG",
+    "message": "DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): reviews:9080",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  },
+  {
+    "timestamp": "2021-05-15T06:18:06.069919+00:00",
+    "service": "productpage",
+    "level": "DEBUG",
+    "message": "DEBUG:urllib3.connectionpool:http://reviews:9080 \"GET /reviews/0 HTTP/1.1\" 200 379",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  },
+  {
+    "timestamp": "2021-05-15T06:18:06.069919+00:00",
+    "service": "productpage",
+    "level": "INFO",
+    "message": "INFO:werkzeug:127.0.0.1 - - [15/May/2021 06:18:05] \"GET /productpage?u=test HTTP/1.1\" 200 -",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  },
+  {
+    "timestamp": "2021-05-15T06:18:06.069919+00:00",
+    "service": "productpage",
+    "level": "DEBUG",
+    "message": "DEBUG:urllib3.connectionpool:http://reviews:9080 \"GET /reviews/0 HTTP/1.1\" 200 375",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  },
+  {
+    "timestamp": "2021-05-15T06:18:06.069919+00:00",
+    "service": "productpage",
+    "level": "DEBUG",
+    "message": "DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): details:9080",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  },
+  {
+    "timestamp": "2021-05-15T06:18:06.069919+00:00",
+    "service": "productpage",
+    "level": "DEBUG",
+    "message": "DEBUG:urllib3.connectionpool:http://details:9080 \"GET /details/0 HTTP/1.1\" 200 178",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  },
+  {
+    "timestamp": "2021-05-15T06:18:06.069919+00:00",
+    "service": "productpage",
+    "level": "DEBUG",
+    "message": "DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): reviews:9080",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  },
+  {
+    "timestamp": "2021-05-15T06:18:06.069919+00:00",
+    "service": "productpage",
+    "level": "INFO",
+    "message": "INFO:werkzeug:127.0.0.1 - - [15/May/2021 06:18:05] \"GET /productpage HTTP/1.1\" 200 -",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  },
+  {
+    "timestamp": "2021-05-15T06:18:06.069919+00:00",
+    "service": "productpage",
+    "level": "DEBUG",
+    "message": "DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): details:9080",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  },
+  {
+    "timestamp": "2021-05-15T06:18:06.069919+00:00",
+    "service": "productpage",
+    "level": "DEBUG",
+    "message": "DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): details:9080",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  },
+  {
+    "timestamp": "2021-05-15T06:18:06.069919+00:00",
+    "service": "productpage",
+    "level": "DEBUG",
+    "message": "DEBUG:urllib3.connectionpool:http://details:9080 \"GET /details/0 HTTP/1.1\" 200 178",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  },
+  {
+    "timestamp": "2021-05-15T06:18:06.069919+00:00",
+    "service": "productpage",
+    "level": "DEBUG",
+    "message": "DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): reviews:9080",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  },
+  {
+    "timestamp": "2021-05-15T06:18:06.069919+00:00",
+    "service": "productpage",
+    "level": "INFO",
+    "message": "INFO:werkzeug:127.0.0.1 - - [15/May/2021 06:18:05] \"GET /productpage HTTP/1.1\" 200 -",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  },
+  {
+    "timestamp": "2021-05-15T06:18:06.069919+00:00",
+    "service": "productpage",
+    "level": "INFO",
+    "message": "INFO:werkzeug:127.0.0.1 - - [15/May/2021 06:18:05] \"GET /productpage?u=test HTTP/1.1\" 200 -",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  },
+  {
+    "timestamp": "2021-05-15T06:18:06.069919+00:00",
+    "service": "productpage",
+    "level": "DEBUG",
+    "message": "DEBUG:urllib3.connectionpool:http://details:9080 \"GET /details/0 HTTP/1.1\" 200 178",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  },
+  {
+    "timestamp": "2021-05-15T06:18:06.069919+00:00",
+    "service": "productpage",
+    "level": "DEBUG",
+    "message": "DEBUG:urllib3.connectionpool:http://reviews:9080 \"GET /reviews/0 HTTP/1.1\" 200 295",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  },
+  {
+    "timestamp": "2021-05-15T06:18:06.069919+00:00",
+    "service": "productpage",
+    "level": "INFO",
+    "message": "INFO:werkzeug:127.0.0.1 - - [15/May/2021 06:18:05] \"GET /productpage HTTP/1.1\" 200 -",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  },
+  {
+    "timestamp": "2021-05-15T06:18:06.070027+00:00",
+    "service": "productpage",
+    "level": "DEBUG",
+    "message": "DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): reviews:9080",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  },
+  {
+    "timestamp": "2021-05-15T06:18:06.070027+00:00",
+    "service": "productpage",
+    "level": "DEBUG",
+    "message": "DEBUG:urllib3.connectionpool:http://details:9080 \"GET /details/0 HTTP/1.1\" 200 178",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  },
+  {
+    "timestamp": "2021-05-15T06:18:06.070027+00:00",
+    "service": "productpage",
+    "level": "DEBUG",
+    "message": "DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): details:9080",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  },
+  {
+    "timestamp": "2021-05-15T06:18:06.070027+00:00",
+    "service": "productpage",
+    "level": "DEBUG",
+    "message": "DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): reviews:9080",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  },
+  {
+    "timestamp": "2021-05-15T06:18:06.070027+00:00",
+    "service": "productpage",
+    "level": "DEBUG",
+    "message": "DEBUG:urllib3.connectionpool:http://reviews:9080 \"GET /reviews/0 HTTP/1.1\" 200 375",
+    "pod": "productpage-v1-6687ddf68f-pbdzm",
+    "host": "ocp4-compute-1",
+    "log_type": "app",
+    "root_cause": "normal"
+  }
+]

@@ -1,3 +1,6 @@
+> Workflow hiện tại: [CP1 README](../README.md) và [bản đồ Resource](../../README.md).
+> Bảng dưới là ghi chú migration lịch sử; đường dẫn lệnh cũ chưa có tiền tố Resource/.
+
 ﻿# CP1 migration note
 
 ## Workflow mới

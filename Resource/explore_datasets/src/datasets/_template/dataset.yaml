@@ -1,0 +1,36 @@
+# Mo ta mot dataset repo. Copy vao src/datasets/<slug>/dataset.yaml
+slug: _template
+display_name: "Ten dataset"
+role: reference          # primary | backup | reference
+
+source:
+  type: huggingface_dataset   # huggingface_dataset | local_files | api
+  repo_id: "org/name"
+  revision: main
+  local_path: "Resource/cp1/raw_data/huggingface/<local_name>"
+  license: "unknown"
+
+# Don vi duoc doc nhu mot incident
+incident:
+  unit: case             # case | window | file | row
+  id_column: case
+  time_column: timestamp
+  service_column: container_name
+  message_column: message
+  severity_column: null      # null nghia la dataset khong co cot nay
+  root_cause_column: root_cause_service
+
+# Mapping tu cot raw sang ten canonical
+canonical:
+  timestamp: timestamp
+  service: container_name
+  message: message
+  severity: null
+  root_cause: root_cause_service
+
+exploration:
+  head_n: 10
+  value_count_columns: [service, message]
+
+notes:
+  - "Ghi chu ve dataset tai day."

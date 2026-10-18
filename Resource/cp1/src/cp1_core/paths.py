@@ -4,12 +4,13 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from src.shared.infrastructure.paths import RAW_DATA_DIR, RESOURCE_ROOT
+
 
 SRC_ROOT = Path(__file__).resolve().parents[1]
 CP1_ROOT = SRC_ROOT.parent
-PROJECT_ROOT = CP1_ROOT.parent
+PROJECT_ROOT = RESOURCE_ROOT
 CONFIG_DIR = CP1_ROOT / "config"
-RAW_DATA_DIR = CP1_ROOT / "raw_data"
 HF_DATA_DIR = RAW_DATA_DIR / "huggingface"
 EXTERNAL_REPOS_DIR = CP1_ROOT / "external_repos" / "github"
 ARTIFACTS_DIR = CP1_ROOT / "artifacts"

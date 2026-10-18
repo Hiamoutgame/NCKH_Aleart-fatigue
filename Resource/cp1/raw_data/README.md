@@ -1,39 +1,35 @@
-# Raw data
+# Raw data dùng chung
 
-Thư mục này chứa dữ liệu nguồn được lấy trực tiếp từ dataset, trước khi parse,
-normalize, lọc `WARN` hoặc tính metric. Không chỉnh sửa hay ghi đè các file đã
-được đặt trong thư mục này.
-
-## Cấu trúc đề xuất
+Nguồn local cho cả CP1 và explore_datasets. Phân tích chỉ đọc các file nguồn;
+normalization ghi sang `Resource/datasets/normalized/`, report ghi vào
+`Resource/cp1/artifacts/`.
 
 ```text
 raw_data/
-└── rcaeval/
-    ├── cases.parquet
-    └── cases/
-        └── <case_id>/
-            ├── logs.parquet
-            ├── traces.parquet
-            └── root_cause.txt
+├── huggingface/
+│   ├── rcaeval/
+│   │   ├── cases.parquet
+│   │   └── <case_id>/logs.parquet
+│   └── lemma_rca/
+│       ├── sample/*.json
+│       ├── LEMMA_RCA_20220606_Scenario_GroundTruth.pptx
+│       └── pod_topology/
+├── nezha/
+│   ├── fault_list.json
+│   └── 03_53_log.csv
+└── manifest.csv
 ```
 
-Không phải case nào cũng có đủ ba file. Cấu trúc của từng case nên được giữ
-giống với repository RCAEval trên Hugging Face để có thể truy ngược nguồn dữ
-liệu và tái lập thí nghiệm.
+Ba case RCAEval local: `re2ss_carts_cpu_1`, `re2tt_ts-route-service_mem_1`,
+`re3ss_carts_f3_4`. Metadata có 735 case không có nghĩa local chứa đủ log cho mọi case.
+LEMMA đang có 2 JSON sample; Nezha có 1 CSV. Xem
+[validation report](../../docs/validation_report.md) để biết phạm vi và giới hạn.
 
-## Một số case mẫu nên giữ để quan sát
+GAIA đã chuyển sang `Resource/archive/excluded_datasets/gaia/raw_data/`.
+`manifest.csv` giữ lịch sử fetch của nguồn được chọn, bao gồm path/revision lịch sử;
+đường dẫn runtime hiện được tính từ vị trí checkout trong `explore_datasets/src/shared/infrastructure/paths.py`.
+Bản manifest đầy đủ trước refactor nằm trong archive. Các downloader chuyên biệt
+không nhất thiết ghi vào manifest CP1 này.
 
-| Case | Mục đích quan sát |
-|---|---|
-| `re3ss_carts_f3_4` | Cảnh báo duplicate ở mức `WARN` |
-| `re2ss_carts_cpu_1` | Cảnh báo Zipkin xuất hiện ở cả normal và faulty window |
-| `re2tt_ts-route-service_mem_1` | Cảnh báo MongoDB xuất hiện trên nhiều service |
-
-## Phân biệt raw data và artifact
-
-- `raw_data`: file tải trực tiếp từ nguồn, không qua biến đổi.
-- `artifacts`: CSV thống kê, report text, bảng kết quả và output sinh bởi code.
-- `src`: code dùng để tải, parse và phân tích dữ liệu.
-
-Dữ liệu RCAEval đầy đủ có dung lượng lớn. Chỉ nên commit README, manifest và
-sample nhỏ khi thật sự cần; dữ liệu đầy đủ nên được tải lại bằng pipeline.
+Không sửa/ghi đè raw trong lúc phân tích. Dữ liệu lớn được giữ local/gitignore;
+chỉ commit manifest, mô tả và sample nhỏ khi cần.

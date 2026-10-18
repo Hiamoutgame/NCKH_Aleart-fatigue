@@ -7,7 +7,7 @@ from pathlib import Path
 
 import yaml
 
-from .paths import CONFIG_DIR, EXTERNAL_REPOS_DIR, HF_DATA_DIR
+from .paths import CONFIG_DIR, EXTERNAL_REPOS_DIR, HF_DATA_DIR, RAW_DATA_DIR
 
 
 @dataclass(frozen=True)
@@ -27,6 +27,8 @@ class Source:
             return HF_DATA_DIR / self.local_name
         if self.type == "github_repository" and self.local_name:
             return EXTERNAL_REPOS_DIR / self.local_name
+        if self.type == "local_directory" and self.local_name:
+            return RAW_DATA_DIR / self.local_name
         return None
 
 
