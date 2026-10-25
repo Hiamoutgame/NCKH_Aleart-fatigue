@@ -1,3 +1,21 @@
-# Root requirements file
-# Chuyen huong den Resource/explore_datasets/requirements.txt
--r Resource/explore_datasets/requirements.txt
+# Root requirements for the NCKH dataset tools (moved from Resource/explore_datasets/requirements.txt)
+
+# --- Core Data Processing (Bat buoc) ---
+pandas>=2.0.0,<3.0.0          # DataFrame, tinh toan shape, columns, value_counts
+pyarrow>=14.0.0               # Doc/ghi file .parquet (dac biet can cho RCAEval)
+PyYAML>=6.0.1                 # Doc cau hinh dataset.yaml va sources.yaml
+requests>=2.31.0              # HTTP client de tai du lieu
+tqdm>=4.66.0                  # Thanh tien trinh truc quan khi download/load du lieu
+
+# --- Dataset Fetchers & Remote Hubs ---
+huggingface_hub>=0.23.0       # Tai cac dataset tren Hugging Face (RCAEval, LEMMA-RCA)
+datasets>=2.14.0              # Thu vien HF Datasets (neu can stream/load truc tiep)
+
+# --- Testing & Code Quality ---
+pytest>=8.0.0                 # Chay kiem thu adapter va pipeline
+pytest-cov>=4.1.0             # Danh gia do bao phu test
+
+# --- Interactive Exploration (Tuy chon - cho Notebooks) ---
+ipykernel>=6.29.0             # Jupyter kernel de chay file .ipynb
+jupyterlab>=4.0.0             # Giao dien Jupyter Lab truc quan (tuy chon)
+notebook>=7.0.0               # Jupyter Notebook co dien (tuy chon)

@@ -1,0 +1,37 @@
+# Bước 1 — Đề xuất nghiên cứu hiện hành
+
+**Phiên bản đang dùng: V3 — cập nhật 23/10/2026.** Đây là bản tóm tắt hiện hành tại `01_topic_proposal/readme`, được cập nhật trực tiếp theo [proposal hiện hành](topic_proposal.md). Giữ khung 8 mục của bản tóm tắt, với định hướng evidence-preserving log organization + service-level RCA.
+
+V3 là phiên bản đang dùng trong repository; tên đề tài, RQ, novelty và thuật toán cuối cùng vẫn cần thống nhất với Prof. Long. [Master context](../../../NCKH_MASTER_CONTEXT_2026-10-23.md) cung cấp context đầy đủ. [Readme V2](history/readme_V2.md) chỉ dùng đối chiếu lịch sử.
+
+## 1. Thông tin đề tài
+
+Tên dự kiến: Tổ chức log phân cấp có bảo toàn bằng chứng và định vị service nguyên nhân gốc trong microservices. Tên/RQ/novelty chưa được Prof. Long duyệt. Domain AIOps/SRE/DevOps; người hưởng lợi là developer và engineer vận hành.
+
+## 2. Vấn đề thực tế
+
+Một incident có nhiều log rời rạc/lặp lại. Cần xem nhóm và ưu tiên service điều tra mà vẫn mở lại mọi raw event. Không coi service label là nhãn từng log; không coi temporal/semantic correlation là causation.
+
+## 3. Lý do tích hợp AI
+
+AI là ứng viên hỗ trợ semantic grouping hoặc học điểm ranking từ đặc trưng kiểm tra được. Bắt đầu bằng rule/template baseline. Không mặc định cần LLM Agent hoặc failure prediction.
+
+## 4. Pipeline dự kiến
+
+Audit → canonicalization/provenance/inventory/split → parsing/grouping → hierarchy → optional evidence links → service ranking → held-out evaluation. Thuật toán cuối cùng chưa chốt.
+
+## 5. Kết quả mong muốn
+
+Tree incident/service/group/raw references; Top-k service candidates có supporting IDs; bảng grouping/traceability/ranking/runtime và ablation. Chưa có kết quả hoặc target accuracy V3; Time to Locate cần user study.
+
+## 6. Phần source đã có
+
+`src/` có ba adapter, canonical schema, regex normalization/template hash, profiler và CLI. `scripts/audit/` (script) + `data/audit/` (artifact) có audit L0/L1. Có 9 canonical Parquet, footer đã kiểm tra; chưa chứng minh eligible RCA coverage. CP1 path mặc định đã lệch raw thật, cần `--data-root`.
+
+## 7. Phần còn thiếu
+
+Case eligibility đáng tin; xử lý mapping/time/provenance gaps; split đã khóa; template/semantic grouping thực nghiệm; hierarchy/evidence links; ranker; held-out evaluation; related-work review xác minh novelty.
+
+## 8. Trạng thái Bước 1
+
+Đã đồng bộ working scope V3 trong docs. Phương pháp, dataset mix, split tỷ lệ, RQ/novelty chính thức và target metrics còn mở. Chưa có pipeline training V3 hoàn chỉnh. Xem [implementation status](../../status/implementation_status.md) trước khi triển khai.

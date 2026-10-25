@@ -1,0 +1,34 @@
+slug: nezha
+display_name: "Nezha"
+role: secondary
+
+source:
+  type: local_directory
+  repo_url: "https://github.com/IntelligentDDS/Nezha.git"
+  local_path: "data/raw/nezha"
+  license: "Apache-2.0"
+
+incident:
+  unit: fault_list / time window
+  id_column: inject_timestamp
+  time_column: TimeUnixNano
+  service_column: PodName
+  message_column: Log
+  severity_column: severity
+  root_cause_column: inject_pod
+
+canonical:
+  timestamp: TimeUnixNano
+  service: PodName
+  message: Log
+  severity: severity
+  root_cause: inject_pod
+
+exploration:
+  head_n: 10
+  value_count_columns: [PodName, Node]
+
+notes:
+  - "Nezha FSE 2023 dataset - Multi-modal observability data (traces, logs, metrics)."
+  - "Log CSV chua TimeUnixNano, PodName, Container, TraceID, SpanID, Log (nested JSON)."
+  - "Fault list luu tru thoi diem tiem loi: inject_time, inject_pod, inject_type."

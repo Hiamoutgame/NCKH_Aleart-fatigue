@@ -15,11 +15,11 @@ Nghiên cứu offline thuộc AIOps / log analysis cho microservices: **evidence
 
 | Cần xác định | Nguồn ưu tiên | Giới hạn |
 | --- | --- | --- |
-| Scope hiện tại | Bản bàn giao của chủ dự án ngày 23/10/2026 → tài liệu này → [proposal V3](01_topic_proposal/topic_proposal.md) | Working direction, chưa phải phê duyệt của thầy |
-| Code đã triển khai | Source thật trong [explore_datasets/src](Resource/explore_datasets/src/README.md) | Tên folder hoặc README không chứng minh chức năng đã chạy |
-| Dữ liệu hiện có | Footer/schema kiểm tra ngày 23/10 trong [validation report](Resource/docs/validation_report.md) | Không thay thế audit nội dung và join theo incident |
-| Audit raw trước đây | [DATASET_PLAN](NCKH_rawData/spec/DATASET_PLAN.md), `audit_summary.json`, `audit_findings.json`, `l1_evidence.json` | Artifact ngày 20/10, giới hạn L0/L1; không chạy lại toàn corpus |
-| V1/V2 và kết quả từng báo cáo | [history index](Resource/docs/history/README.md) | Chỉ dùng với nhãn lịch sử; claim paper chưa được rà soát độc lập |
+| Scope hiện tại | Bản bàn giao của chủ dự án ngày 23/10/2026 → tài liệu này → [proposal V3](docs/research/01_topic_proposal/topic_proposal.md) | Working direction, chưa phải phê duyệt của thầy |
+| Code đã triển khai | Source thật trong [explore_datasets/src](src/README.md) | Tên folder hoặc README không chứng minh chức năng đã chạy |
+| Dữ liệu hiện có | Footer/schema kiểm tra ngày 23/10 trong [validation report](docs/status/validation_report.md) | Không thay thế audit nội dung và join theo incident |
+| Audit raw trước đây | [DATASET_PLAN](docs/data/DATASET_PLAN.md), `audit_summary.json`, `audit_findings.json`, `l1_evidence.json` | Artifact ngày 20/10, giới hạn L0/L1; không chạy lại toàn corpus |
+| V1/V2 và kết quả từng báo cáo | [history index](docs/history/resource_docs/README.md) | Chỉ dùng với nhãn lịch sử; claim paper chưa được rà soát độc lập |
 
 Tên `Context-cho-AGEnt-hiểu-hướng-đi-của-dự-án-(AGENTS).txt`, `sources/`, `data/`, `MANIFEST.txt` thuộc mô tả gói handoff. **Không tìm thấy các đường dẫn đó ở root checkout này**; không tạo liên kết giả hoặc khẳng định đã đọc chúng. Handoff được cung cấp trực tiếp trong hội thoại. Repository local có source và dữ liệu nhiều hơn gói upload được mô tả.
 
@@ -29,8 +29,8 @@ Quy ước: **SOURCE FACT** = quan sát trực tiếp ở nguồn chỉ rõ; **H
 
 | Phiên bản | Trọng tâm | Trạng thái |
 | --- | --- | --- |
-| V1 | WARNING-only Alert Aggregation; bốn arms gồm rule, semantic, temporal-spatial, tool-calling Agent; ARR/RCPR/F1/Purity | Lịch sử: [README V1](Resource/docs/history/README_V1_before_V3.md) |
-| V2 | Log-based RCA + Near-Future Failure Prediction; signal filtering và prediction | Lịch sử: [proposal V2](01_topic_proposal/history/topic_proposal_V2.md) |
+| V1 | WARNING-only Alert Aggregation; bốn arms gồm rule, semantic, temporal-spatial, tool-calling Agent; ARR/RCPR/F1/Purity | Lịch sử: [README V1](docs/history/resource_docs/README_V1_before_V3.md) |
+| V2 | Log-based RCA + Near-Future Failure Prediction; signal filtering và prediction | Lịch sử: [proposal V2](docs/research/01_topic_proposal/history/topic_proposal_V2.md) |
 | V3 | Audit → canonicalization → grouping → hierarchy → optional evidence relationships → service ranking → evaluation | Working direction mới nhất |
 
 Không đưa WARNING-only, autonomous Agent, failure prediction, synthetic runbook, target ARR 60% hoặc Top-1 70% vào V3 theo mặc định. Timeline 8 tuần, khoảng 2 giờ/ngày là kế hoạch ban đầu, không phải tiến độ hiện tại.
@@ -93,15 +93,15 @@ Các bất biến cần được kiểm tra khi triển khai:
 
 | Thành phần | Đường dẫn thật | Trạng thái |
 | --- | --- | --- |
-| Raw RCAEval | `NCKH_rawData/raw_data/huggingface/rcaeval/` | Có local; audit 20/10 báo 735 case, 359 log files không rỗng |
-| Raw LEMMA-RCA | `NCKH_rawData/raw_data/huggingface/lemma_rca/` | Có local; schema/kịch bản cần xác minh theo từng partition |
-| Raw Nezha | `NCKH_rawData/raw_data/nezha/` | Có local; mapping pod/service và incident windows cần audit |
-| Canonical outputs | `Resource/datasets/normalized/<slug>/` | Có ba bảng/dataset; footer đã đọc lại ngày 23/10 |
-| Adapters + CLI + tests | `Resource/explore_datasets/` | Source có thật; chưa có pipeline V3 end-to-end |
-| Metadata audit riêng | `NCKH_rawData/spec/` | Có script, tests, JSON/CSV audit L0/L1 |
+| Raw RCAEval | `data/raw/huggingface/rcaeval/` | Có local; audit 20/10 báo 735 case, 359 log files không rỗng |
+| Raw LEMMA-RCA | `data/raw/huggingface/lemma_rca/` | Có local; schema/kịch bản cần xác minh theo từng partition |
+| Raw Nezha | `data/raw/nezha/` | Có local; mapping pod/service và incident windows cần audit |
+| Canonical outputs | `data/normalized/<slug>/` | Có ba bảng/dataset; footer đã đọc lại ngày 23/10 |
+| Adapters + CLI + tests | `src/` | Source có thật; chưa có pipeline V3 end-to-end |
+| Metadata audit riêng | `scripts/audit/` (script) + `data/audit/` (artifact) | Có script, tests, JSON/CSV audit L0/L1 |
 | CP1/CP2 cũ | `Resource/cp1/`, `Resource/cp2/` | Không hiện diện trong checkout đang làm; có bản lịch sử dưới worktree công cụ, không dùng như source active |
 
-**Path mismatch:** `paths.py` vẫn mặc định về `Resource/cp1/raw_data/`, hiện không có. CLI `list` chỉ in cấu hình, không chứng minh raw tồn tại. Dùng `--data-root` cho từng dataset; chưa đổi code trong lần cập nhật docs.
+**Cập nhật 25/10/2026 (restructure):** đường dẫn trong bảng trên đã đổi theo cấu trúc mới, xem [docs/README.md](docs/README.md). `paths.py` giờ mặc định về `data/raw/` nên mismatch CP1 ngày 23/10 đã được sửa. CLI `list` chỉ in cấu hình, không chứng minh raw tồn tại; raw LEMMA-RCA hiện **không có** ở `data/raw/huggingface/lemma_rca/` trên máy local.
 
 Footer canonical xác nhận:
 
@@ -111,7 +111,7 @@ Footer canonical xác nhận:
 | LEMMA-RCA | 4 | 4 | 200,000 | Code mặc định 50,000 logs/scenario; chưa xác minh đầy đủ alignment/labels |
 | Nezha | 21 | 21 | 71,173 | `normalize()` chỉ xuất log cho incident đầu tiên; số metadata rows không phải log coverage |
 
-Nguồn: [validation report](Resource/docs/validation_report.md). Footer chỉ xác nhận số dòng/cột/row groups; chưa đo unique incident coverage, null rates, inventory recall hay correct raw reconstruction.
+Nguồn: [validation report](docs/status/validation_report.md). Footer chỉ xác nhận số dòng/cột/row groups; chưa đo unique incident coverage, null rates, inventory recall hay correct raw reconstruction.
 
 Audit raw 20/10 báo tổng 400.362 GB theo kích thước file, chưa khử trùng, LEMMA chiếm phần lớn. RCAEval có 49,652,771 log rows theo footer; 240 cases có traces. Đây là kết quả artifact trước đó, **không phải full scan vừa chạy lại**. Số WARN 9,738 (Sock Shop 9,662; Train Ticket 74; Online Boutique 2), 8 `root_cause.txt`, 4 WARNING indicators thuộc báo cáo V1, chưa tái kiểm trong phiên này.
 
@@ -130,7 +130,7 @@ Audit raw 20/10 báo tổng 400.362 GB theo kích thước file, chưa khử tr�
 | 7. Ranking | Features hợp lệ từ log/groups/inventory | Service scores/ranks + supporting IDs | Candidates hợp lệ, held-out evaluation, không leakage |
 | 8. Evaluation | Cùng dataset/split cho variants | Metrics, ablation, error analysis, paper figures | Mỗi con số kèm protocol và run manifest |
 
-Hiện code có `normalize_message` và MD5 12 ký tự của chuỗi đã mask làm `template_id`; chưa thấy implementation Drain3/Spell, semantic clustering, group/tree/edge/ranker/training/evaluation V3 trong source active. [Implementation status](Resource/docs/implementation_status.md) nêu bằng chứng và các giới hạn cụ thể.
+Hiện code có `normalize_message` và MD5 12 ký tự của chuỗi đã mask làm `template_id`; chưa thấy implementation Drain3/Spell, semantic clustering, group/tree/edge/ranker/training/evaluation V3 trong source active. [Implementation status](docs/status/implementation_status.md) nêu bằng chứng và các giới hạn cụ thể.
 
 ## 9. Baselines và ablation — đề xuất
 
@@ -167,7 +167,7 @@ AI hỗ trợ embedding/grouping, feature learning và ranking; output phải tr
 
 ## 12. Related work
 
-[Related-work matrix](02_related_work/literature_review_matrix.md) phân biệt candidate papers với kết luận đã kiểm chứng. COLA, AlertGuardian, RCAEval, LEMMA-RCA, Nezha, Drain, SBERT, HDBSCAN, SRE Book là các tên đã xuất hiện trong tài liệu cũ; metadata, paper results và reproducibility claims chưa được rà soát web/paper gốc trong lần đồng bộ docs này. Không dùng danh sách này làm bằng chứng novelty.
+[Related-work matrix](docs/research/02_related_work/literature_review_matrix.md) phân biệt candidate papers với kết luận đã kiểm chứng. COLA, AlertGuardian, RCAEval, LEMMA-RCA, Nezha, Drain, SBERT, HDBSCAN, SRE Book là các tên đã xuất hiện trong tài liệu cũ; metadata, paper results và reproducibility claims chưa được rà soát web/paper gốc trong lần đồng bộ docs này. Không dùng danh sách này làm bằng chứng novelty.
 
 ## 13. Threats to validity
 
@@ -205,18 +205,18 @@ Go/no-go: thiếu incident labels hoặc event/service join đáng tin thì chư
 
 ## 16. Prompt chuyển giao
 
-> Đọc NCKH_MASTER_CONTEXT_2026-10-23.md và Resource/docs/implementation_status.md trước khi đề xuất. Mặc định V3 evidence-preserving hierarchy + service-level candidate ranking. Phân biệt source fact, historical report, proposal, inference, unverified. Giữ raw và mapping log_id→group→service; không bịa service/metric/paper results/code đã có. Audit→canonicalization→baseline grouping→hierarchy→optional evidence links→ranking→held-out evaluation. Không coi correlation là causation hoặc service label là log label. Kiểm tra path/schema nguồn thực; không dùng worktree lịch sử như source active. Những lựa chọn chưa chốt phải giữ trạng thái đề xuất.
+> Đọc NCKH_MASTER_CONTEXT_2026-10-23.md và docs/status/implementation_status.md trước khi đề xuất. Mặc định V3 evidence-preserving hierarchy + service-level candidate ranking. Phân biệt source fact, historical report, proposal, inference, unverified. Giữ raw và mapping log_id→group→service; không bịa service/metric/paper results/code đã có. Audit→canonicalization→baseline grouping→hierarchy→optional evidence links→ranking→held-out evaluation. Không coi correlation là causation hoặc service label là log label. Kiểm tra path/schema nguồn thực; không dùng worktree lịch sử như source active. Những lựa chọn chưa chốt phải giữ trạng thái đề xuất.
 
 ## 17. Bản đồ tài liệu
 
 - [README](README.md): lối vào và quick start.
-- [Proposal V3](01_topic_proposal/topic_proposal.md): giữ khung 11 mục đề xuất ban đầu.
-- [Resource map](Resource/README.md), [src architecture](Resource/explore_datasets/src/README.md): cấu trúc code thật.
-- [Implementation status](Resource/docs/implementation_status.md), [dataset audit](Resource/docs/dataset_audit.md), [validation](Resource/docs/validation_report.md): bằng chứng/giới hạn.
-- [Research protocol](Resource/docs/research_protocol_v3.md): phương án đánh giá và output contract chưa triển khai.
-- [Training note](Resource/note/pineline_training_model.md): thiết kế MVP để tra cứu, chưa là code.
-- [History](Resource/docs/history/README.md): V1/V2 và báo cáo cũ.
-- [Docs reconciliation](Resource/docs/docs_reconciliation_2026-10-23.md): thay đổi và cách kiểm tra.
+- [Proposal V3](docs/research/01_topic_proposal/topic_proposal.md): giữ khung 11 mục đề xuất ban đầu.
+- [repo map](docs/README.md), [src architecture](src/README.md): cấu trúc code thật.
+- [Implementation status](docs/status/implementation_status.md), [dataset audit](docs/status/dataset_audit.md), [validation](docs/status/validation_report.md): bằng chứng/giới hạn.
+- [Research protocol](docs/research/research_protocol_v3.md): phương án đánh giá và output contract chưa triển khai.
+- [Training note](docs/notes/pineline_training_model.md): thiết kế MVP để tra cứu, chưa là code.
+- [History](docs/history/resource_docs/README.md): V1/V2 và báo cáo cũ.
+- [Docs reconciliation](docs/status/docs_reconciliation_2026-10-23.md): thay đổi và cách kiểm tra.
 
 ## 18. Giới hạn snapshot
 
