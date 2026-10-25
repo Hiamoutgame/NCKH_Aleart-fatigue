@@ -1,3 +1,5 @@
+> **Ghi chú paper lịch sử — bổ sung 23/10/2026.** Nội dung/metadata/claim dưới đây chưa được đối chiếu paper gốc trong lần đồng bộ docs V3. Khi dùng cho Related Work, xác minh source/page và phân biệt paper fact với inference. [Matrix V3](../literature_review_matrix.md) quy định vai trò hiện tại; không lấy scope WARNING/Agent/prediction cũ làm yêu cầu V3.
+
 # Paper 03 Summary
 
 ## Citation

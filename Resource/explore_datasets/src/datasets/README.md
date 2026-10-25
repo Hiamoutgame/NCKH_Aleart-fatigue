@@ -1,17 +1,15 @@
-# Các module dataset đang dùng
+# Dataset modules — registry hiện hành
 
-| Slug | Vai trò | Nguồn | Đơn vị incident |
+**23/10/2026.** Ba module tham gia CLI; vai trò nghiên cứu là dự kiến sau audit, không tự chứng nhận external ranking eligibility.
+
+| Slug | Vai trò dự kiến | Đơn vị code hiện tại | README |
 | --- | --- | --- | --- |
-| `rcaeval` | Primary | `phamquiluan/RCAEval` trên Hugging Face | Case |
-| `lemma_rca` | Backup / external validation | `Lemma-RCA-NEC/Product_Review_Original` trên Hugging Face | Scenario |
-| `nezha` | Secondary | Nezha, file raw cung cấp local | Fault window |
+| `rcaeval` | Primary candidate | Case | [RCAEval](rcaeval/README.md) |
+| `lemma_rca` | External/backup candidate | Scenario hard-code | [LEMMA-RCA](lemma_rca/README.md) |
+| `nezha` | Secondary/external candidate | Fault window | [Nezha](nezha/README.md) |
 
-Các thư mục ở đây chứa **code**, không chứa raw dataset. `_template/` là sườn tạo
-module mới, không tham gia registry CLI. GAIA và các dataset phụ đã chuyển sang
-`Resource/archive/excluded_datasets/`.
+Thư mục này chứa code, không chứa raw. Raw thật tại `NCKH_rawData/raw_data/`; default code CP1 cũ cần override `--data-root` cho từng dataset. `_template/` chỉ là sườn, không có trong registry.
 
-Các module không import chéo. Canonical schema/contract nằm trong `src/shared/`;
-path, normalization và severity dùng chung nằm trong `src/shared/infrastructure/`.
-CLI ghép adapter ở `src/interface/datasets_cli.py`. Để thêm dataset đang chạy, cần
-cập nhật cả mapping trong `src/shared/infrastructure/paths.py`, registry CLI, CP1 registry nếu
-có fetch/inspect, và test tương ứng; sửa `dataset.yaml` riêng chưa đủ.
+Không import chéo giữa datasets; shared chứa canonical schema/ports/helpers. CLI composition ở `src/interface/datasets_cli.py`, runtime paths ở `src/shared/infrastructure/paths.py`. `dataset.yaml` chưa được loader đọc làm runtime config. CP1/archive được nhắc ở docs cũ không hiện diện trong checkout active.
+
+[Implementation status](../../../docs/implementation_status.md) chỉ rõ export caps, mapping và metadata gaps. [Thêm dataset](../docs/ADD_A_DATASET.md) mô tả bước mở rộng; không lấy số rows hoặc nhãn code gán để chứng minh khoa học.

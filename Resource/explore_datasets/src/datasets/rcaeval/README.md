@@ -1,45 +1,43 @@
-# rcaeval — RCAEval
+# rcaeval — primary dataset candidate cho V3
 
-> Vai trò: **primary**
-> Nguồn: phamquiluan/RCAEval (HuggingFace)
-> Local: Resource/cp1/raw_data/huggingface/rcaeval
+Nguồn được ghi trong dự án: `phamquiluan/RCAEval`. Raw thật từ root: `NCKH_rawData/raw_data/huggingface/rcaeval/`. Default adapter vẫn ở CP1 cũ, hiện không tồn tại; dùng `--data-root`.
 
-## 1. Dữ liệu có gì
-- 735 case; chỉ 359/735 case có log (suite RE1 gồm 375 case metric-only).
-- logs.parquet của từng case chỉ có 3 cột: timestamp, container_name, message.
-- Không có cột severity/level; service chính là container_name.
-- Khoảng 49,6 triệu dòng log; dòng chứa WARN rất hiếm (khoảng 0,02%).
-- Một case chứa log của nhiều service, không chỉ service bị inject.
-- Thời gian: time_start, inject_time, time_end (epoch giây).
+## 1. Dữ liệu và bằng chứng
 
-## 2. Đọc một incident
-| Khái niệm | Cột |
+Audit raw 20/10 báo **735 cases**, **359 log files không rỗng**, **49,652,771 log rows** theo footer; 375 RE1 cases không log và một case RE2 thiếu log. Đây là artifact lịch sử, không full-scan mới ngày 23/10. Schema log: `timestamp`, `container_name`, `message`; không severity column riêng.
+
+Metadata label `root_cause_service` là mức service; không phải nhãn từng log. Việc container name khớp canonical service/target phải được audit; timestamp integer được code coi epoch seconds và chuyển UTC, chưa thay thế kiểm chứng clock nguồn.
+
+## 2. Mapping hiện có
+
+| Canonical | Nguồn / xử lý |
 | --- | --- |
-| Đơn vị incident | case |
-| id | case |
-| timestamp | timestamp |
-| service | container_name |
-| message | message |
-| severity | (không có) |
-| root cause | root_cause_service |
+| Incident ID | `rcaeval_` + `case` |
+| Log ID | Incident ID + row index |
+| Service/entity | `container_name` trực tiếp |
+| Raw/parsed message | Raw `message` + regex normalization |
+| Template key | MD5 12 ký tự của parsed message, chưa phải Drain3 |
+| Severity | Header hoặc token regex; unknown có thể null; token match chưa chứng minh severity thật |
+| Trace/span | Canonical adapter để null |
+| Provenance | File path, row index, raw record reference |
 
-## 3. Code và lệnh hiện tại
+`incidents.raw_label` chứa service/fault label, không được dùng làm feature. `mapping_status=verified` được code gán khi label có giá trị, chưa là independent audit.
 
-`infrastructure/adapter.py` chứa `RCAEvalAdapter`: đọc metadata, incident,
-ground truth và log của tất cả case đang có local. Hiện local có 3 case log,
-tổng 405.960 dòng; số liệu đầy đủ ở mục 1 là phạm vi khảo sát lịch sử.
-
-Từ root repository:
+## 3. Lệnh từ root
 
 ```bash
-bash run_datasets.sh inspect rcaeval
-bash run_datasets.sh normalize rcaeval --output-root /tmp/normalized-preview
+bash run_datasets.sh inspect rcaeval --data-root NCKH_rawData/raw_data/huggingface/rcaeval
+
+# Chỉ chạy khi cần output mới; đọc logs và ghi vào /tmp
+bash run_datasets.sh normalize rcaeval \
+  --data-root NCKH_rawData/raw_data/huggingface/rcaeval \
+  --output-root /tmp/nckh-normalized-preview
 ```
 
-Dùng `--data-root` để đổi input. `normalize` xuất ba bảng Parquet chung schema.
-Các thư mục layer khác đang là sườn; logic runtime tập trung trong adapter.
+`normalize(max_cases=30)` mặc định xuất metadata/GT toàn bộ nhưng logs tối đa 30 case được chọn prefix theo system. CLI chưa expose max_cases. Writer theo case, loader vẫn đọc nguyên mỗi case vào RAM.
 
-## 5. Cảnh báo diễn giải
-- message xuất hiện nhiều KHÔNG nhất thiết là lỗi.
-- service có nhiều log KHÔNG nhất thiết là service gây ra sự cố.
-- Tần suất không phải nhân quả.
+## 4. Trạng thái và việc cần làm
+
+Footer canonical 23/10: **735 incidents, 735 GT rows, 5,272,618 log rows**, 30 log row groups. Không suy row-group count thành unique eligible incidents. Cần audit labels/window/inventory/provenance, missingness, aliases và repetition groups trước ranking. Chưa có grouping/hierarchy/ranker/Top-k V3 trong module này.
+
+[Validation](../../../../docs/validation_report.md), [implementation status](../../../../docs/implementation_status.md), [master context](../../../../../NCKH_MASTER_CONTEXT_2026-10-23.md). Log/service xuất hiện nhiều không chứng minh nguyên nhân.

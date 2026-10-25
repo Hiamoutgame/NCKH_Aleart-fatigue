@@ -1,67 +1,37 @@
-# Bước 1 — Lĩnh vực ứng dụng và đề xuất đề tài
+# Bước 1 — Đề xuất nghiên cứu hiện hành
+
+**Phiên bản đang dùng: V3 — cập nhật 23/10/2026.** Đây là bản tóm tắt hiện hành tại `01_topic_proposal/readme`, được cập nhật trực tiếp theo [proposal hiện hành](topic_proposal.md). Giữ khung 8 mục của bản tóm tắt, với định hướng evidence-preserving log organization + service-level RCA.
+
+V3 là phiên bản đang dùng trong repository; tên đề tài, RQ, novelty và thuật toán cuối cùng vẫn cần thống nhất với Prof. Long. [Master context](../NCKH_MASTER_CONTEXT_2026-10-23.md) cung cấp context đầy đủ. [Readme V2](history/readme_V2.md) chỉ dùng đối chiếu lịch sử.
 
 ## 1. Thông tin đề tài
 
-- **Tên đề tài dự kiến:** Phân tích nguyên nhân gốc và dự đoán lỗi gần tương lai trong hệ thống microservices dựa trên log.
-- **Lĩnh vực ứng dụng:** Vận hành hệ thống phần mềm (SRE/DevOps), giám sát hệ thống microservices.
-- **Đối tượng người dùng:** Kỹ sư trực hệ thống (on-call engineer), kỹ sư SRE, DevOps engineer và đội vận hành hệ thống microservices.
+Tên dự kiến: Tổ chức log phân cấp có bảo toàn bằng chứng và định vị service nguyên nhân gốc trong microservices. Tên/RQ/novelty chưa được Prof. Long duyệt. Domain AIOps/SRE/DevOps; người hưởng lợi là developer và engineer vận hành.
 
 ## 2. Vấn đề thực tế
 
-Khi một hệ thống microservices có bất thường, các service sinh ra lượng lớn log INFO/WARN/ERROR. Kỹ sư vận hành phải lọc qua hàng nghìn dòng log, trong đó phần lớn là lặp lại, hậu quả lan truyền, hoặc routine noise. Điều này dẫn đến **alert fatigue** và chậm xác định nguyên nhân gốc.
+Một incident có nhiều log rời rạc/lặp lại. Cần xem nhóm và ưu tiên service điều tra mà vẫn mở lại mọi raw event. Không coi service label là nhãn từng log; không coi temporal/semantic correlation là causation.
 
-## 3. Lý do cần tích hợp AI
+## 3. Lý do tích hợp AI
 
-Các cách gom log theo rule tĩnh khó phân biệt log cùng ngữ nghĩa nhưng khác chữ, hoặc phân biệt root cause với propagated symptom.
+AI là ứng viên hỗ trợ semantic grouping hoặc học điểm ranking từ đặc trưng kiểm tra được. Bắt đầu bằng rule/template baseline. Không mặc định cần LLM Agent hoặc failure prediction.
 
-AI được dự kiến sử dụng để:
+## 4. Pipeline dự kiến
 
-- parse và cluster log theo template hoặc ngữ nghĩa;
-- lọc cụm noise, giữ cụm bất thường có tín hiệu đáng nghi;
-- xếp hạng root-cause candidate từ log pattern bình thường vs bất thường;
-- dự đoán fault type và estimated time-to-failure từ log trend.
-
-## 4. Model AI dự kiến
-
-Pipeline đề xuất gồm 5 bước:
-
-```text
-(1) Log Collection       gom INFO + WARN + ERROR
-(2) Log Parsing          Drain3/Spell → template
-    + Clustering         Sentence-BERT → HDBSCAN
-(3) Signal Filtering     giữ bất thường, bỏ routine
-(4) RCA Ranking          rank service + template đáng nghi
-(5) Failure Prediction   dự đoán fault type + time-to-failure
-```
-
-> Chưa chọn model cụ thể và chưa có code chạy AI trong `src`.
+Audit → canonicalization/provenance/inventory/split → parsing/grouping → hierarchy → optional evidence links → service ranking → held-out evaluation. Thuật toán cuối cùng chưa chốt.
 
 ## 5. Kết quả mong muốn
 
-- Root-cause candidate đúng nằm trong top-k kết quả — mục tiêu **Top-1 accuracy ≥ 70%**, **Top-3 accuracy ≥ 85%**.
-- Dự đoán đúng fault type — mục tiêu **Prediction F1 ≥ 0.70**, **AUC ≥ 0.75**.
-- Cảnh báo sớm trước khi service suy giảm — mục tiêu **lead time ≥ 5 phút**.
+Tree incident/service/group/raw references; Top-k service candidates có supporting IDs; bảng grouping/traceability/ranking/runtime và ablation. Chưa có kết quả hoặc target accuracy V3; Time to Locate cần user study.
 
-## 6. Những phần pipeline đã có trong `Resource/cp1/src`
+## 6. Phần source đã có
 
-- Registry nguồn dữ liệu tại `config/sources.yaml`.
-- Tải dataset từ Hugging Face, clone repository tham khảo và lưu manifest phiên bản dữ liệu.
-- Đọc log local và metadata của RCAEval.
-- Quét, đếm log `WARN`/`WARNING`, `ERROR`, `INFO`, `DEBUG` theo từng case.
-- Suy luận severity từ nội dung message vì RCAEval không có cột severity chuẩn.
-- Chuẩn hóa timestamp, UUID, thread ID, hexadecimal ID và số thay đổi trong message để phục vụ gom nhóm sau này.
-- Tách warning trước/sau thời điểm inject lỗi.
-- Xuất bảng CSV và báo cáo kiểm chứng dataset.
-- Có unit test cho parsing warning, normalization, path và source registry.
+`Resource/explore_datasets/src/` có ba adapter, canonical schema, regex normalization/template hash, profiler và CLI. `NCKH_rawData/spec/` có audit L0/L1. Có 9 canonical Parquet, footer đã kiểm tra; chưa chứng minh eligible RCA coverage. CP1 path mặc định đã lệch raw thật, cần `--data-root`.
 
-## 7. Những phần chưa có
+## 7. Phần còn thiếu
 
-- Log parsing/clustering chạy thật bằng Drain3/Spell, Sentence-BERT và HDBSCAN.
-- Signal filtering theo frequency spike, new template và resource-related log.
-- Root-cause candidate ranking theo service + log template.
-- Failure prediction module để dự đoán fault type và estimated time-to-failure.
-- Tính các metric Top-k RCA accuracy, Prediction F1/AUC, lead time và false alarm rate.
+Case eligibility đáng tin; xử lý mapping/time/provenance gaps; split đã khóa; template/semantic grouping thực nghiệm; hierarchy/evidence links; ranker; held-out evaluation; related-work review xác minh novelty.
 
-## 8. Kết luận trạng thái Bước 1
+## 8. Trạng thái Bước 1
 
-Nội dung đề xuất đề tài, lĩnh vực, vấn đề, người dùng, lý do dùng AI và kết quả kỳ vọng đã được xác định. Pipeline 5 bước đã chốt: Log Collection → Log Parsing + Clustering → Signal Filtering → RCA Ranking → Failure Prediction. Pipeline mã nguồn hiện mới hoàn thành phần **kiểm chứng và tiền xử lý dữ liệu**; phần **log clustering, RCA ranking và failure prediction** vẫn là các bước triển khai tiếp theo.
+Đã đồng bộ working scope V3 trong docs. Phương pháp, dataset mix, split tỷ lệ, RQ/novelty chính thức và target metrics còn mở. Chưa có pipeline training V3 hoàn chỉnh. Xem [implementation status](../Resource/docs/implementation_status.md) trước khi triển khai.

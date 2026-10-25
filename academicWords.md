@@ -1,3 +1,7 @@
+> **Scope note 23/10/2026:** phần glossary gốc bên dưới phục vụ V1. Các ví dụ “trong đề tài”, WARNING-only, bốn arms, Agent tools, target ARR/RCPR và novelty là lịch sử, không specification hoặc kết quả V3. [Master context](NCKH_MASTER_CONTEXT_2026-10-23.md) là nguồn hiện hành.
+>
+> Thuật ngữ V3: **evidence preservation** = giữ raw và references để kiểm tra lại; **hierarchy** = incident→service→group→events; **provenance** = nguồn file/bản ghi và phép biến đổi; **visibility reduction** = ít mục hiển thị hơn, không deletion; **candidate coverage** = ground-truth service có nằm trong inventory không; **service-level RCA** = rank service, chưa gán nhãn từng log. Code dùng `log_id`; correlation không chứng minh causation. Các chỉ số cũ chưa được đo lại và không tự thành target V3.
+
 # 📖 Academic & Technical Words — Dự án NCKH Alert Aggregation
 
 > Ghi chú thuật ngữ cho dự án: "Tác động của cơ chế gom nhóm cảnh báo (Alert Aggregation) lên việc giảm tỷ lệ cảnh báo nhiễu trong microservices"

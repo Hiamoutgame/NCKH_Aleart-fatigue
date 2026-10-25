@@ -109,17 +109,32 @@ class NezhaAdapter(BaseDatasetAdapter):
     def dataset_source(self) -> str:
         return "nezha"
 
-    def locate_fault_list(self) -> Path:
-        p = self.data_root / "fault_list.json"
-        if p.exists():
-            return p
-        candidates = list(self.data_root.rglob("*fault_list.json"))
+    def locate_fault_lists(self) -> list[Path]:
+        """Locate all fault list files across all experiment dates."""
+        dated = sorted(list(self.data_root.glob("20*/*fault_list.json")))
+        if dated:
+            return dated
+        root_fault = self.data_root / "fault_list.json"
+        if root_fault.exists():
+            return [root_fault]
+        candidates = sorted(list(self.data_root.rglob("*fault_list.json")))
         if candidates:
-            return candidates[0]
-        raise FileNotFoundError(f"fault_list.json not found under {self.data_root}")
+            return candidates
+        raise FileNotFoundError(f"No fault_list.json found under {self.data_root}")
+
+    def locate_fault_list(self) -> Path:
+        lists = self.locate_fault_lists()
+        return lists[0]
 
     def locate_log_csvs(self) -> list[Path]:
-        return sorted([p for p in self.data_root.rglob("*.csv") if p.is_file()])
+        """Locate only log CSV files (ignoring metric/trace CSVs)."""
+        return sorted(
+            [
+                p
+                for p in self.data_root.rglob("*.csv")
+                if p.is_file() and (p.parent.name == "log" or p.name.endswith("_log.csv"))
+            ]
+        )
 
     def inspect(self) -> dict[str, Any]:
         """Inspect available Nezha files, incidents, and logs."""
@@ -142,14 +157,20 @@ class NezhaAdapter(BaseDatasetAdapter):
         }
 
     def load_incidents(self) -> list[Incident]:
-        """Load canonical Incident entities from fault_list.json."""
-        fault_path = self.locate_fault_list()
-        with fault_path.open("r", encoding="utf-8") as f:
-            fault_dict = json.load(f)
-
+        """Load canonical Incident entities from all available fault lists."""
         incidents: list[Incident] = []
-        for hour_key, items in fault_dict.items():
-            for item in items:
+        seen_ids = set()
+
+        for fault_path in self.locate_fault_lists():
+            with fault_path.open("r", encoding="utf-8") as f:
+                fault_dict = json.load(f)
+
+            for hour_key, items in fault_dict.items():
+                for item in items:
+                    inj_ts_str = str(item["inject_timestamp"])
+                    if inj_ts_str in seen_ids:
+                        continue
+                    seen_ids.add(inj_ts_str)
                 inj_ts_str = str(item["inject_timestamp"])
                 inj_ts = int(inj_ts_str)
                 inject_dt = datetime.fromtimestamp(inj_ts, tz=timezone.utc)
@@ -177,14 +198,20 @@ class NezhaAdapter(BaseDatasetAdapter):
         return incidents
 
     def load_ground_truth(self) -> list[GroundTruth]:
-        """Load canonical GroundTruth entities for Nezha."""
-        fault_path = self.locate_fault_list()
-        with fault_path.open("r", encoding="utf-8") as f:
-            fault_dict = json.load(f)
-
+        """Load canonical GroundTruth entities for Nezha across all dates."""
         ground_truths: list[GroundTruth] = []
-        for hour_key, items in fault_dict.items():
-            for item in items:
+        seen_ids = set()
+
+        for fault_path in self.locate_fault_lists():
+            with fault_path.open("r", encoding="utf-8") as f:
+                fault_dict = json.load(f)
+
+            for hour_key, items in fault_dict.items():
+                for item in items:
+                    inj_ts_str = str(item["inject_timestamp"])
+                    if inj_ts_str in seen_ids:
+                        continue
+                    seen_ids.add(inj_ts_str)
                 inj_ts_str = str(item["inject_timestamp"])
                 pod = item.get("inject_pod", "")
                 fault_type = item.get("inject_type", "")
@@ -218,8 +245,12 @@ class NezhaAdapter(BaseDatasetAdapter):
 
         count = 0
         for csv_path in csv_files:
-            rel_file = record_source_path(csv_path, self.data_root)
+            if target_inc and target_inc.start_time:
+                date_str = target_inc.start_time.strftime("%Y-%m-%d")
+                if date_str not in str(csv_path) and ("2022" in str(csv_path) or "2023" in str(csv_path)):
+                    continue
 
+            rel_file = record_source_path(csv_path, self.data_root)
             df = pd.read_csv(csv_path)
 
             for idx, row in df.iterrows():

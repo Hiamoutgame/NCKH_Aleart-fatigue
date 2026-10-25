@@ -1,9 +1,7 @@
-# application/ — lemma_rca
+# application — LEMMA-RCA exploration use cases
 
-Use case cua dataset LEMMA-RCA.
+Source hiện có trong `use_cases.py`: describe_lemma_use_case, inspect_lemma_logs_use_case, export_lemma_logs_use_case, list_lemma_incidents_use_case, get_lemma_incident_use_case và fetch_lemma_use_case.
 
-- describe_dataset: tra ve profile (shape, columns, head(10), value_counts()).
-- read_incident(id): doc mot case.
-- explain_incident(id): mo ta noi dung incident bang bang chung.
+Use cases hiện gọi concrete loader/downloader từ infrastructure; không mô tả là chỉ gọi domain hoặc đã hoàn toàn tách I/O. Đây là đường khám phá dữ liệu, không service RCA model. Danh sách incidents lấy từ scenario hard-code; cột root_cause trong exploration là heuristic, không GT log-level.
 
-Chi goi domain; viec doc file do infrastructure/ lam.
+[Dataset README](../README.md) nêu commands/raw paths và [implementation status](../../../../../docs/implementation_status.md) nêu giới hạn trước V3 training.

@@ -1,44 +1,34 @@
-# CLEAN ARCHITECTURE cho src/datasets
+# Clean architecture — định hướng và source thực tế
 
-## 1. Dependency rule
-~~~
-interface/datasets_cli --> datasets/{rcaeval,lemma_rca,nezha}
-datasets/<x> --> shared
-cp1 --> shared/infrastructure
-datasets/<x> --X--> datasets/<y>    (cam)
-shared       --X--> datasets/*      (cam)
-~~~
-Trong mỗi dataset:
-~~~
-domain <-- application <-- infrastructure
-                       \-- interface
-~~~
-Lớp ngoài được biết lớp trong; lớp trong không được biết lớp ngoài.
+**Cập nhật 23/10/2026.** [src map](../README.md) mô tả code hiện có; các layer còn là sườn không được ghi thành chức năng hoàn chỉnh.
 
-## 2. Vai trò từng layer trong một dataset repo
-| Layer | Chứa gì | Không chứa gì |
+## 1. Dependency rule đề xuất
+
+```text
+interface/datasets_cli → datasets/{rcaeval,lemma_rca,nezha}
+datasets/<x> → shared
+datasets/<x> không import datasets/<y>
+shared không import dataset cụ thể
+```
+
+Trong module, ưu tiên domain ← application ← infrastructure/interface. Quy tắc này là hướng thiết kế; source hiện có `canonical.py` import pandas/chuyển DataFrame và LEMMA application gọi concrete loader. CP1 từng dùng shared helpers nhưng không có source CP1 active trong checkout này.
+
+## 2. Vai trò layer
+
+| Layer | Hiện trạng | Hướng mở rộng |
 | --- | --- | --- |
-| domain | Entity của dataset (Incident, LogEvent), port đọc dữ liệu, luật thuần | pandas, đường dẫn file, HTTP |
-| application | Use case: describe_dataset, read_incident, explain_incident | đọc file trực tiếp |
-| infrastructure | Adapter đọc dữ liệu, mapping cột raw sang canonical | luật nghiệp vụ |
-| interface | CLI, notebook, entry point | logic nặng |
-| config | dataset.yaml mô tả nguồn và mapping | code |
+| Domain | Incident/LogEvent/GroundTruth, profile entities, ports | Tách I/O/conversion khi phù hợp; không mặc định đã thuần Python |
+| Application | Profiling/LEMMA exploration use cases | Điều phối; không feed label metadata vào inference |
+| Infrastructure | Raw readers, canonical adapters, paths, regex | Mapping/time/provenance có evidence và validation |
+| Interface | CLI/notebook, registry composition | Entry points rõ scope/limits |
+| dataset.yaml | Metadata mô tả | Chưa được runtime loader dùng làm cấu hình |
 
-## 3. Kết nối qua shared
-- shared/domain: contract chung (DatasetProfile, ColumnProfile, DatasetSource).
-- shared/application: use case dùng lại (profile_dataframe).
-- shared/infrastructure: loader dùng chung (load_table).
-- shared/interface: CLI chung (profile_cli).
-Khi hai dataset cần dùng chung một thứ, đưa contract vào shared thay vì import chéo.
+## 3. Shared và pipeline V3
 
-## 4. Khi nào thêm vào shared
-- Khi có từ 2 dataset trở lên cần.
-- Khi contract ổn định, không gắn với một dataset cụ thể.
+Shared giữ contract/helper thực sự dùng chung; không thêm logic riêng của một dataset. Canonical schema chưa có Group/Edge/Ranking. Khi triển khai, dùng `LogEvent.log_id` liên kết group members và provenance; không tự đổi tên schema theo sơ đồ.
 
-## Helper dùng chung trong exploration
+Grouping, hierarchy, evidence relationships và service ranking là các bước riêng trong [research protocol](../../../docs/research_protocol_v3.md), **chưa phải modules tồn tại**. Tách feature allowlist khỏi Incident/GT vì `raw_label` có thể chứa đáp án. Dependency tốt không tự chứng minh dữ liệu không leakage hoặc mapping đúng.
 
-`src/shared/infrastructure/` giữ path, normalization và severity dùng chung với CP1.
-Các helper này không import CP1 hay adapter. `src/interface/datasets_cli.py` là nơi
-ghép các module vào CLI, nên được phép import từng adapter; `src/shared/` vẫn
-không import dataset cụ thể. Các quy tắc layer ở trên là định hướng thiết kế;
-code canonical hiện có thêm hàm chuyển DataFrame và use case gọi loader trực tiếp.
+## 4. Những giới hạn cần đối chiếu
+
+Default raw path vẫn CP1 cũ; `--data-root` cho từng dataset trỏ raw thật ở `NCKH_rawData/raw_data/`. Export caps/Nezha iteration/LEMMA multi-target, raw payload và timestamp assumptions được liệt kê ở [implementation status](../../../docs/implementation_status.md). Không mô tả chúng đã được sửa trong lần cập nhật docs.

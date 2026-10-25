@@ -33,6 +33,17 @@ dqhien@fit.hcmus.edu.vn
 
 \maketitle
 
+% Historical V1 draft: active research scope is documented in the V3 master context.
+\begin{quote}
+\textbf{Historical V1 draft --- status 23 October 2026.}
+This draft describes the previous warning-only, tool-calling-agent proposal.
+It is not the current V3 specification or a report of completed experiments.
+The current working direction is evidence-preserving hierarchical log
+organization and service-level root-cause candidate ranking. Its research
+question, novelty, methods, and evaluation targets remain under review.
+\end{quote}
+
+
 \begin{abstract}
 In distributed microservice architectures, cascading performance degradation during pre-failure phases routinely triggers alert storms, inundating on-call engineers with early-warning-level logs. Over 70\% of these alerts are noisy or unactionable, causing severe alert fatigue and delaying critical incident remediation. Existing alert management approaches primarily target post-mortem failure stages or rely on static rule-based grouping (e.g., Prometheus Alertmanager) and semantic similarity clustering, both of which lack awareness of dynamic service call topologies and causal propagation. This paper proposes a two-stage alert aggregation framework tailored specifically for early-warning telemetry in microservices. The framework integrates a lightweight deterministic fast filter for duplicate elimination and time-window pre-grouping with an LLM agent equipped with tool-calling capabilities (\texttt{get\_related\_alerts}, \texttt{get\_service\_dependency}, and \texttt{get\_runbook}). We evaluate on the RCAEval benchmark, which provides 735 failure cases across three systems (Online Boutique, Sock Shop, and Train Ticket), of which 359 cases expose raw log telemetry. Because RCAEval does not ship a severity column, we introduce an explicit three-tier severity assignment procedure that derives early-warning alerts from raw log messages and, for systems that emit no severity token, from faulty-versus-normal template frequency shifts. The proposed framework is designed to achieve an Alert Reduction Ratio (ARR) $\ge 60\%$ while strictly preserving the root cause service alert with a Root Cause Preservation Rate (RCPR) $\ge 95\%$. The primary contributions are: (1) formalizing a four-tier taxonomy of noisy early-warning alerts (duplicate, transient, unactionable, cascading), (2) introducing an agentic tool-calling mechanism for causal pre-failure alert triage, and (3) establishing a standardized multi-metric evaluation protocol balancing alert reduction against diagnostic safety.
 \end{abstract}

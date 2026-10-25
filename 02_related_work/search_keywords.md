@@ -1,3 +1,32 @@
+# Search plan V3 — log organization, provenance và service RCA
+
+**23/10/2026; đây là kế hoạch tìm, chưa là kết quả search.** Đọc [master context](../NCKH_MASTER_CONTEXT_2026-10-23.md); cập nhật [paper list](paper_list.md) và [matrix](literature_review_matrix.md) với exact source/page sau khi đọc.
+
+## Từ khóa ưu tiên
+
+```text
+hierarchical log organization microservices
+log grouping provenance traceability incident investigation
+evidence preserving log analysis root cause localization
+log template clustering service root cause ranking
+log exploration information overload incident diagnosis
+microservices root cause localization logs benchmark
+log parsing template clustering evaluation ground truth
+service root cause ranking candidate coverage
+microservice RCA benchmark data leakage repeated fault injection
+incident diagnosis user study time to locate
+```
+
+Tìm theo khái niệm lẫn tên: log/alert organization, parsing/clustering, provenance, service ranking, incident-level evaluation, hierarchical exploration. Dùng paper gốc, official repo/docs và bibliographies của bài đã đọc; không giới hạn review vào WARNING/LLM hoặc coi bài storage/compression đương nhiên không liên quan — kiểm tra task/claims cụ thể.
+
+Ghi ngày tìm/phạm vi năm/nguồn/query và inclusion/exclusion reasons. Theo snapshot 23/10/2026, không dùng bộ lọc 2021–2025 cũ như toàn phạm vi review; vẫn đọc các bài nền tảng cũ nếu cần. Không suy novelty từ vài query không có kết quả.
+
+Checklist đọc: input là log hay alert, output groups/tree/graph/rank, label level, preservation/reconstruction, candidates/coverage, split/repetitions, metric denominators, runtime và dữ liệu/code public có thật không. Không đưa số paper results vào docs trước khi có locator.
+
+## Search notes V1/V2 được giữ để đối chiếu
+
+Phần bên dưới là lịch sử. WARNING-only, LLM Agent và failure prediction **không phải ưu tiên mặc định V3**; seed metadata/venue/year/scores chưa được xác minh lại trong lần cập nhật này.
+
 # Search Keywords — Alert Aggregation / LLM Agent / Microservices RCA
 
 > Mục đích: tài liệu hóa từ khóa tìm kiếm để cậu tự research và tìm bài báo phù hợp.

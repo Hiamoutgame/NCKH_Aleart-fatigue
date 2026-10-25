@@ -1,117 +1,94 @@
-# Validation sau refactor: RCAEval, LEMMA-RCA và Nezha
+# Validation report — snapshot local ngày 23/10/2026
 
-Kiểm tra ngày **18/10/2026**, trên dữ liệu local hiện có. Báo cáo cũ được giữ tại
-[history/validation_report_before_refactor.md](history/validation_report_before_refactor.md).
-Bản này phân biệt việc code chạy đúng sau refactor với độ đúng của nhãn nghiên cứu.
+Báo cáo này chỉ ghi những kiểm tra thực hiện khi đồng bộ docs V3: đọc source/docs, xem artifact audit trước đó, đọc footer/schema chín Parquet, chạy CLI help/list và ba regression checks dùng dữ liệu tạm. **Không full-scan raw, không normalize lại outputs hiện có, không training và không đo RCA/grouping quality.**
 
-## 1. Kết quả kiểm tra code
+Báo cáo ngày 19/10 được giữ nguyên tại [history](history/validation_report_2026-10-19.md). Các claim “32/32 pass”, “đã giải quyết triệt để”, “hoàn toàn đủ điều kiện khoa học” và “50% train/50% test” trong bản đó **không được tái xác nhận** cho checkout hiện tại.
 
-**39/39 test PASSED** trên môi trường local:
+## 1. Môi trường và path
+
+- Có source adapters trong `Resource/explore_datasets/`, raw ở `NCKH_rawData/raw_data/`, outputs ở `Resource/datasets/normalized/`.
+- Không có `Resource/cp1/`, `Resource/cp2/` hoặc `Resource/archive/` trong workspace active. Bản sao công cụ dưới `.kilo/worktrees/` không được dùng thay source hiện hành.
+- `Resource/explore_datasets/.venv/bin/python`: Python 3.14.4, import được pandas/pyarrow/pytest. Python hệ thống trong lần kiểm tra này thiếu ba modules trên.
+- `bash run_datasets.sh --help` và `bash run_datasets.sh list` chạy thành công. `list` vẫn in path mặc định `Resource/cp1/raw_data/` đã vắng mặt; thành công của lệnh không chứng minh raw ở default tồn tại.
+
+Không chạy `inspect all` hoặc normalize raw trong lần này. `--data-root` chỉ áp dụng một slug; hướng dẫn hiện hành ở [Resource map](../README.md).
+
+## 2. Footer/schema Parquet đọc lại
+
+| Dataset | incidents rows | ground_truth rows | log_events rows | Log row groups |
+| --- | ---: | ---: | ---: | ---: |
+| RCAEval | 735 | 735 | 5,272,618 | 30 |
+| LEMMA-RCA | 4 | 4 | 200,000 | 1 |
+| Nezha | 21 | 21 | 71,173 | 1 |
+
+Cả chín file có schema columns khớp các dataclasses hiện tại. `log_events` có `log_id`, `incident_id`, `raw_message`, provenance fields, time/service/entity/severity/template/trace/span fields. `incidents` có `raw_label`, `fault_type`, `inject_time`, nên cần chặn leakage khi tạo features. Ground truth có original/canonical target và mapping status.
+
+**Điều đã xác nhận:** file đọc được metadata/schema, số rows và row groups như bảng. **Chưa xác nhận:** unique incident coverage, nhãn đúng nguồn, raw record reconstruction, null/duplicate rates, inventory coverage, window alignment hoặc eligibility. Số row groups không phải phép đo số incident độc lập.
+
+Đọc lại metadata từ root bằng môi trường local:
 
 ```bash
-Resource/explore_datasets/.venv/bin/python -m pytest -c Resource/pytest.ini -q -p no:cacheprovider
+Resource/explore_datasets/.venv/bin/python - <<'PYMETA'
+from pathlib import Path
+import pyarrow.parquet as pq
+for path in sorted(Path('Resource/datasets/normalized').glob('*/*.parquet')):
+    pf = pq.ParquetFile(path)
+    print(path, pf.metadata.num_rows, pf.metadata.num_row_groups, pf.schema_arrow.names)
+PYMETA
 ```
 
-Suite gồm CP1, ba adapter, canonical validation và test hồi quy mới:
+Lệnh chỉ đọc footer/schema, không yêu cầu load bảng logs. Không gọi normalize để tái hiện bảng metadata này.
 
-- Các entrypoint CP1/LEMMA/CLI chung chạy từ thư mục tạm, không có `PYTHONPATH`.
-- Wrapper Bash tìm đúng Python và source khi gọi bằng đường dẫn tuyệt đối từ nơi khác.
-- Registry chỉ có `rcaeval`, `lemma_rca`, `nezha` và repo code `rcaeval_github`.
-- Đường dẫn raw trong CP1 registry trùng đường dẫn mặc định adapter.
-- Chuẩn hóa RCAEval với raw tùy chọn nằm ngoài repository, output vào thư mục tạm,
-  giữ nguyên raw message và liên kết incident/provenance.
-- Import script export không tự chạy normalization.
+## 3. Kiểm tra CLI trên dữ liệu tạm
 
-`bash -n` cho cả ba wrapper và kiểm tra cú pháp Python đều qua.
-`git diff --check` không phát hiện lỗi whitespace.
-Archive, môi trường ảo và worktree Kilo nằm ngoài phạm vi thu thập test.
-Một số test adapter/validation dùng raw local đang có, chưa phải suite độc lập với data.
+Đã chạy từ root:
 
-Trước refactor, bộ test ba dataset có **29 pass, 1 fail**: test registry còn đòi các
-nguồn phụ đã bị bỏ khỏi cấu hình. Test này đã được cập nhật theo phạm vi ba dataset.
+```bash
+PYTHONDONTWRITEBYTECODE=1 Resource/explore_datasets/.venv/bin/python -m pytest \
+  -c Resource/pytest.ini Resource/explore_datasets/tests/test_dataset_workflow.py \
+  -q -p no:cacheprovider -k 'shell_wrappers or custom_input or export_module'
+```
 
-## 2. Bảo toàn dữ liệu
+**Kết quả: 3 passed, 5 deselected (5.18s).** Phạm vi:
 
-Đã chụp SHA-256 trước refactor và đối chiếu sau khi hoàn tất:
+1. Shell wrappers chạy từ thư mục khác với repo.
+2. Một fixture RCAEval do test tạo có custom raw/output roots, một log được export đúng raw string và source ref.
+3. Import export wrapper không tự chạy normalization hoặc tạo outputs.
 
-- **27 file raw/artifact/normalized chính giữ nguyên checksum**.
-- **3 file bị bỏ là bản trùng hoàn toàn**, giữ nguyên nội dung tương ứng tại
-  `datasets/normalized/lemma_rca/`.
-- Không ghi đè raw hoặc Parquet normalized hiện có khi kiểm thử.
-- Symlink `normalized/lemma_rca/lemma -> lemma` tự trỏ đã được bỏ.
-- Code/raw/report dataset phụ được chuyển sang archive. Bản registry/manifest cũ
-  được lưu tại đó để giữ provenance; manifest đang dùng chỉ còn nguồn được chọn.
+Đây là regression checks có sẵn, không phải test mới cho V3. Năm case không được chọn gồm kiểm tra entrypoints, trong đó có CP1 đã vắng mặt; kết quả trên không đại diện full suite.
 
-Danh sách checksum và ánh xạ bản trùng:
-[refactor_preservation.json](refactor_preservation.json).
-Phạm vi checksum không gồm cache tải dữ liệu và file cấu hình được chủ đích refactor.
+## 4. Kiểm tra control flow Nezha bằng fixture riêng
 
-## 3. Kiểm tra luồng export thật
+Tạo `fault_list.json` tổng hợp trong temporary directory, một hour bucket có hai faults khác nhau. Kết quả trên source hiện tại:
 
-Đã gọi `export_all_normalized.py --output-root <thư mục tạm>` từ `/tmp`, bỏ
-`PYTHONPATH`, và kiểm tra đủ chín file Parquet. Output dùng đúng ba thư mục:
-`rcaeval`, `lemma_rca`, `nezha`; không sinh thêm tên `lemma`.
+| Giá trị fixture | Kết quả |
+| --- | ---: |
+| Fault records trong JSON / `inspect()` | 2 / 2 |
+| `load_incidents()` | 1 |
+| `load_ground_truth()` | 1 |
+| Record được tạo | Fault cuối bucket |
 
-| Dataset | incidents.parquet | ground_truth.parquet | log_events.parquet | Incident có log |
-| --- | ---: | ---: | ---: | ---: |
-| RCAEval | 735 | 735 | 405.960 | 3 |
-| LEMMA-RCA | 4 | 4 | 20.000 | 1 |
-| Nezha | 24 | 24 | 4.136 | 1 |
+Fixture này tái hiện phần tạo record ở ngoài vòng từng `item`; **không phải thống kê corpus Nezha**. Không sửa adapter trong lần cập nhật docs. Xem [implementation status](implementation_status.md).
 
-Đã đọc cả chín bảng và so sánh với output trước refactor bằng
-`pandas.testing.assert_frame_equal`: giữ cùng schema và các giá trị xử lý.
-Riêng `source_file` đổi sang một quy ước nhất quán: tương đối với root repository;
-nếu raw ngoài repository thì tương đối với `data_root`. Trước đây mỗi adapter
-chọn một mốc thư mục khác nhau. `raw_record_ref`, raw message, timestamp, template,
-severity, incident và nhãn không bị thay đổi bởi refactor.
+## 5. Kết quả audit cũ và code assumptions
 
-Các Parquet chính đang có vẫn là bản gốc. Chuẩn hóa lại sau này sẽ áp dụng quy ước
-`source_file` mới. Export kiểm tra được đặt trong thư mục tạm ngoài repository.
+[DATASET_PLAN 20/10](../../NCKH_rawData/spec/DATASET_PLAN.md) báo raw tổng 400.362 GB theo file sizes, chưa deduplicate; RCAEval 735 cases/359 log files/49,652,771 log rows/240 trace cases. Audit chỉ xác minh prefix 200 label rows thuộc RE1 không log, nên chưa xác nhận eligible ranking cases. Đây là artifact lịch sử, không phép đo full corpus mới.
 
-## 4. Những thay đổi cấu trúc
+Những khác biệt đáng chú ý so với báo cáo 19/10:
 
-- Helper path/normalization/severity được gom vào
-  `Resource/explore_datasets/src/shared/infrastructure/`. CP1 dùng chung qua import
-  tương thích; package riêng ở cấp Resource đã được gộp vào exploration.
-- Adapter không còn import `cp1_core`; CP1 giữ export tương thích cho helper cũ.
-- Registry thêm Nezha dạng `local_directory`, chưa có bước download tự động.
-- CLI chung: `bash run_datasets.sh list`, `inspect <slug|all>`,
-  `normalize <slug|all> --output-root <folder>`.
-- CLI/menu LEMMA cũ tiếp tục dùng được mà không cần thêm CP1 vào import path.
-- GAIA, LogHub2, OpsEval, CorrelatedAlerts, Suricata CTU-13 được đưa khỏi workflow
-  đang chạy; xem [archive](../archive/README.md).
+- RCAEval `normalize(max_cases=30)` cap logs; metadata/GT 735 rows không chứng minh log coverage toàn corpus. Writer theo case, loader vẫn full-case memory.
+- Nezha chỉ export log incident đầu; vòng metadata làm mất faults trong bucket; không claim 21 incidents đều có log hoặc 100% TraceID/SpanID.
+- LEMMA có scenario hard-code, file matching theo date/path, multi-target bị rút ở canonical target. Chưa claim đã khắc phục alignment/label hoàn toàn.
+- Test canonical hiện hữu kiểm tra mẫu/fields; chưa kiểm chứng full provenance, leakage qua values/path hoặc split independence.
 
-## 5. Giới hạn dữ liệu và nhãn chưa được sửa trong refactor
+## 6. Kiểm tra docs và bảo toàn file
 
-### RCAEval
+Đối chiếu với snapshot local lấy trước khi sửa: **74 file source/config/artifact/Parquet** được ghi nhận có hash không đổi, gồm cả **9 canonical Parquet**. Sáu bản sao lịch sử khớp byte với docs local trước sửa. Không hash toàn raw corpus 400 GB; không có thao tác ghi raw trong phiên này.
 
-Metadata có 735 case nhưng checkout này chỉ có log cho 3 case, tổng 405.960 dòng.
-Kết quả scan đầy đủ trong artifact/tài liệu lịch sử không mô tả cùng phạm vi local.
-Không suy ra mọi case có metadata đều có log để đánh giá.
+Kiểm tra 41 docs/phần bổ sung hiện hành: **187 liên kết local resolve được**, Markdown fences cân bằng, proposal giữ đủ **11 mục** theo khung cũ. Phần lịch sử nguyên văn được giữ riêng hoặc dưới banner, không được coi là hướng dẫn runtime đã kiểm chứng.
 
-### LEMMA-RCA
+## 7. Kết luận có thể sử dụng
 
-`load_incidents()` lấy bốn scenario từ danh sách khai báo trong loader.
-`normalize()` hiện lấy scenario đầu tiên và gán mọi log sample vào scenario đó;
-`load_logs()` chưa lọc log theo cửa sổ thời gian scenario.
+Checkout có data-preparation source và canonical outputs để tiếp tục audit. **Chưa đủ bằng chứng để chứng nhận sẵn sàng train/evaluate service RCA V3**, chưa có split protocol được khóa hoặc Top-k/grouping metric thực đo.
 
-**Có sai lệch quan sát được**: 20.000 log sample có timestamp trong tháng 05/2021,
-nhưng scenario đầu tiên là DDoS năm 2022. Cần sửa segmentation/đối chiếu nhãn
-trước khi dùng bộ này để đánh giá RCA. Test hiện tại xác nhận incident ID tồn tại,
-không chứng minh timestamp nằm đúng trong scenario.
-
-CSV/JSON xuất qua CLI khám phá còn dùng cột `root_cause` gán theo tên service
-(`reviews` → `reviews-v2/reviews-v3`, còn lại → `normal`). Cột này chưa phải nhãn
-incident đã xác minh. CLI loader có fallback level `INFO`, khác canonical adapter
-cho phép severity thiếu là `null`. Hai dạng output không cùng schema/ngữ nghĩa.
-
-### Nezha
-
-Có 24 incident metadata, 1 CSV raw và 4.136 log. `normalize()` chỉ xuất log cho
-incident đầu tiên; chưa tạo log_events bao phủ toàn bộ incident. Cửa sổ hiện dùng
-[-2 phút, +3 phút] quanh inject time. Cần xác định phạm vi quan sát và log sẵn có
-cho từng incident trước khi đánh giá toàn dataset.
-
-Các giới hạn này được giữ rõ để refactor cấu trúc không làm thay đổi âm thầm
-kết quả nghiên cứu. **39 test pass xác nhận các kiểm tra đã nêu, không xác nhận
-mọi nhãn ground truth đã đúng hoặc dataset đã sẵn sàng cho đánh giá toàn diện.**
+Tiếp theo là case eligibility và xác minh labels/windows/inventory/provenance, xử lý code gaps, rồi baseline theo [research protocol](research_protocol_v3.md). Việc xác minh nội dung/raw và sửa code là công việc tiếp theo, không được ghi thành đã hoàn thành trong docs.

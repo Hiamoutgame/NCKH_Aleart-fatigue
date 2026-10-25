@@ -1,5 +1,7 @@
 # EXPLORATION PROTOCOL — Đọc một dataset và một incident
 
+> **V3, cập nhật 23/10/2026.** [Master context](../../../../NCKH_MASTER_CONTEXT_2026-10-23.md) quy định scope; [dataset audit](../../../docs/dataset_audit.md) phân biệt artifact cũ với footer mới. Profiler/sample không chứng minh eligibility hoặc nhãn causal/log-level.
+
 ## 0. Nguyên tắc
 - Mục tiêu: trả lời được "dataset này có gì?" và "incident này có nội dung gì?" bằng bằng chứng tái lập được.
 - Không kết luận nhân quả từ tần suất.
@@ -39,9 +41,18 @@ Cần trả lời được các câu hỏi sau:
 - message xuất hiện nhiều KHÔNG nhất thiết là lỗi: có thể là log INFO lặp, health check, retry thành công.
 - service có nhiều log KHÔNG nhất thiết là service gây ra sự cố: có thể do service verbose, hoặc là nạn nhân của lỗi lan truyền.
 - Tần suất = độ phổ biến, không phải mức nghiêm trọng.
-- Muốn suy ra nguyên nhân cần: tương quan thời gian, lan truyền theo service dependency, so sánh baseline, và đối chiếu nhãn root cause.
+- Các tín hiệu thời gian/dependency/baseline hỗ trợ xếp hạng nghi vấn; chúng chưa chứng minh causation. Đối chiếu service labels để chấm ranking, không dùng labels tạo feature hoặc kết luận log nào là nguyên nhân.
 
 ## 4. Output chuẩn của một lần explore
 - profile.json: shape, columns, head, value_counts.
 - report.md: nhận xét, nghi vấn, việc cần kiểm chứng tiếp.
 - Ghi lại cảnh báo diễn giải ở mục 3 trong report.
+
+## 5. Gate cho V3 trước thực nghiệm
+
+- Ghi snapshot/source path, sampling scope/caps, timestamp units/timezone/missingness và raw provenance. Default CP1 cũ khác raw thật `NCKH_rawData/raw_data/`.
+- Tách grouping pool khỏi RCA-eligible pool; ground truth service không cung cấp log-group/noise/causal-edge labels.
+- Kiểm tra label source/multiplicity, service aliases và inventory coverage; không loại case thiếu candidate đáp án âm thầm.
+- Giữ `log_id`/raw strings/source record references; kiểm tra duplicate IDs, incident overlap và repeated-run groups trước split.
+- Không feed raw_label/fault_type/inject annotation hoặc heuristic root_cause từ exploration vào model.
+- [Research protocol](../../../docs/research_protocol_v3.md) mô tả output/gate đề xuất; profile.json/report.md ở mục 4 là format mong muốn, không phải mọi CLI hiện tự xuất được hai file này.

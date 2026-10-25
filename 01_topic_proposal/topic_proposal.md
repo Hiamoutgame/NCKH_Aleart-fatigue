@@ -1,155 +1,169 @@
-# Topic Proposal
+# Topic Proposal — Phiên bản hiện hành
+
+> **Phiên bản đang dùng trong repository: V3 — cập nhật 23/10/2026.** Nội dung được cập nhật trực tiếp trong file `01_topic_proposal/topic_proposal.md`, giữ khung 11 mục và thay thế proposal V2 tại đường dẫn này. Định hướng hiện tại là tổ chức log phân cấp có bảo toàn bằng chứng và xếp hạng service nghi ngờ gây lỗi.
+>
+> **Trạng thái nghiên cứu:** bản đề xuất làm việc, chưa được Prof. Long phê duyệt; tên đề tài, RQ, novelty và thuật toán cuối cùng còn cần thống nhất. Phiên bản hiện hành trong repo không đồng nghĩa phương pháp đã được duyệt hoặc triển khai xong.
+
+[Bản tóm tắt hiện hành](readme) · [Master context](../NCKH_MASTER_CONTEXT_2026-10-23.md). [Proposal V2](history/topic_proposal_V2.md) chỉ dùng đối chiếu lịch sử.
 
 ## 1. Group Information
 
-- Class: SE1922
-- Leader: _(chưa điền)_
-- Members: _(chưa điền)_
+- Class: SE1922.
+- Leader: _(chưa điền)_.
+- Members: _(chưa điền)_.
+- Người hướng dẫn được ghi trong context dự án: Prof. Long.
 
 ## 2. Proposed Title
 
-English title: Log-based Root Cause Analysis and Near-Future Failure Prediction for Microservice Systems
+**English working title:** Evidence-preserving Hierarchical Log Organization and Service-level Root Cause Localization in Microservice Systems.
 
-Vietnamese title: Phân tích nguyên nhân gốc và dự đoán lỗi gần tương lai trong hệ thống microservices dựa trên log
+**Tên tiếng Việt dự kiến:** Tổ chức log phân cấp có bảo toàn bằng chứng và định vị service nguyên nhân gốc trong hệ thống microservices.
+
+Tên chính thức, RQ và novelty cần thống nhất với người hướng dẫn. “Near-Future Failure Prediction” thuộc V2, không còn là mục tiêu mặc định.
 
 ## 3. Application Domain
 
-Vận hành hệ thống phần mềm (SRE/DevOps), giám sát hệ thống microservices.
+AIOps / log analysis trong vận hành phần mềm (SRE/DevOps), observability cho microservices. Nghiên cứu **offline** trên dataset có sẵn, dùng máy local; tập trung phương pháp, thực nghiệm và paper, không xây monitoring stack production.
 
 ## 4. Problem Statement
 
-Khi một hệ thống microservices có bất thường, các service sinh ra lượng lớn log ở mức INFO, WARN và ERROR. Kỹ sư vận hành phải đọc hàng nghìn dòng log rời rạc, trong đó phần lớn là lặp lại, là hậu quả lan truyền, hoặc là thông tin thường ngày không liên quan đến lỗi. Việc này dẫn đến hai vấn đề:
+Một incident có thể tạo nhiều log từ nhiều service. Những dòng lặp lại, thông tin thường ngày và triệu chứng liên quan khiến engineer phải đọc nhiều trước khi xác định nơi cần điều tra. Nhãn service gây lỗi không tự chỉ ra log nào là nguyên nhân hoặc log nào nên bỏ.
 
-- **Alert fatigue (quá tải cảnh báo):** quá nhiều log khiến engineer không kịp phân biệt signal với noise.
-- **Chậm xác định nguyên nhân gốc (RCA):** log gốc gây lỗi bị lẫn trong đống log lan truyền và log routine.
+Bài toán V3: tổ chức log thành cấu trúc dễ khám phá, giữ toàn bộ bằng chứng nguồn và dùng đặc trưng kiểm tra được để xếp hạng service nghi ngờ. Phân biệt:
 
-Cụ thể, log sinh ra trong một incident thường thuộc các nhóm:
+- **Organization:** incident → service → template/semantic group → raw references.
+- **Relationships:** liên hệ temporal/semantic/dependency có supporting evidence, chưa phải causation.
+- **Ranking:** service scores/ranks kèm groups/logs hỗ trợ kiểm tra.
+- **Visibility reduction:** giảm số mục ở tổng quan, không xóa raw events.
 
-- **duplicated signal:** cùng một log template lặp lại nhiều lần bởi cùng service.
-- **propagated symptom:** log xuất hiện ở service downstream vì service upstream đã lỗi trước đó.
-- **routine noise:** log health check, periodic info, heartbeat không liên quan đến fault.
-
-Câu hỏi nghiên cứu trung tâm: Có thể từ log INFO/WARN/ERROR của hệ thống microservices, sau khi gom nhóm và lọc tín hiệu, xác định được root-cause candidate và dự đoán được nguy cơ lỗi gần tương lai hay không?
+**Working RQ:** Can evidence-preserving hierarchical log organization reduce information overload while maintaining accurate service-level root cause localization in microservice systems?
 
 ## 5. Motivation
 
-1. **Log quá nhiều, signal bị chìm:** một incident có thể sinh hàng nghìn dòng log từ nhiều service, phần lớn là noise hoặc symptom lan truyền, khiến engineer mất thời gian tìm log gốc gây lỗi.
-2. **Rule-based không đủ:** gom log theo rule tĩnh (service name, severity, keyword) không phân biệt được hai log khác chữ nhưng cùng ngữ nghĩa, hoặc root cause với propagated symptom.
-3. **RCA hiện tại thường quá thô:** nhiều phương pháp chỉ xác định service nghi ngờ, chưa chỉ ra log template hoặc resource cụ thể gây lỗi.
-4. **Cần cảnh báo sớm:** nếu chỉ phát hiện lỗi khi service đã chết thì quá muộn. Cần dự đoán fault type và thời gian ước lượng trước khi service suy giảm để engineer kịp hành động.
-5. **Chưa có pipeline end-to-end từ log → RCA → prediction:** hầu hết các công trình hiện tại tập trung vào một trong ba bước (log parsing, RCA, hoặc failure prediction) riêng lẻ, chưa kết nối thành pipeline liền mạch.
+1. Các log tương tự có thể được xem qua một nhóm rồi mở lại từng raw event khi cần.
+2. Candidate ranking có thể giúp chọn service điều tra trước; phải đo held-out accuracy thay vì mặc định nhiều ERROR là nguyên nhân.
+3. Provenance — thông tin file/bản ghi gốc — giúp kiểm tra nhóm và bằng chứng của ranking.
+4. Scope service-level phù hợp loại nhãn đang xem xét hơn việc tự tạo nhãn root-cause-log.
+5. Thiết kế nhỏ, baseline rõ và audit trước phù hợp nguồn lực local.
+
+Đây là lý do thực hiện nghiên cứu, **chưa phải bằng chứng** phương pháp cải thiện thời gian điều tra hoặc novelty đã xác nhận.
 
 ## 6. Target Users
 
-- Kỹ sư trực hệ thống (on-call engineer).
-- Kỹ sư SRE (Site Reliability Engineer).
-- DevOps engineer.
-- Đội vận hành hệ thống microservices.
+- Developer và on-call engineer.
+- SRE, DevOps engineer và đội vận hành microservices.
+
+User study chỉ được đưa vào deliverable nếu có protocol và người tham gia phù hợp; không mặc định có dữ liệu đánh giá con người.
 
 ## 7. Proposed AI Model / Method
 
-Pipeline đề xuất gồm 5 bước:
-
 ```text
-(1) Log Collection
-    gom INFO + WARN + ERROR từ microservices
-         ↓
-(2) Log Parsing + Clustering
-    template extraction (Drain/Spell)
-    hoặc semantic embedding clustering
-         ↓
-(3) Signal Filtering
-    giữ cụm bất thường (frequency spike, new template, resource-related)
-    bỏ cụm routine (health check, periodic info)
-         ↓
-(4) Root-Cause Candidate Ranking
-    so sánh log pattern bình thường vs bất thường
-    rank service + log template đáng nghi nhất
-    dùng ERROR log làm validation signal
-         ↓
-(5) Failure Prediction
-    từ root-cause candidate + log trend
-    dự đoán fault type + thời gian tới lỗi
-    output: risk score + estimated time-to-failure
+Dataset audit + case eligibility
+    → Canonical events + raw provenance + trusted inventory + incident split
+    → Parsing + grouping
+    → Incident/service/group hierarchy
+    → Optional evidence relationships
+    → Service candidate ranking + supporting IDs
+    → Held-out evaluation + ablation + error analysis
 ```
 
-Các model/method dự kiến:
+| Bước | Phương án nghiên cứu | Output / gate |
+| --- | --- | --- |
+| Audit | Schema, incident/label/window/service join, null/duplicate | Biết rõ case dùng cho grouping và case dùng cho RCA |
+| Preparation | Timestamp/service canonicalization, IDs, controlled masking | Giữ raw strings và nguồn, không mất incident boundary |
+| Parsing/grouping | Exact normalized-template baseline; Drain3/Spell; SBERT/HDBSCAN là ứng viên | Group members và representative; kiểm tra coverage, determinism |
+| Hierarchy | Indexed tree, không bắt buộc frontend | Mọi event truy ngược được, kể cả thiếu service |
+| Relationships | Time overlap, semantic similarity, observed dependency | Edge type/method/threshold/supporting IDs; có thể bỏ nếu thiếu bằng chứng |
+| Ranking | Time/frequency heuristic; Logistic Regression/XGBoost nếu đủ nhãn | Chỉ rank service trong trusted inventory, giữ evidence references |
 
-- **Log parsing:** Drain3 / Spell — rút log thành template.
-- **Embedding model:** Sentence-BERT — biến log/template thành vector ngữ nghĩa.
-- **Clustering:** HDBSCAN — gom các vector tương tự thành cụm.
-- **RCA ranking:** so sánh cụm log giai đoạn bình thường vs bất thường để xếp hạng root-cause candidate.
-- **Failure prediction:** dùng root-cause candidate, xu hướng tần suất log và đặc trưng thời gian để dự đoán fault type và estimated time-to-failure. Có thể dùng LSTM, XGBoost hoặc LLM tùy thực nghiệm.
+**Trạng thái implementation:** có adapters, canonical tables, regex normalization và hash template key. Chưa có implementation V3 grouping/hierarchy/ranker trong source active. `log_id` là event ID hiện có. [Implementation status](../Resource/docs/implementation_status.md) ghi chi tiết, gồm lỗi/giới hạn cần xử lý trước thực nghiệm.
 
-> LLM nếu dùng sẽ đóng vai trò hỗ trợ giải thích hoặc xử lý case khó, không thay thế toàn bộ pipeline.
+Model cuối cùng, feature set và hyperparameters chưa chốt. [Training note System One](../Resource/note/pineline_training_model.md) là thiết kế MVP để thử, chưa phải model đã train.
 
 ## 8. System Features
 
-Các chức năng chính của hệ thống:
+Các chức năng nghiên cứu dự kiến:
 
-1. **Log Collection & Parsing:** thu thập log INFO/WARN/ERROR từ nhiều microservice, parse thành template chuẩn.
-2. **Log Clustering & Signal Filtering:** phân cụm log theo ngữ nghĩa hoặc template, lọc bỏ noise (health check, periodic info), giữ cụm bất thường.
-3. **Root-Cause Candidate Ranking:** so sánh log pattern bình thường vs bất thường, xếp hạng service + log template đáng nghi nhất, dùng ERROR log làm validation signal.
-4. **Failure Prediction & Early Warning:** dự đoán fault type (DB overload, server overload, node failure...) và estimated time-to-failure, đưa ra risk score và cảnh báo sớm cho engineer.
+1. **Dataset audit:** data card, eligibility và lý do loại từng incident.
+2. **Normalization/provenance:** canonical schema và mapping về raw records.
+3. **Grouping/hierarchy:** nhóm theo service/template hoặc semantic, giữ member IDs và log chưa phân giải.
+4. **Evidence relationships, tùy chọn:** liên kết nhóm có loại bằng chứng rõ.
+5. **Service ranking:** Top-k candidates, score và groups/logs hỗ trợ.
+6. **Reproducible evaluation:** cùng split/candidate/data scope, run manifest và error analysis.
+
+Không bắt buộc collector real-time, dashboard production, LLM Agent, prediction hoặc noise deletion. Những mục trên là chức năng dự kiến, không phải danh sách đã hoàn thành.
 
 ## 9. Expected Contribution
 
-Đóng góp dự kiến:
+Các đóng góp **cần kiểm chứng**, chưa claim novelty:
 
-1. Một pipeline log-based RCA gồm log parsing, clustering, signal filtering và root-cause candidate ranking cho hệ thống microservices.
-2. Một failure prediction module dự đoán fault type và estimated time-to-failure từ log trend và RCA signal.
-3. Một experimental analysis so sánh các baseline về Top-k RCA accuracy, Prediction F1/AUC, lead time và false alarm rate.
+1. Một cách biểu diễn hierarchy có provenance cho khám phá log microservices.
+2. Phân tích trade-off giữa số mục hiển thị, traceability và service-level RCA ranking.
+3. Protocol so sánh baseline/ablation, candidate coverage và lỗi trên held-out incidents.
 
-> Đóng góp không được mô tả đơn giản là "dùng AI để gom log" hay "dùng LLM để tìm root cause".
+Systematic related-work review và kết quả thực nghiệm mới quyết định có đóng góp phương pháp mới hay chủ yếu đóng góp đánh giá/tái lập. Không claim log-level causal diagnosis khi chỉ có service labels.
 
 ## 10. Evaluation Plan
 
-### Dataset
+### Dataset và mức bằng chứng
 
-- Dự kiến dùng log từ hệ thống microservices mã nguồn mở có fault injection (ví dụ: OnlineBoutique, TrainTicket, hoặc dataset từ RCAEval).
-- Log gồm INFO, WARN, ERROR với timestamp, service name.
-- Ground truth được xác định từ fault injection (biết trước lỗi inject ở service nào, fault type nào).
+RCAEval là nguồn chính dự kiến; LEMMA-RCA và Nezha là ứng viên external/cross-system sau audit. Raw hiện ở `NCKH_rawData/raw_data/`, khác path CP1 mặc định trong source.
 
-### Baseline
+| Dataset | Canonical incident / GT rows | Canonical log rows | Giới hạn |
+| --- | ---: | ---: | --- |
+| RCAEval | 735 / 735 | 5,272,618 | Footer đã đọc lại 23/10; code cap tối đa 30 case logs mặc định |
+| LEMMA-RCA | 4 / 4 | 200,000 | 4 scenario hard-code, cap 50,000/scenario; label/time alignment cần audit |
+| Nezha | 21 / 21 | 71,173 | Code chỉ export logs incident đầu; fault loop và pod mapping cần kiểm tra |
 
-- A. Rule-based (gom theo service + severity + time window).
-- B. Template-only (Drain3/Spell + template frequency).
-- C. Semantic clustering (Drain3/Spell + Sentence-BERT + HDBSCAN).
-- D. Semantic + temporal (C + frequency trend + time window).
-- E. Proposed approach (D + signal filtering + RCA ranking + failure prediction).
+Các con số là rows của file, **không chứng minh số eligible incidents**. Audit raw 20/10 báo 359 RCAEval cases có log nhưng chưa xác minh ranking labels cho tập có log trong giới hạn mẫu. Nguồn: [dataset audit](../Resource/docs/dataset_audit.md), [validation](../Resource/docs/validation_report.md), [raw audit plan](../NCKH_rawData/spec/DATASET_PLAN.md).
+
+### Baselines và ablation đề xuất
+
+| ID | Method | Mục tiêu so sánh |
+| --- | --- | --- |
+| B0 | Flat raw logs, timestamp order | Workload reference; không có rank thì không so Top-k |
+| B1 | Service + explicit severity nếu có + time window | Rule grouping |
+| B2 | Template-only + frequency | Parsing/grouping cơ bản |
+| B3 | B2 + semantic clustering | Semantic grouping |
+| B4 | B3 + temporal/dependency links | Quan hệ có bằng chứng |
+| P | Hierarchy + explicit service ranker, có thể dùng B4 | Proposed combination |
+
+Không coi đây là sáu RCA models có thể so thẳng. Muốn đo grouping, giữ ranker/candidates cố định; muốn đo ranking, giữ grouping/input cố định. Ablate semantic, temporal và topology riêng.
+
+### Split và leakage
+
+Tách theo incident/nhóm nguồn; các repetition của cùng cấu hình lỗi không nằm khác fold nếu có nguy cơ cùng dữ liệu. Cross-system giữ trọn một system family qua mọi phiên bản. Chưa khóa tỷ lệ split: docs cũ có 50/50, 70/15/15 và 60/20/20; chọn sau eligibility, trước test score, lưu actual IDs/seed/group key. Preprocessing có fit chỉ học train, tuning dùng validation.
+
+Không dùng ground truth, `raw_label`, fault type, inject annotation, tên case/path chứa nhãn làm feature hoặc để thêm đáp án vào inventory. Ground truth chỉ dạy ranker trong train và chấm đánh giá.
 
 ### Metrics
 
-- **Top-1 accuracy** ≥ 70%, **Top-3 accuracy** ≥ 85% — root-cause service/template đúng nằm trong top-k kết quả.
-- **Prediction F1** ≥ 0.70, **AUC** ≥ 0.75 — dự đoán đúng fault type gần tương lai.
-- **Lead time** ≥ 5 phút — cảnh báo sớm trước khi service thật sự suy giảm.
-- **Signal Filtering Rate** — tỉ lệ log noise bị loại, giám sát để đảm bảo không loại mất root-cause signal.
-- **False Alarm Rate** — tỉ lệ dự đoán sai, càng thấp càng tốt.
+- **Visible Log Reduction:** `1 - N_visible_items/N_raw_events_in_scope`; khai báo rõ tree level, không tính xóa event.
+- **Raw Log Traceability:** số unique events truy đúng raw / số events trong phạm vi; mục tiêu kỹ thuật 100%, chưa đo toàn corpus.
+- **Top-1/Top-3 service RCA:** báo candidate coverage, conditional và end-to-end scores; candidate thiếu đáp án không bị loại âm thầm. Với ít hơn K candidates, dùng tất cả candidates.
+- **Runtime/Memory/Cost:** ghi riêng per-stage và end-to-end, máy/config/data size.
+- **Time to Locate:** chỉ đo/claim nếu thực hiện user study.
 
-> Các chỉ số trên đều là target metric, không phải kết quả đã đo được.
+Multi-target phải giữ tập nhãn và định nghĩa Hit@k/Recall@k phù hợp; không lấy riêng target đầu làm ground truth hoàn chỉnh. N/A nếu mẫu số rỗng. Chưa chốt target accuracy; target V1/V2 chỉ là lịch sử, không phải số đo V3.
 
-### Research Questions
+### Research Questions đề xuất
 
-- **RQ1.** Signal filtering giảm được bao nhiêu log noise mà không làm mất root-cause signal?
-- **RQ2.** Log clustering + temporal signal có cải thiện RCA accuracy so với template-only hoặc rule-based không?
-- **RQ3.** Pipeline đề xuất có đạt Top-1/Top-3 RCA accuracy tốt hơn các baseline không?
-- **RQ4.** Prediction module dự đoán fault type và time-to-failure với F1/AUC và lead time như thế nào?
-- **RQ5.** ERROR log khi dùng làm validation signal có cải thiện RCA accuracy so với khi bỏ ERROR?
+- **RQ1:** Template/semantic grouping giảm số mục hiển thị thế nào ở cùng tree level?
+- **RQ2:** Có bảo toàn raw events, service inventory và truy vết đúng nguồn không?
+- **RQ3:** Template/temporal/relationship features có cải thiện held-out service RCA so với baseline đơn giản không?
+- **RQ4:** Runtime, memory, error patterns và độ ổn định thay đổi ra sao theo system/incident?
+- **RQ5, nếu khả thi:** Cùng giao diện khám phá, engineer tìm đúng service nhanh hơn không?
 
-### Expert evaluation
+### Expert evaluation / user survey
 
-- _(chưa xác định — có thể mời SRE/DevOps engineer đánh giá tính hữu ích của output)_
+Chưa xác định protocol, số người hoặc tính khả thi. Không dùng nhận xét không kiểm soát để claim cải thiện workload.
 
-### User survey
+### Gate và threats
 
-- _(chưa xác định)_
+Trước train: xác minh labels/windows/inventory và exclusion reasons; trước kết luận: kiểm tra candidate misses, imbalance, repetition leakage, mapping và export caps. Không đủ service labels/join thì thu hẹp sang log organization/exploration. Thiếu edge labels thì không claim causal graph accuracy.
 
 ## 11. Related Papers
 
-| No  | Title                                                                                                      | Year | Source             | Link / DOI                                                                       |
-| --- | ---------------------------------------------------------------------------------------------------------- | ---- | ------------------ | -------------------------------------------------------------------------------- |
-| 1   | Nezha: Interpretable Fine-Grained Root Causes Analysis for Microservices on Multi-modal Observability Data | 2023 | ESEC/FSE 2023, ACM | https://doi.org/10.1145/3611643.3616249                                          |
-| 2   | Intelligent Logging and Monitoring Strategies                                                              | 2026 | IJSTC Vol. 8 No. 8 | https://ijcdra.us/index.php/IJSTC/article/view/69                                |
-| 3   | Drain: An Online Log Parsing Approach with Fixed Depth Tree                                                | 2017 | IEEE ICWS 2017     | https://www.computer.org/csdl/proceedings-article/icws/2017/0752a033/12OmNBInLkZ |
-| 4   | Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks                                             | 2019 | EMNLP-IJCNLP 2019  | https://doi.org/10.18653/v1/D19-1410                                             |
-| 5   | Density-Based Clustering Based on Hierarchical Density Estimates                                           | 2015 | ACM TKDD           | https://doi.org/10.1145/2733381                                                  |
+Giữ các nhóm bibliography của khung cũ nhưng coi là **candidate reading list**: Nezha/RCAEval/LEMMA-RCA cho RCA/dataset; Drain/Sentence-BERT/HDBSCAN cho parsing/grouping; COLA/AlertGuardian cho alert organization; SRE material cho background. “Intelligent Logging and Monitoring Strategies” là candidate từ V2, chưa xác minh chất lượng/metadata.
+
+Không chép paper scores, venue/year hoặc “first/no prior work” thành source fact khi chưa đọc nguồn gốc. [Paper list](../02_related_work/paper_list.md), [matrix](../02_related_work/literature_review_matrix.md) và [search plan](../02_related_work/search_keywords.md) theo dõi việc kiểm chứng; lần đồng bộ này không thực hiện literature review mới.

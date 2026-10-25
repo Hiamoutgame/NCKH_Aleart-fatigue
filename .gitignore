@@ -1,1 +1,31 @@
 temp/
+
+# Python environment and caches
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.cache/
+.ipynb_checkpoints/
+
+# Data: raw, normalized and generated artifacts stay local / on Drive
+data/
+*.parquet
+
+# Personal and course material, kept local only
+_personal/
+
+# Kev (vendored from github.com/jaredpalmer/kev): code is tracked,
+# the upstream experiment outputs and large eval partitions are not.
+third_party/kev/runs/
+third_party/kev/evals/**/*.jsonl
+!third_party/kev/evals/smoke-v1/*.jsonl
+third_party/kev/.venv/
+third_party/kev/playground/node_modules/
+
+# Office lock files
+~$*
+
+# Pre-restructure locations (removed after the move)
+NCKH_rawData/
+models/

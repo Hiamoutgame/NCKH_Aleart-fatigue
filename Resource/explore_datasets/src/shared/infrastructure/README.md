@@ -1,15 +1,8 @@
-# shared/infrastructure
+# shared/infrastructure — I/O và helpers hiện có
 
-Adapter đọc dữ liệu thành pandas DataFrame.
+- `loaders.py`: load_table cho CSV/TSV/JSON/JSONL/Parquet thành pandas DataFrame.
+- `paths.py`: neo path theo checkout; raw default **vẫn ở CP1 cũ**, hiện thiếu. Raw thật ở `NCKH_rawData/raw_data/`; override `data_root` từng adapter.
+- `normalization.py`: mask timestamp/UUID/thread/hex/numbers bằng regex; không phải Drain3/Spell parser.
+- `severity.py`: regex và compatibility helpers; `infer_severity()` legacy mặc định INFO khi unknown, khác canonical adapter có thể trả null.
 
-- load_table(path, **kwargs): hỗ trợ .csv, .tsv, .json, .jsonl, .parquet.
-
-Quy ước: chỉ đọc, không ghi đè raw data.
-
-Helper dùng chung cho các adapter và CP1:
-
-- `paths.py`: đường dẫn raw/normalized được neo theo checkout.
-- `normalization.py`: chuẩn hóa message theo rule CP1 hiện có.
-- `severity.py`: regex severity và hàm tương thích CP1.
-
-CP1 dùng các module này qua `src.shared.infrastructure`; các helper không import CP1.
+Không ghi đè raw. CP1 từng dùng helpers nhưng source CP1 không có active trong snapshot này. Các helpers không import CP1 hoặc adapters. [Implementation status](../../../../docs/implementation_status.md) nêu timestamp/severity/provenance assumptions; không tự chứng nhận field mapping đúng nguồn.

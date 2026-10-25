@@ -142,7 +142,7 @@ class LemmaAdapter(BaseDatasetAdapter):
             incident_id if incident_id.startswith("lemma_") else f"lemma_{incident_id}"
         )
 
-        files = self.loader.locate_log_files()
+        files = self.loader.locate_log_files(canonical_incident_id)
         if not files:
             return []
 
@@ -171,7 +171,13 @@ class LemmaAdapter(BaseDatasetAdapter):
                 container_name = k8s.get("container_name")
                 pod_name = k8s.get("pod_name")
 
-                if container_name:
+                if pod_name and any(pod_name.startswith(svc) for svc in ["reviews", "productpage", "ratings", "details", "mongodb"]):
+                    parts = pod_name.split("-")
+                    if len(parts) >= 3 and parts[1].startswith("v"):
+                        service_id = f"{parts[0]}-{parts[1]}"
+                    else:
+                        service_id = parts[0]
+                elif container_name and container_name not in {"istio-proxy", "proxy"}:
                     service_id = container_name
                 elif pod_name:
                     service_id = pod_name.split("-")[0]
@@ -213,7 +219,9 @@ class LemmaAdapter(BaseDatasetAdapter):
 
         return events
 
-    def normalize(self, output_dir: Optional[str | Path] = None) -> dict[str, Any]:
+    def normalize(
+        self, output_dir: Optional[str | Path] = None, limit_per_incident: Optional[int] = 50000
+    ) -> dict[str, Any]:
         """Normalize LEMMA-RCA data and export Parquet datasets."""
         if output_dir is None:
             out_path = NORMALIZED_DIR / "lemma_rca"
@@ -234,10 +242,13 @@ class LemmaAdapter(BaseDatasetAdapter):
         gt_file = out_path / "ground_truth.parquet"
         df_gt.to_parquet(gt_file, index=False)
 
-        # 3. Export Log Events (linked to the first active scenario)
-        primary_incident = incidents[0].incident_id if incidents else "lemma_default"
-        events = self.load_logs(primary_incident)
-        df_logs = log_events_to_dataframe(events)
+        # 3. Export Log Events across all available scenarios
+        all_events: list[LogEvent] = []
+        for inc in incidents:
+            events = self.load_logs(inc.incident_id, limit=limit_per_incident)
+            all_events.extend(events)
+
+        df_logs = log_events_to_dataframe(all_events)
         logs_file = out_path / "log_events.parquet"
         df_logs.to_parquet(logs_file, index=False)
 
@@ -247,5 +258,5 @@ class LemmaAdapter(BaseDatasetAdapter):
             "incidents_count": len(df_incidents),
             "ground_truth_count": len(df_gt),
             "log_events_count": len(df_logs),
-            "primary_incident": primary_incident,
+            "scenarios_loaded": [i.incident_id for i in incidents if len(self.loader.locate_log_files(i.incident_id)) > 0],
         }

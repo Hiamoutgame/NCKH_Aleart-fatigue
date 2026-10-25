@@ -12,7 +12,7 @@ import pandas as pd
 
 from src.shared.infrastructure.normalization import normalize_message
 from src.shared.infrastructure.paths import DATASET_PATHS, NORMALIZED_DIR, record_source_path
-from src.shared.infrastructure.severity import DEBUG_RE, ERROR_RE, INFO_RE, LOG4J_LEVEL_RE, WARN_RE
+from src.shared.infrastructure.severity import DEBUG_RE, ERROR_RE, ERR_NULL_RE, INFO_RE, LOG4J_LEVEL_RE, WARN_RE
 from src.shared.domain.canonical import (
     GroundTruth,
     Incident,
@@ -37,7 +37,8 @@ def extract_explicit_severity(message: object) -> Optional[str]:
         return "WARN" if level == "WARNING" else level
     if WARN_RE.search(message):
         return "WARN"
-    if ERROR_RE.search(message):
+    cleaned = ERR_NULL_RE.sub("", message)
+    if ERROR_RE.search(cleaned):
         return "ERROR"
     if DEBUG_RE.search(message):
         return "DEBUG"
@@ -236,8 +237,24 @@ class RCAEvalAdapter(BaseDatasetAdapter):
 
         return events
 
-    def normalize(self, output_dir: Optional[str | Path] = None) -> dict[str, Any]:
-        """Normalize all available cases and export Parquet datasets."""
+    def select_balanced_cases(self, case_ids: list[str], max_cases: int) -> list[str]:
+        """Select a representative balanced subset across systems."""
+        df_cases = pd.read_parquet(self._get_cases_path())
+        df_avail = df_cases[df_cases["case"].isin(case_ids)]
+        per_sys = max(1, max_cases // 3)
+        selected = []
+        for sys_name in ["ob", "ss", "tt"]:
+            sys_cases = df_avail[df_avail["system"] == sys_name]["case"].tolist()
+            selected.extend(sys_cases[:per_sys])
+        return selected
+
+    def normalize(
+        self, output_dir: Optional[str | Path] = None, max_cases: Optional[int] = 30
+    ) -> dict[str, Any]:
+        """Normalize cases and export Parquet datasets using streaming for memory safety."""
+        import pyarrow as pa
+        import pyarrow.parquet as pq
+
         if output_dir is None:
             out_path = NORMALIZED_DIR / "rcaeval"
         else:
@@ -257,22 +274,50 @@ class RCAEvalAdapter(BaseDatasetAdapter):
         gt_file = out_path / "ground_truth.parquet"
         df_gt.to_parquet(gt_file, index=False)
 
-        # 3. Export Log Events for all locally available cases
+        # 3. Export Log Events for locally available cases
         available_cases = self.list_available_log_cases()
-        all_events: list[LogEvent] = []
-        for case_id in available_cases:
-            events = self.load_logs(case_id)
-            all_events.extend(events)
+        selected_cases = list(available_cases.keys())
+        if max_cases is not None and max_cases > 0 and len(selected_cases) > max_cases:
+            selected_cases = self.select_balanced_cases(selected_cases, max_cases)
 
-        df_logs = log_events_to_dataframe(all_events)
         logs_file = out_path / "log_events.parquet"
-        df_logs.to_parquet(logs_file, index=False)
+        log_schema = pa.schema([
+            ("log_id", pa.string()),
+            ("incident_id", pa.string()),
+            ("raw_message", pa.string()),
+            ("source_file", pa.string()),
+            ("source_row_id", pa.string()),
+            ("raw_record_ref", pa.string()),
+            ("timestamp_utc", pa.timestamp("ns", tz="UTC")),
+            ("service_id", pa.string()),
+            ("entity_id", pa.string()),
+            ("entity_type", pa.string()),
+            ("severity", pa.string()),
+            ("parsed_message", pa.string()),
+            ("template_id", pa.string()),
+            ("trace_id", pa.string()),
+            ("span_id", pa.string()),
+        ])
+
+        writer = pq.ParquetWriter(logs_file, schema=log_schema, compression="snappy")
+        total_logs = 0
+        try:
+            for case_id in selected_cases:
+                events = self.load_logs(case_id)
+                if not events:
+                    continue
+                df_chunk = log_events_to_dataframe(events)
+                table = pa.Table.from_pandas(df_chunk, schema=log_schema, preserve_index=False)
+                writer.write_table(table)
+                total_logs += len(df_chunk)
+        finally:
+            writer.close()
 
         return {
             "dataset_source": self.dataset_source,
             "output_dir": str(out_path),
             "incidents_count": len(df_incidents),
             "ground_truth_count": len(df_gt),
-            "log_events_count": len(df_logs),
-            "cases_normalized": list(available_cases.keys()),
+            "log_events_count": total_logs,
+            "cases_normalized": selected_cases,
         }

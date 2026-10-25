@@ -1,3 +1,13 @@
+# Paper candidates cho V3
+
+**23/10/2026.** Dùng [matrix V3](literature_review_matrix.md) và [search plan](search_keywords.md). Lần cập nhật này chỉ đồng bộ docs từ context/source local, chưa xác minh bibliography ngoài repo hoặc đánh dấu paper mới đã đọc.
+
+Danh sách cũ bên dưới được giữ để không mất ghi chú. Venue/year/author/DOI/arXiv, paper scores, dataset license và các nhận xét “không public/không WARNING/khó tái lập” trong đó đều cần đối chiếu paper/repo gốc trước khi trích. Số seed papers không đồng nghĩa số bài đã kiểm chứng; quota trong bảng là ghi chú yêu cầu cũ, không phải completion count.
+
+Ưu tiên đọc theo nhiệm vụ V3: dataset/service RCA → parsing/grouping → evidence-preserving organization → ranking/evaluation. LLM/Agent và failure prediction là nguồn lân cận tùy RQ, không phải module bắt buộc. Không tự thêm paper chưa tìm thấy hoặc biến DOI candidate thành source fact.
+
+## Danh sách lịch sử V1/V2 — candidate metadata chưa rà soát lại
+
 # Paper List — Alert Aggregation / LLM Agent / Microservices RCA
 
 > **Trạng thái: BẢN NHÁP** — Chỉ liệt kê seed papers từ README.

@@ -1,15 +1,14 @@
-# shared — Shared kernel
+# shared — contract và helper dùng chung
 
-Chứa mọi thứ dùng chung cho các dataset repo. Không phụ thuộc vào bất kỳ dataset cụ thể nào.
+Không phụ thuộc dataset cụ thể. CLI composition ở `src/interface/datasets_cli.py` được phép ghép adapters; không đưa logic riêng từng dataset vào shared.
 
-| Layer | Nội dung |
+| Layer | Source hiện có |
 | --- | --- |
-| domain | DatasetProfile, ColumnProfile, Incident, DatasetSource (port) |
-| application | profile_dataframe, format_profile |
-| infrastructure | load_table cho csv/tsv/json/jsonl/parquet |
-| interface | profile_cli.py |
+| domain | Profile entities/port, Incident/LogEvent/GroundTruth, BaseDatasetAdapter, DataFrame conversions |
+| application | Profiling use cases |
+| infrastructure | Table loaders, paths, regex normalization và severity |
+| interface | File profiler CLI |
 
-## Quy tắc
-- Thêm contract mới vào shared khi có từ 2 dataset cần.
-- Không nhét logic riêng của một dataset vào đây.
-- shared không được import từ datasets/.
+`domain/canonical.py` hiện import pandas; không khẳng định mọi domain code thuần Python. Schema dùng `log_id`, chưa có Group/Edge/Ranking. [src README](../README.md) và [implementation status](../../../docs/implementation_status.md) ghi hiện trạng.
+
+Default raw vẫn ở CP1 cũ, khác raw thật `NCKH_rawData/raw_data/`; dùng adapter/CLI `data_root` override. Incident có label-bearing metadata, nên tách bảng ground truth chưa bảo đảm không leakage.

@@ -1,3 +1,32 @@
+# Literature review V3 — bảng cần kiểm chứng
+
+**Đồng bộ scope ngày 23/10/2026, chưa thực hiện literature search mới.** [Master context](../NCKH_MASTER_CONTEXT_2026-10-23.md) là nguồn định hướng. Các paper/claims phía dưới từ ghi chú cũ không trở thành bằng chứng đã xác minh chỉ vì xuất hiện trong matrix.
+
+## Matrix làm việc hiện tại
+
+| Nhóm candidate đã được nhắc | Vai trò có thể có trong V3 | Cần đọc/kiểm chứng trước khi dùng |
+| --- | --- | --- |
+| RCAEval, LEMMA-RCA, Nezha | Dataset/benchmark và service-level diagnosis | Modality, label level/multiplicity, case eligibility, protocol và source revision |
+| Drain/Spell | Template parsing baseline | Parser assumptions, accuracy/coverage, fitting protocol; phân biệt Drain paper và implementation Drain3 |
+| Sentence-BERT, HDBSCAN | Semantic grouping candidates | Input granularity, grouping labels, parameters, runtime, relation với service ranking |
+| COLA, AlertGuardian | Related alert organization/correlation | Log vs alert unit, data availability, knowledge sources, evidence preservation và scope metric |
+| SRE/domain materials | Problem framing, operational concepts | Source/claim thực tế; không dùng background làm bằng chứng novelty |
+| Intelligent Logging and Monitoring Strategies | Candidate background từ V2 | Metadata/chất lượng nguồn/nội dung thực; chưa xác nhận phù hợp |
+
+Mỗi paper record cần: exact source/revision, inspected section/page, task/input/output, label granularity, raw provenance, hierarchy/relationships/ranking, dataset/split/leakage controls, metrics denominator, reproducibility, limitations và evidence status. Paper score chỉ ghi khi có vị trí nguồn cụ thể.
+
+## Những giả thuyết cần literature và thí nghiệm
+
+- Hierarchy có provenance có hỗ trợ khám phá log tốt hơn flat grouping không?
+- Grouping/temporal features có lợi gì cho service ranking khi giữ candidates và split cố định?
+- Có trade-off giữa số mục hiển thị, raw reconstruction và RCA accuracy không?
+
+Đây là **câu hỏi cần trả lời**, chưa phải research gaps đã xác nhận. Không dùng “WARNING gap”, RCPR target, first hybrid topology+semantic+agent hoặc việc suy alert labels từ service GT làm novelty V3.
+
+## Ghi chú matrix V1/V2 được giữ để đối chiếu
+
+**Toàn bộ phần cũ bên dưới là lịch sử/UNVERIFIED cho lần đồng bộ này.** Không dùng gap map/claim method/metric của nó như kết luận hiện tại. IDs trong các file cũ chưa thống nhất với nhau; khi review phải đối chiếu paper identity, không chỉ ID A1/A2.
+
 # Literature Review Matrix — Alert Aggregation / LLM Agent / Microservices RCA
 
 > **Trạng thái: BẢN NHÁP** — Chưa điền sâu vì cần cậu research bài trước từ `search_keywords.md`.

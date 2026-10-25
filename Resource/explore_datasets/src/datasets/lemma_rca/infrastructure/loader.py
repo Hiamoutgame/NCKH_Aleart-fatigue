@@ -36,16 +36,29 @@ class LemmaLoader:
         else:
             self.data_root = Path(data_root)
 
-    def locate_log_files(self) -> list[Path]:
-        """Tim tat ca cac file JSON log trong thu muc local."""
+    def locate_log_files(self, incident_id: Optional[str] = None) -> list[Path]:
+        """Tim cac file JSON log trong thu muc local, loc theo incident_id neu duoc chi dinh."""
         if not self.data_root.exists():
             return []
 
-        # Tim cac file json, loai tru cac file manifest / metadata nho neu co
-        json_files = sorted(
-            [p for p in self.data_root.rglob("*.json") if p.is_file() and p.stat().st_size > 1024]
-        )
-        return json_files
+        def is_log_file(p: Path) -> bool:
+            return (
+                p.is_file()
+                and p.stat().st_size > 1024
+                and (p.name.startswith("app-") or p.name.startswith("infra-"))
+            )
+
+        if incident_id:
+            for tag in ["20220606", "20210517", "20210524", "20211203"]:
+                if tag in incident_id:
+                    matched = sorted([
+                        p for p in self.data_root.rglob("*.json")
+                        if is_log_file(p) and tag in str(p)
+                    ])
+                    if matched:
+                        return matched
+
+        return sorted([p for p in self.data_root.rglob("*.json") if is_log_file(p)])
 
     @staticmethod
     def extract_level_from_message(raw_msg: str, default_level: str = "INFO") -> str:

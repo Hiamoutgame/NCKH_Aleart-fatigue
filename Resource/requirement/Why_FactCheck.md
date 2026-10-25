@@ -1,3 +1,5 @@
+> **Tài liệu lịch sử V1, đánh dấu 23/10/2026.** Lý do, paper/industry claims và kết quả fact-check dưới đây được giữ để đối chiếu, chưa xác minh lại trong lần đồng bộ docs. Không dùng chúng như novelty/scope/metric V3. Đọc [master context](../../NCKH_MASTER_CONTEXT_2026-10-23.md) và [proposal V3](../../01_topic_proposal/topic_proposal.md).
+
 # FACT-CHECK & REFERENCE AUDIT — Why.md
 
 > Mục đích: Đối chiếu từng luận điểm/con số trong Why.md với nguồn gốc thực tế.  

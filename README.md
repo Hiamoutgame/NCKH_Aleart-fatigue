@@ -1,220 +1,101 @@
-# Alert Aggregation from Early-Warning Logs in Microservices
+# Evidence-preserving Log Organization & Service-level RCA
 
-**Research project** — 8-week timeline, supervised by Prof. Long
+Nghiên cứu offline về **tổ chức log phân cấp, giữ bằng chứng gốc và xếp hạng service nghi ngờ gây lỗi** trong microservices. Đây là working direction V3, cập nhật **23/10/2026**; tên đề tài, RQ và novelty chưa được Prof. Long phê duyệt.
 
-Dataset workspace: **RCAEval, LEMMA-RCA, Nezha**. See the current
-[Resource map](Resource/README.md) and [validation report](Resource/docs/validation_report.md).
-Other dataset code/data is retained under `Resource/archive/`.
+Đọc [master context](NCKH_MASTER_CONTEXT_2026-10-23.md) trước khi làm việc. V1 WARNING-only/LLM Agent và V2 Failure Prediction được giữ trong [lịch sử](Resource/docs/history/README.md).
 
----
+## Mục tiêu và nguyên tắc
 
-## 🎯 Research Objective
+Một incident tạo nhiều log lặp lại hoặc liên quan giữa các service. Đề tài hướng đến cấu trúc `incident → service → nhóm template/ngữ nghĩa → log gốc`, kèm candidate ranking và bằng chứng để kiểm tra.
 
-Investigate whether an **LLM agent with tool-calling** (combining semantic similarity + service topology + synthetic runbook reasoning) can reduce noisy early-warning alerts more effectively than rule-based, semantic-only, and temporal-spatial baselines — **while preserving root-cause signals (RCPR ≥ 95%)**.
+- Giảm số mục cần xem ở tổng quan, giữ toàn bộ log nguồn và mapping truy ngược.
+- Quan hệ temporal/semantic/dependency không tự chứng minh nhân quả.
+- Đánh giá RCA ở mức service; không tự suy nhãn noise/root-cause cho từng log.
+- Candidate phải thuộc inventory có nguồn. Split theo incident/nhóm case lặp, không dùng test labels làm input hoặc tuning.
+- Không bắt buộc WARNING-only, autonomous Agent, failure prediction hoặc production dashboard.
 
-| Dimension | Detail |
-|-----------|--------|
-| **Focus** | Early-warning / `WARNING` level logs (pre-failure) |
-| **Architecture** | Microservices (Online Boutique, Sock Shop, Train Ticket) |
-| **Primary Dataset** | RCAEval (`phamquiluan/RCAEval`) — 735 cases, MIT license |
-| **Backup Dataset** | LEMMA-RCA (CC-BY-NC-4.0) — *does not solve WARNING gap* |
-| **Timeline** | 8 weeks, ~2h/day |
-| **Core Metrics** | ARR ≥ 60%, RCPR ≥ 95%, Pairwise F1 ≥ 0.85, Group Purity ≥ 0.80 |
-
----
-
-## 🧭 Agent Topology & Navigation Graph
+## Pipeline và trạng thái thực tế
 
 ```mermaid
-graph TB
-    subgraph "INPUT LAYER"
-        I1["Dataset<br/>RCAEval (primary)<br/>LEMMA-RCA (backup)"]
-        I2["Alert Stream<br/>Parse logs.csv<br/>Filter WARNING<br/>Normalize message"]
-    end
-
-    subgraph "BASELINE ARMS"
-        B1["Arm 1: Rule-based<br/>Prometheus-style<br/>group_by: service+alertname+severity"]
-        B2["Arm 2: Semantic-only<br/>Drain3 → SBERT → HDBSCAN"]
-        B3["Arm 3: Temporal-Spatial<br/>Service call graph + Δt window"]
-        B4["Arm 4: LLM Agent<br/>Fast filter → Tool-calling → CoT"]
-    end
-
-    subgraph "AGENT TOOLS (Arm 4)"
-        T1["🔧 get_related_alerts<br/>(service, time_window)"]
-        T2["🔧 get_service_dependency<br/>(service)"]
-        T3["🔧 get_runbook<br/>(fault_type)<br/>synthetic only"]
-    end
-
-    subgraph "METRICS"
-        M1["ARR ≥ 60%"]
-        M2["RCPR ≥ 95%"]
-        M3["Pairwise F1 ≥ 0.85"]
-        M4["Group Purity ≥ 0.80"]
-    end
-
-    I1 --> I2
-    I2 --> B1
-    I2 --> B2
-    I2 --> B3
-    I2 --> B4
-    B4 --> T1
-    B4 --> T2
-    B4 --> T3
-    B1 --> COMP
-    B2 --> COMP
-    B3 --> COMP
-    B4 --> COMP
-    COMP["📊 Compare ARR/RCPR/F1/Purity"]
-    COMP --> M1
-    COMP --> M2
-    COMP --> M3
-    COMP --> M4
+flowchart LR
+    A[Dataset audit] --> B[Canonical events + provenance]
+    B --> C[Parsing + grouping]
+    C --> D[Incident/service/group hierarchy]
+    D --> E[Service candidate ranking]
+    D -. tùy bằng chứng .-> F[Temporal/semantic/dependency links]
+    F -.-> E
+    E --> G[Held-out evaluation]
 ```
 
----
+| Thành phần | Trạng thái ngày 23/10 |
+| --- | --- |
+| Ba adapters, CLI inspect/normalize, canonical schema | Có source trong `Resource/explore_datasets/` |
+| Raw metadata audit L0/L1 | Có artifact/script trong `NCKH_rawData/spec/`, ngày 20/10 |
+| Chín Parquet chuẩn hóa | Có file; đã kiểm tra lại footer, chưa audit đầy đủ nội dung |
+| Regex normalization + hash `template_id` | Có; chưa phải Drain3/Spell hoặc semantic clustering |
+| Grouping/hierarchy/evidence graph/ranker V3 | Chưa tìm thấy implementation trong source active |
+| Top-k, grouping metrics, user study | Chưa có kết quả V3 được xác nhận |
 
-## 📁 Repository Structure
+Xem [implementation status](Resource/docs/implementation_status.md) và [validation report](Resource/docs/validation_report.md). Số dòng canonical hiện có: RCAEval **5,272,618**, LEMMA-RCA **200,000**, Nezha **71,173**. Đây là log-event rows, không phải số incident đủ điều kiện đánh giá.
+
+## Cấu trúc hiện tại
 
 ```text
+NCKH_MASTER_CONTEXT_2026-10-23.md    # Context chuẩn V3
+01_topic_proposal/                 # Proposal V3 theo khung cũ; history/V2
+02_related_work/                   # Paper candidates, matrix, search plan
+NCKH_rawData/
+├── raw_data/                      # Raw thật: RCAEval, LEMMA-RCA, Nezha
+└── spec/                          # Audit L0/L1 và dataset plan
 Resource/
-├── README.md                  # Current folder graph and data flow
-├── cp1/                       # Raw data, dataset verification, historical artifacts
-├── explore_datasets/          # 3 dataset adapters, CLI and shared paths/log helpers
-├── datasets/normalized/       # Three canonical Parquet tables per dataset
-├── docs/                      # Schema audit and current validation report
-├── archive/                   # Excluded datasets, retained outside the active workflow
-├── report/                    # LaTeX and DOCX research drafts
-├── requirement/               # Research proposal and fact check
-└── note/                      # Research notes
-run_datasets.sh                # list / inspect / normalize, selects local Python
-run_lemma_rca.sh               # Detailed LEMMA exploration CLI
+├── explore_datasets/src/          # Adapters, canonical schema, CLI
+├── datasets/normalized/<slug>/    # incidents/log_events/ground_truth.parquet
+├── docs/                          # Audit, status, protocol, validation, history
+├── note/                          # Handoff và thiết kế training MVP
+└── report/                        # LaTeX/DOCX lịch sử, chưa là paper V3
 ```
 
-## ⚡ Quick Start
+`Resource/cp1/`, `Resource/cp2/`, `Resource/archive/` được nhắc ở docs cũ nhưng không có trong checkout active. Không lấy bản sao dưới `.kilo/worktrees/` làm source đang triển khai. [Resource map](Resource/README.md) giải thích đường dẫn và giới hạn runtime.
 
-Run from the repository root after installing `requirements.txt` into the local
-Python environment described in [Resource/README.md](Resource/README.md):
+## Quick start
+
+Từ root repo, dùng môi trường có `pandas`, `pyarrow`, `pytest`. Wrapper ưu tiên `.venv` local rồi mới dùng `python3`.
 
 ```bash
+# Khi cần tạo môi trường mới
+python3 -m venv .venv
+.venv/bin/python -m pip install -r requirements.txt
+
+# Chỉ xem CLI và cấu hình đường dẫn
+bash run_datasets.sh --help
 bash run_datasets.sh list
-bash run_datasets.sh inspect all
-bash run_lemma_rca.sh logs --service productpage --limit 5
-bash run_datasets.sh normalize all --output-root /tmp/normalized-preview
-Resource/explore_datasets/.venv/bin/python -m pytest -c Resource/pytest.ini -q
+
+# Đọc metadata RCAEval ở vị trí raw hiện tại
+bash run_datasets.sh inspect rcaeval --data-root NCKH_rawData/raw_data/huggingface/rcaeval
 ```
 
-The empirical findings below are historical research results. The current local
-snapshot has logs for three RCAEval cases; see the validation report for sample
-coverage and existing incident-label limitations.
+**Path mismatch đã biết:** `paths.py` còn trỏ về `Resource/cp1/raw_data/`. `list` chỉ in các path mặc định đó; `inspect all` không hỗ trợ override cả ba nguồn cùng lúc. Dùng `--data-root` với từng dataset. Không cần tải lại raw hoặc chạy normalize để đọc context.
 
----
+Nếu chủ động tạo bản canonical mới sau khi audit, ghi vào nơi riêng:
 
-## 📊 Key Empirical Findings (Verified on RCAEval)
+```bash
+bash run_datasets.sh normalize rcaeval \
+  --data-root NCKH_rawData/raw_data/huggingface/rcaeval \
+  --output-root /tmp/nckh-normalized-preview
+```
 
-| Item | Verified Value | Note |
-|------|----------------|------|
-| Total cases | 735 | 9 datasets × 3 systems |
-| Cases **with logs** | **359** | RE1 (375 cases) = metric-only |
-| Total log lines | 49,652,771 | scanned fully |
-| Lines containing `WARN` | **9,738** (0.0196%) | Sock Shop 9,662 · Train Ticket 74 · Online Boutique 2 |
-| Log columns | `timestamp`, `container_name`, `message` | **no `severity` column** |
-| `root_cause.txt` cases | 8 | only 4 have `WARNING` as indicator |
+Lệnh này mặc định chọn tối đa **30 case** RCAEval. LEMMA cap 50,000 log/incident; Nezha chỉ export log incident đầu tiên. CLI chưa có cờ thay các cap này. Không gọi đó là full-corpus normalization.
 
-**Critical constraint**: RCAEval **does not have a `severity` column**. Severity must be inferred via a 3-tier process (parse from message / frequency anomaly / root-cause label). See `Resource/cp1/docs/data_schema_notes.md` and `Resource/cp1/docs/CP1_Ban_Dinh_Huong.md §4.2`.
+## Đọc tiếp và bước nghiên cứu tiếp theo
 
----
+1. [Proposal V3](01_topic_proposal/topic_proposal.md): problem, method candidates, evaluation và open decisions.
+2. [Implementation status](Resource/docs/implementation_status.md): code có gì, thiếu gì, vì sao chưa claim sẵn sàng training.
+3. [Dataset audit](Resource/docs/dataset_audit.md) và [validation](Resource/docs/validation_report.md): phạm vi bằng chứng hiện có.
+4. [Research protocol](Resource/docs/research_protocol_v3.md): eligibility, baselines, split và metrics đề xuất.
+5. [Related work](02_related_work/literature_review_matrix.md): kiểm chứng literature trước khi claim novelty.
 
-## 🔬 Four Experimental Arms
+Bước tiếp theo là xác minh label/window/service inventory và lập case eligibility trước baseline grouping/ranking. Chưa chốt target accuracy V3; không chuyển target V1/V2 thành kết quả.
 
-| Arm | Method | Tools / Tech | Expected Strength | Known Weakness |
-|-----|--------|--------------|-------------------|----------------|
-| **1. Rule-based** | Prometheus Alertmanager simulation | `group_by: service,alertname,severity` | Fast, deterministic | Topology-blind, manual rules |
-| **2. Semantic-only** | Drain3 → Sentence-BERT → HDBSCAN | `all-MiniLM-L6-v2`, `sklearn` | No topology needed | **Drain3 drops severity**; causality-blind |
-| **3. Temporal-Spatial** | Service call graph + sliding window | Topology from traces/repo, Δt ∈ {30,60,120}s | Catches cascading | Sensitive to τ/Δt; rigid |
-| **4. LLM Agent** | Fast filter → Agent → ≤2 tool calls | `get_related_alerts`, `get_service_dependency`, `get_runbook` (synthetic) | Causal reasoning, flexible | Latency, token cost, non-deterministic |
+## License và nguồn ngoài
 
-**Agent constraint**: max **2 tool calls per grouping decision**.
-
----
-
-## 📐 Metrics (Defined by This Work)
-
-| Metric | Formula | Target | Note |
-|--------|---------|--------|------|
-| **ARR** | `1 − N_groups / N_raw_alerts` | ≥ 60% | Matches AlertGuardian definition |
-| **RCPR** (service-level) | `𝟙(root_service ∈ primary_group) / M` | ≥ 95% | **Primary** — 359 cases |
-| **RCPR** (alert-level) | `𝟙(root_alert ∈ primary_group)` | ≥ 95% | **Secondary** — only 4 cases |
-| **Pairwise F1** | `2PR/(P+R)` on co-clustered pairs | ≥ 0.85 | Comparable to COLA (0.901–0.930) |
-| **Group Purity** | `Σ max_count_per_group / N_total` | ≥ 0.80 | Prevents over-aggregation |
-
----
-
-## 🧩 Research Gaps Addressed
-
-| Gap | Why It Matters |
-|-----|----------------|
-| **No work on WARNING-level aggregation** | All prior work is post-failure (noise/critical binary) |
-| **No root-cause preservation metric** | Prior metrics only measure compression (ARR) or pairwise correctness |
-| **No hybrid topology + semantic + agent** | Arm 4 is the first to combine all three |
-| **No public alert-level benchmark** | This work *creates* alert stream + labels from RCAEval — methodological contribution |
-
----
-
-## 📅 8-Week Plan (Checkpoints)
-
-| Week | Checkpoint | Deliverable | Review |
-|------|------------|-------------|--------|
-| **1** | CP1 | Dataset verified, 1-page direction | Self-check |
-| **2** | CP2 | Gap analysis (1 page) | **Prof. Long** |
-| **3** | CP3/4 | Parse RCAEval → `alerts.csv` | Self-check |
-| **4** | CP4b/5 | MVP Agent + baseline + dependency table | Self-check |
-| **5** | CP5 | Full run, ARR/RCPR/F1/Purity table | Self-check |
-| **6** | CP6/7/8 | Draft → Final report | **Prof. Long** |
-
----
-
-## 📄 Key Documents (Read in Order)
-
-1. **`Resource/cp1/docs/CP1_Ban_Dinh_Huong.md`** — 1-page direction (VN), updated after empirical verification
-2. **`Resource/docs/validation_report.md`** — current dataset coverage, validation and known limitations
-3. **`Resource/cp1/docs/data_schema_notes.md`** — Full empirical verification log (49.6M lines scanned)
-4. **`Resource/PROJECT_MINDMAP.md`** — Visual overview (some numbers outdated, see banner)
-
----
-
-## ⚠️ Threats to Validity (Declared Upfront)
-
-1. **Severity is inferred**, not provided by dataset — 3-tier process documented in CP1 §4.2
-2. **WARNING density skewed**: 99.2% from Sock Shop; Online Boutique ~0 lines
-3. **Cascading at WARNING level**: nearly absent (Train Ticket 74 lines only)
-4. **Runbooks are synthetic** — no production SOPs exist in RCAEval
-5. **Service topology** built manually from public repos / traces (240 cases have `traces.parquet`)
-6. **Ground truth at alert level**: only 4 cases — RCPR primary is service-level (359 cases)
-
----
-
-## 🔗 References (Core)
-
-- **COLA** — ICSE-SEIP 2024, arXiv:2403.06485 (pairwise F1 0.901–0.930, **not reproducible** on RCAEval — needs 3,000 SOPs)
-- **AlertGuardian** — ASE 2025, arXiv:2601.14912 (ARR 94.8%, **dataset not public**, binary noise/critical)
-- **RCAEval** — WWW 2025 Companion, arXiv:2412.17015 (735 cases, MIT, **no alert ground truth**)
-- **LEMMA-RCA** — CIKM 2026, arXiv:2406.05375 (backup, **no WARNING in golden signals**)
-- **Prometheus Alertmanager** — official docs (Arm 1 baseline)
-
----
-
-## 🛠 Development Notes
-
-- Python 3.10+ in `.venv`
-- `pytest` for tests (`Resource/cp1/tests/`)
-- Raw data in `Resource/cp1/raw_data/` (gitignored)
-- Artifacts in `Resource/cp1/artifacts/`
-- Legacy scripts in `Resource/cp1/legacy/` — **do not use for new work**
-
----
-
-## 📝 License
-
-Code: MIT (unless otherwise noted).
-RCAEval data: MIT. LEMMA-RCA: CC-BY-NC-4.0 (non-commercial).
-Derived datasets / synthetic runbooks: declare license at publication.
+License code/dataset và bibliography trong docs cũ là thông tin cần đối chiếu đúng revision nguồn trước khi phân phối hoặc viết paper. Lần đồng bộ này không xác minh license hay paper results ngoài repository.
