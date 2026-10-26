@@ -9,14 +9,14 @@ Cấu trúc này có từ ngày 25/10/2026 (branch `restructure`). Đợt này *
 ├── README.md, AGENTS.md, OUTPUT.md        # lối vào, quy tắc làm việc, cách giải thích
 ├── NCKH_MASTER_CONTEXT_2026-10-23.md      # context chuẩn V3
 ├── requirements.txt, pytest.ini, conftest.py
-├── run_datasets.sh, run_lemma_rca.sh      # wrapper gọi scripts/
+├── run_datasets.sh                        # wrapper gọi scripts/
 ├── src/                                   # code: adapters, canonical schema, normalization, CLI
 ├── scripts/                               # entry scripts, export; audit/ = audit L0/L1; legacy/ = setup CP1 cũ
 ├── tests/                                 # test chung (test riêng dataset nằm trong src/datasets/*/tests)
 ├── notebooks/                             # khám phá dữ liệu, bài học Kev trên Colab
 ├── docs/
 │   ├── context/                           # mindmap, handoff
-│   ├── research/                          # proposal, related work, protocol, requirement (Why)
+│   ├── research/                          # 01 proposal, 02 related work, 03 problem/gap/RQ, 04 hệ thống đề xuất, 05 phương pháp; protocol, requirement (Why)
 │   ├── status/                            # implementation status, audit, validation, kiến trúc đề xuất
 │   ├── data/                              # dataset plan, README raw, explore_cards/ (data card)
 │   ├── notes/                             # ghi chú làm việc, hướng dẫn Kev/Colab, thiết kế training

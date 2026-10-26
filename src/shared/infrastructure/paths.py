@@ -9,7 +9,6 @@ RAW_DATA_DIR = DATA_DIR / "raw"
 NORMALIZED_DIR = DATA_DIR / "normalized"
 DATASET_PATHS = {
     "rcaeval": RAW_DATA_DIR / "huggingface" / "rcaeval",
-    "lemma_rca": RAW_DATA_DIR / "huggingface" / "lemma_rca",
     "nezha": RAW_DATA_DIR / "nezha",
 }
 

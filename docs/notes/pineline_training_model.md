@@ -1,6 +1,6 @@
 > **Đối chiếu V3 ngày 23/10/2026:** đây là thiết kế MVP để học/triển khai, chưa phải thuật toán chính thức được duyệt hoặc code đã có. [Master context](../../NCKH_MASTER_CONTEXT_2026-10-23.md), [implementation status](../status/implementation_status.md) và [protocol V3](../research/research_protocol_v3.md) bổ sung nguồn hiện hành.
 >
-> Tỷ lệ 70/15/15, seed/config/model và experiments bên dưới là **đề xuất trong tài liệu này**, chưa phải split run đã chốt; audit plan 20/10 có đề xuất 60/20/20 và validation cũ có 50/50. Các số coverage/annotation ghi trong note 19/10 là báo cáo lịch sử, chưa xác minh nội dung lại; footer Parquet chỉ xác nhận số rows. Default raw path CP1 không còn tồn tại; raw thật ở `data/raw/`. Nezha export/iteration, LEMMA labels và provenance cần xử lý trước training. Không dùng nguyên Incident/raw_label hoặc heuristic root_cause trong exploration làm feature/GT log-level.
+> Tỷ lệ 70/15/15, seed/config/model và experiments bên dưới là **đề xuất trong tài liệu này**, chưa phải split run đã chốt; audit plan 20/10 có đề xuất 60/20/20 và validation cũ có 50/50. Các số coverage/annotation ghi trong note 19/10 là báo cáo lịch sử, chưa xác minh nội dung lại; footer Parquet chỉ xác nhận số rows. Default raw path CP1 không còn tồn tại; raw thật ở `data/raw/`. Nezha export/iteration và provenance (LEMMA đã bỏ khỏi dự án 26/10/2026) cần xử lý trước training. Không dùng nguyên Incident/raw_label hoặc heuristic root_cause trong exploration làm feature/GT log-level.
 
 # Hướng dẫn hiểu và xây dựng pipeline training System One
 
@@ -152,9 +152,9 @@ Log thiếu service hoặc thời gian vẫn được giữ để tra lại ngu�
 ### Ba dataset được dùng thế nào?
 
 - **RCAEval:** nguồn chính để học và chấm model đầu tiên.
-- **Nezha, LEMMA:** giữ riêng để thử model đã chốt trên nguồn khác, khi dữ liệu đã được kiểm chứng.
+- **Nezha:** giữ riêng để thử model đã chốt trên nguồn khác, khi dữ liệu đã được kiểm chứng.
 
-Không cần hoàn tất mọi sửa chữa ở Nezha/LEMMA mới bắt đầu phần RCAEval hợp lệ. Các số liệu kiểm tra từ phiên trước nằm ở mục 12; cần chạy lại audit khi triển khai.
+Không cần hoàn tất mọi sửa chữa ở Nezha mới bắt đầu phần RCAEval hợp lệ. Các số liệu kiểm tra từ phiên trước nằm ở mục 12; cần chạy lại audit khi triển khai.
 
 ## 5. Bước 2 — Chia dữ liệu để model không được xem trước bài kiểm tra
 
@@ -588,7 +588,6 @@ Số liệu dưới đây là **snapshot từ phiên kiểm tra trước**, khô
 |---|---|---|
 | RCAEval | 359 file log raw; normalized có log của 30 case | Mở rộng xử lý đầy đủ và audit từng case; chưa coi 359 là số mẫu train hợp lệ |
 | Nezha | 101 bản ghi tiêm lỗi; adapter tạo 21 incident; normalized có log cho 1 incident | Sửa vòng lặp và đọc log cho mọi incident; kiểm tra lỗi đồng thời |
-| LEMMA | 200.000 log mẫu; hai kịch bản nhận log tháng 05/2021 không khớp thời gian khai báo | Chọn đúng file theo kịch bản; không tìm thấy thì báo thiếu, không lấy mọi file thay thế |
 
 Giới hạn cần nhớ: service không phát log có thể không vào candidate; nhãn có thể khác cấp service; model giỏi trên hệ thống đã thấy chưa chắc giỏi trên hệ thống mới. Chưa có kết quả accuracy hoặc runtime thực nghiệm trong tài liệu.
 
@@ -629,7 +628,7 @@ Báo cáo audit ghi `valid` (hợp lệ), `invalid` (sai), `unverified` (chưa x
 - Thử cấu hình bằng conditional Top-1, hòa thì MRR; vẫn hòa thì chọn `C` nhỏ hơn rồi `class_weight=None`. Với MRR dùng để phá hòa, giữ mẫu số như Phụ lục C trên tập validation tương ứng.
 - `class_weight="balanced"` cân bằng mức coi trọng các nhãn theo tần suất, không tự cho mọi incident trọng số bằng nhau. Ghi số candidate để thấy khác biệt này.
 - Nếu sau này thử **cross-system — kiểm tra trên hệ thống chưa dùng để học**, giữ trọn một hệ thống làm test; chọn cấu hình chỉ trên các hệ thống còn lại.
-- Nezha/LEMMA chỉ là **external evaluation — đánh giá bằng nguồn ngoài** nếu chưa dùng để chọn feature/cấu hình. Nếu đã dùng chúng để điều chỉnh, cần nguồn độc lập khác cho kết luận cuối.
+- Nezha chỉ là **external evaluation — đánh giá bằng nguồn ngoài** nếu chưa dùng để chọn feature/cấu hình. Nếu đã dùng nó để điều chỉnh, cần nguồn độc lập khác cho kết luận cuối.
 
 ## Phụ lục B — Công thức feature và kiểm tra input
 

@@ -1,4 +1,4 @@
-"""One local inspect/normalization CLI for RCAEval, LEMMA-RCA and Nezha."""
+"""One local inspect/normalization CLI for RCAEval and Nezha."""
 
 from __future__ import annotations
 
@@ -9,14 +9,12 @@ from pathlib import Path
 import pyarrow.parquet as pq
 
 from src.shared.infrastructure.paths import DATASET_PATHS, NORMALIZED_DIR
-from src.datasets.lemma_rca import LemmaAdapter
 from src.datasets.nezha import NezhaAdapter
 from src.datasets.rcaeval import RCAEvalAdapter
 
 
 ADAPTERS = {
     "rcaeval": RCAEvalAdapter,
-    "lemma_rca": LemmaAdapter,
     "nezha": NezhaAdapter,
 }
 TABLES = ("incidents.parquet", "log_events.parquet", "ground_truth.parquet")

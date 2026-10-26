@@ -21,11 +21,7 @@ def run_cli(arguments, cwd):
 
 
 @pytest.mark.parametrize("entrypoint", [
-    REPOSITORY_ROOT / "scripts/run_lemma_rca.py",
     REPOSITORY_ROOT / "scripts/run_datasets.py",
-    REPOSITORY_ROOT / "Resource/cp1/src/main_RCAEval.py",
-    REPOSITORY_ROOT / "Resource/cp1/src/main_LEMMA_RCA.py",
-    REPOSITORY_ROOT / "Resource/cp1/src/main_Nezha.py",
 ])
 def test_entrypoints_work_without_pythonpath_from_other_directory(tmp_path, entrypoint):
     result = run_cli([sys.executable, str(entrypoint), "--help"], tmp_path)
@@ -35,8 +31,6 @@ def test_entrypoints_work_without_pythonpath_from_other_directory(tmp_path, entr
 def test_shell_wrappers_work_from_other_directory(tmp_path):
     result = run_cli(["bash", str(REPOSITORY_ROOT / "run_datasets.sh"), "list"], tmp_path)
     assert json.loads(result.stdout) == {slug: str(path) for slug, path in DATASET_PATHS.items()}
-    result = run_cli(["bash", str(REPOSITORY_ROOT / "run_lemma_rca.sh"), "--help"], tmp_path)
-    assert "logs" in result.stdout
 
 
 def test_custom_input_and_output_roots_are_respected(tmp_path):

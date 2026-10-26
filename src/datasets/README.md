@@ -1,11 +1,10 @@
 # Dataset modules — registry hiện hành
 
-**23/10/2026.** Ba module tham gia CLI; vai trò nghiên cứu là dự kiến sau audit, không tự chứng nhận external ranking eligibility.
+**23/10/2026, cập nhật 26/10/2026 (đã bỏ LEMMA-RCA).** Hai module tham gia CLI; vai trò nghiên cứu là dự kiến sau audit, không tự chứng nhận external ranking eligibility.
 
 | Slug | Vai trò dự kiến | Đơn vị code hiện tại | README |
 | --- | --- | --- | --- |
 | `rcaeval` | Primary candidate | Case | [RCAEval](rcaeval/README.md) |
-| `lemma_rca` | External/backup candidate | Scenario hard-code | [LEMMA-RCA](lemma_rca/README.md) |
 | `nezha` | Secondary/external candidate | Fault window | [Nezha](nezha/README.md) |
 
 Thư mục này chứa code, không chứa raw. Raw thật tại `data/raw/` (default của code); `--data-root` override từng dataset. `_template/` chỉ là sườn, không có trong registry.

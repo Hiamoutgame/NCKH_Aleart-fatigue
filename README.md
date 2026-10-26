@@ -36,7 +36,7 @@ flowchart LR
 | Grouping/hierarchy/evidence graph/ranker V3 | Chưa tìm thấy implementation trong source active |
 | Top-k, grouping metrics, user study | Chưa có kết quả V3 được xác nhận |
 
-Xem [implementation status](docs/status/implementation_status.md) và [validation report](docs/status/validation_report.md). Số dòng canonical hiện có: RCAEval **5,272,618**, LEMMA-RCA **200,000**, Nezha **71,173**. Đây là log-event rows, không phải số incident đủ điều kiện đánh giá.
+Xem [implementation status](docs/status/implementation_status.md) và [validation report](docs/status/validation_report.md). Số dòng canonical hiện có: RCAEval **5,272,618**, Nezha **71,173** (LEMMA-RCA đã bỏ khỏi dự án ngày 26/10/2026). Đây là log-event rows, không phải số incident đủ điều kiện đánh giá.
 
 ## Cấu trúc hiện tại
 
@@ -85,7 +85,7 @@ bash run_datasets.sh normalize rcaeval \
   --output-root /tmp/nckh-normalized-preview
 ```
 
-Lệnh này mặc định chọn tối đa **30 case** RCAEval. LEMMA cap 50,000 log/incident; Nezha chỉ export log incident đầu tiên. CLI chưa có cờ thay các cap này. Không gọi đó là full-corpus normalization.
+Lệnh này mặc định chọn tối đa **30 case** RCAEval. Nezha chỉ export log incident đầu tiên. CLI chưa có cờ thay các cap này. Không gọi đó là full-corpus normalization.
 
 ## Đọc tiếp và bước nghiên cứu tiếp theo
 

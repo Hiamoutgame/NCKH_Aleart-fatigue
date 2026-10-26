@@ -94,26 +94,26 @@ Các bất biến cần được kiểm tra khi triển khai:
 | Thành phần | Đường dẫn thật | Trạng thái |
 | --- | --- | --- |
 | Raw RCAEval | `data/raw/huggingface/rcaeval/` | Có local; audit 20/10 báo 735 case, 359 log files không rỗng |
-| Raw LEMMA-RCA | `data/raw/huggingface/lemma_rca/` | Có local; schema/kịch bản cần xác minh theo từng partition |
 | Raw Nezha | `data/raw/nezha/` | Có local; mapping pod/service và incident windows cần audit |
 | Canonical outputs | `data/normalized/<slug>/` | Có ba bảng/dataset; footer đã đọc lại ngày 23/10 |
 | Adapters + CLI + tests | `src/` | Source có thật; chưa có pipeline V3 end-to-end |
 | Metadata audit riêng | `scripts/audit/` (script) + `data/audit/` (artifact) | Có script, tests, JSON/CSV audit L0/L1 |
 | CP1/CP2 cũ | `Resource/cp1/`, `Resource/cp2/` | Không hiện diện trong checkout đang làm; có bản lịch sử dưới worktree công cụ, không dùng như source active |
 
-**Cập nhật 25/10/2026 (restructure):** đường dẫn trong bảng trên đã đổi theo cấu trúc mới, xem [docs/README.md](docs/README.md). `paths.py` giờ mặc định về `data/raw/` nên mismatch CP1 ngày 23/10 đã được sửa. CLI `list` chỉ in cấu hình, không chứng minh raw tồn tại; raw LEMMA-RCA hiện **không có** ở `data/raw/huggingface/lemma_rca/` trên máy local.
+**Cập nhật 25/10/2026 (restructure):** đường dẫn trong bảng trên đã đổi theo cấu trúc mới, xem [docs/README.md](docs/README.md). `paths.py` giờ mặc định về `data/raw/` nên mismatch CP1 ngày 23/10 đã được sửa. CLI `list` chỉ in cấu hình, không chứng minh raw tồn tại.
+
+**Cập nhật 26/10/2026:** chủ dự án đã **bỏ dataset LEMMA-RCA** khỏi phạm vi (xóa module `src/datasets/lemma_rca/`, scripts/wrapper LEMMA và các test liên quan). Các mục LEMMA còn lại trong tài liệu này và trong `docs/history/` là lịch sử; không dùng LEMMA làm external/backup dataset. Dự án còn hai nguồn: RCAEval (primary) và Nezha (secondary/external).
 
 Footer canonical xác nhận:
 
 | Dataset | Incident rows | Ground-truth rows | Log-event rows | Phạm vi chưa được chứng minh |
 | --- | ---: | ---: | ---: | --- |
 | RCAEval | 735 | 735 | 5,272,618 | Không phải toàn bộ 359 case logs; code mặc định tối đa 30 case |
-| LEMMA-RCA | 4 | 4 | 200,000 | Code mặc định 50,000 logs/scenario; chưa xác minh đầy đủ alignment/labels |
 | Nezha | 21 | 21 | 71,173 | `normalize()` chỉ xuất log cho incident đầu tiên; số metadata rows không phải log coverage |
 
 Nguồn: [validation report](docs/status/validation_report.md). Footer chỉ xác nhận số dòng/cột/row groups; chưa đo unique incident coverage, null rates, inventory recall hay correct raw reconstruction.
 
-Audit raw 20/10 báo tổng 400.362 GB theo kích thước file, chưa khử trùng, LEMMA chiếm phần lớn. RCAEval có 49,652,771 log rows theo footer; 240 cases có traces. Đây là kết quả artifact trước đó, **không phải full scan vừa chạy lại**. Số WARN 9,738 (Sock Shop 9,662; Train Ticket 74; Online Boutique 2), 8 `root_cause.txt`, 4 WARNING indicators thuộc báo cáo V1, chưa tái kiểm trong phiên này.
+Audit raw 20/10 báo tổng 400.362 GB theo kích thước file, chưa khử trùng, LEMMA (nay đã bỏ khỏi dự án) chiếm phần lớn. RCAEval có 49,652,771 log rows theo footer; 240 cases có traces. Đây là kết quả artifact trước đó, **không phải full scan vừa chạy lại**. Số WARN 9,738 (Sock Shop 9,662; Train Ticket 74; Online Boutique 2), 8 `root_cause.txt`, 4 WARNING indicators thuộc báo cáo V1, chưa tái kiểm trong phiên này.
 
 `DATASET_PLAN.md` chỉ xác minh prefix 200 nhãn thuộc RE1 không có log; **0 ranking case đã xác minh trong audit đó** không có nghĩa dataset không có nhãn. Không lấy 359 case có log làm số incident chắc chắn đủ điều kiện RCA.
 
@@ -167,7 +167,7 @@ AI hỗ trợ embedding/grouping, feature learning và ranking; output phải tr
 
 ## 12. Related work
 
-[Related-work matrix](docs/research/02_related_work/literature_review_matrix.md) phân biệt candidate papers với kết luận đã kiểm chứng. COLA, AlertGuardian, RCAEval, LEMMA-RCA, Nezha, Drain, SBERT, HDBSCAN, SRE Book là các tên đã xuất hiện trong tài liệu cũ; metadata, paper results và reproducibility claims chưa được rà soát web/paper gốc trong lần đồng bộ docs này. Không dùng danh sách này làm bằng chứng novelty.
+[Related-work matrix](docs/research/02_related_work/literature_review_matrix.md) phân biệt candidate papers với kết luận đã kiểm chứng. COLA, AlertGuardian, RCAEval, LEMMA-RCA (đã bỏ khỏi dataset dự án; chỉ còn là tài liệu tham khảo), Nezha, Drain, SBERT, HDBSCAN, SRE Book là các tên đã xuất hiện trong tài liệu cũ; metadata, paper results và reproducibility claims chưa được rà soát web/paper gốc trong lần đồng bộ docs này. Không dùng danh sách này làm bằng chứng novelty.
 
 ## 13. Threats to validity
 

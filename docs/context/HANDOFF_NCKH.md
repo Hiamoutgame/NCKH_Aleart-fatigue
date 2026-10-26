@@ -10,14 +10,14 @@ V1 WARNING-only/LLM Agent và V2 failure prediction là lịch sử. Tên/RQ/nov
 
 ## 2. Repo thực tế
 
-- Source active: `src/`, có adapters RCAEval/LEMMA-RCA/Nezha, schema, regex normalization và CLI.
+- Source active: `src/`, có adapters RCAEval/Nezha (LEMMA-RCA đã bỏ ngày 26/10/2026), schema, regex normalization và CLI.
 - Raw thật: `data/raw/`; metadata audit L0/L1: `scripts/audit/` (script) + `data/audit/` (artifact).
 - `paths.py` mặc định đọc raw ở `data/raw/` (sửa ngày 25/10/2026); `Resource/cp1/` không có active. Không lấy `.kilo/worktrees/` làm source hiện hành.
-- Canonical outputs: `data/normalized/<slug>/`. Footer 23/10: RCAEval 735/735/5,272,618; LEMMA 4/4/200,000; Nezha 21/21/71,173, theo thứ tự incident/GT/log rows. Counts không chứng minh eligible coverage.
+- Canonical outputs: `data/normalized/<slug>/`. Footer 23/10: RCAEval 735/735/5,272,618; Nezha 21/21/71,173, theo thứ tự incident/GT/log rows. Counts không chứng minh eligible coverage.
 
 ## 3. Khoảng trống phải biết
 
-[Implementation status](../status/implementation_status.md): RCAEval cap 30 case mặc định; LEMMA 50,000 logs/scenario, hard-code labels và rút multi-target; Nezha metadata loop tạo item cuối mỗi bucket và export logs incident đầu. Mapping/time/provenance còn cần kiểm chứng. `log_id` là event ID hiện có; template key là regex-normalized MD5, chưa phải Drain3/semantic clustering.
+[Implementation status](../status/implementation_status.md): RCAEval cap 30 case mặc định; Nezha metadata loop tạo item cuối mỗi bucket và export logs incident đầu. Mapping/time/provenance còn cần kiểm chứng. `log_id` là event ID hiện có; template key là regex-normalized MD5, chưa phải Drain3/semantic clustering.
 
 Chưa có group/tree/evidence graph/ranker/training/held-out evaluation V3 trong source active. Training note System One là phương án MVP, chưa phải code đã chạy. Chưa có metric hoặc novelty V3 xác nhận.
 

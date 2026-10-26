@@ -55,26 +55,6 @@ def audit_nezha():
     for l in df_nezha['Log'].head(3):
         print('  ', repr(l))
 
-def audit_lemma():
-    print('=== 3. LEMMA-RCA AUDIT ===')
-    lemma_log_path = DATASET_PATHS["lemma_rca"] / "sample/app-000174log20210517_132254.json"
-    with open(lemma_log_path) as f: lemma_data = json.load(f)
-    hits = lemma_data.get('hits', {}).get('hits', [])
-    print('LEMMA hits count:', len(hits))
-    if hits:
-        hit0 = hits[0]
-        print('Hit _id:', hit0.get('_id'))
-        src = hit0.get('_source', {})
-        print('Hit _source fields:', list(src.keys()))
-        k8s = src.get('kubernetes', {})
-        print('kubernetes fields:', list(k8s.keys()))
-        print('pod_name:', k8s.get('pod_name'))
-        print('container_name:', k8s.get('container_name'))
-        print('@timestamp:', src.get('@timestamp'))
-        print('level:', src.get('level'))
-        print('message:', repr(src.get('message')))
-
 if __name__ == '__main__':
     audit_rcaeval()
     audit_nezha()
-    audit_lemma()

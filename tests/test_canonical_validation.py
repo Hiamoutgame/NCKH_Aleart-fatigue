@@ -19,7 +19,6 @@ from pathlib import Path
 import pytest
 
 from src.datasets.rcaeval import RCAEvalAdapter
-from src.datasets.lemma_rca import LemmaAdapter
 from src.datasets.nezha import NezhaAdapter
 from src.shared.domain.canonical import Incident, LogEvent, GroundTruth
 
@@ -30,11 +29,6 @@ def rcaeval_adapter():
 
 
 @pytest.fixture
-def lemma_adapter():
-    return LemmaAdapter()
-
-
-@pytest.fixture
 def nezha_adapter():
     return NezhaAdapter()
 
@@ -42,18 +36,11 @@ def nezha_adapter():
 # ----------------------------------------------------------------------
 # 1. Raw preservation
 # ----------------------------------------------------------------------
-def test_raw_preservation(rcaeval_adapter, lemma_adapter, nezha_adapter):
+def test_raw_preservation(rcaeval_adapter, nezha_adapter):
     # RCAEval
     rca_logs = rcaeval_adapter.load_logs("rcaeval_re2ss_carts_cpu_1", limit=10)
     assert len(rca_logs) > 0
     for event in rca_logs:
-        assert isinstance(event.raw_message, str)
-        assert len(event.raw_message) > 0
-
-    # Lemma
-    lemma_logs = lemma_adapter.load_logs("lemma-20220606-ddos-oom", limit=10)
-    assert len(lemma_logs) > 0
-    for event in lemma_logs:
         assert isinstance(event.raw_message, str)
         assert len(event.raw_message) > 0
 
@@ -68,10 +55,9 @@ def test_raw_preservation(rcaeval_adapter, lemma_adapter, nezha_adapter):
 # ----------------------------------------------------------------------
 # 2. Traceability
 # ----------------------------------------------------------------------
-def test_traceability(rcaeval_adapter, lemma_adapter, nezha_adapter):
+def test_traceability(rcaeval_adapter, nezha_adapter):
     for adapter, inc_id in [
         (rcaeval_adapter, "rcaeval_re2ss_carts_cpu_1"),
-        (lemma_adapter, "lemma-20220606-ddos-oom"),
         (nezha_adapter, "nezha_1661140434"),
     ]:
         logs = adapter.load_logs(inc_id, limit=5)
@@ -85,10 +71,9 @@ def test_traceability(rcaeval_adapter, lemma_adapter, nezha_adapter):
 # ----------------------------------------------------------------------
 # 3. Timestamp UTC
 # ----------------------------------------------------------------------
-def test_timestamp_utc(rcaeval_adapter, lemma_adapter, nezha_adapter):
+def test_timestamp_utc(rcaeval_adapter, nezha_adapter):
     for adapter, inc_id in [
         (rcaeval_adapter, "rcaeval_re2ss_carts_cpu_1"),
-        (lemma_adapter, "lemma-20220606-ddos-oom"),
         (nezha_adapter, "nezha_1661140434"),
     ]:
         logs = adapter.load_logs(inc_id, limit=5)
@@ -101,7 +86,7 @@ def test_timestamp_utc(rcaeval_adapter, lemma_adapter, nezha_adapter):
 # ----------------------------------------------------------------------
 # 4. Service mapping
 # ----------------------------------------------------------------------
-def test_service_mapping(rcaeval_adapter, lemma_adapter, nezha_adapter):
+def test_service_mapping(rcaeval_adapter, nezha_adapter):
     # RCAEval: container_name is preserved as service_id
     rca_logs = rcaeval_adapter.load_logs("rcaeval_re2ss_carts_cpu_1", limit=10)
     for event in rca_logs:
@@ -114,17 +99,12 @@ def test_service_mapping(rcaeval_adapter, lemma_adapter, nezha_adapter):
             assert event.service_id is not None
             assert event.service_id in event.entity_id
 
-    # Lemma: container_name or pod prefix is mapped to service
-    lemma_logs = lemma_adapter.load_logs("lemma-20220606-ddos-oom", limit=10)
-    for event in lemma_logs:
-        assert event.service_id is not None
-
 
 # ----------------------------------------------------------------------
 # 5. Ground truth preservation
 # ----------------------------------------------------------------------
-def test_ground_truth_preservation(rcaeval_adapter, lemma_adapter, nezha_adapter):
-    for adapter in [rcaeval_adapter, lemma_adapter, nezha_adapter]:
+def test_ground_truth_preservation(rcaeval_adapter, nezha_adapter):
+    for adapter in [rcaeval_adapter, nezha_adapter]:
         gts = adapter.load_ground_truth()
         assert len(gts) > 0
         for gt in gts[:5]:
@@ -137,10 +117,9 @@ def test_ground_truth_preservation(rcaeval_adapter, lemma_adapter, nezha_adapter
 # ----------------------------------------------------------------------
 # 6. Incident segmentation
 # ----------------------------------------------------------------------
-def test_incident_segmentation(rcaeval_adapter, lemma_adapter, nezha_adapter):
+def test_incident_segmentation(rcaeval_adapter, nezha_adapter):
     for adapter, inc_id in [
         (rcaeval_adapter, "rcaeval_re2ss_carts_cpu_1"),
-        (lemma_adapter, "lemma-20220606-ddos-oom"),
         (nezha_adapter, "nezha_1661140434"),
     ]:
         incidents = {i.incident_id: i for i in adapter.load_incidents()}
@@ -152,12 +131,11 @@ def test_incident_segmentation(rcaeval_adapter, lemma_adapter, nezha_adapter):
 # ----------------------------------------------------------------------
 # 7. Label leakage prevention
 # ----------------------------------------------------------------------
-def test_label_leakage_prevention(rcaeval_adapter, lemma_adapter, nezha_adapter):
+def test_label_leakage_prevention(rcaeval_adapter, nezha_adapter):
     """Ensure LogEvent attributes do not contain ground truth target labels."""
     forbidden_gt_attributes = {"root_cause", "is_root_cause", "ground_truth", "rc_label"}
     for adapter, inc_id in [
         (rcaeval_adapter, "rcaeval_re2ss_carts_cpu_1"),
-        (lemma_adapter, "lemma-20220606-ddos-oom"),
         (nezha_adapter, "nezha_1661140434"),
     ]:
         logs = adapter.load_logs(inc_id, limit=5)
@@ -170,10 +148,9 @@ def test_label_leakage_prevention(rcaeval_adapter, lemma_adapter, nezha_adapter)
 # ----------------------------------------------------------------------
 # 8. Determinism
 # ----------------------------------------------------------------------
-def test_determinism(rcaeval_adapter, lemma_adapter, nezha_adapter):
+def test_determinism(rcaeval_adapter, nezha_adapter):
     for adapter, inc_id in [
         (rcaeval_adapter, "rcaeval_re2ss_carts_cpu_1"),
-        (lemma_adapter, "lemma-20220606-ddos-oom"),
         (nezha_adapter, "nezha_1661140434"),
     ]:
         run1 = adapter.load_logs(inc_id, limit=5)

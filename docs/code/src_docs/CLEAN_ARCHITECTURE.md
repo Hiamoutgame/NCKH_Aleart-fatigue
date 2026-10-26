@@ -5,20 +5,20 @@
 ## 1. Dependency rule đề xuất
 
 ```text
-interface/datasets_cli → datasets/{rcaeval,lemma_rca,nezha}
+interface/datasets_cli → datasets/{rcaeval,nezha}
 datasets/<x> → shared
 datasets/<x> không import datasets/<y>
 shared không import dataset cụ thể
 ```
 
-Trong module, ưu tiên domain ← application ← infrastructure/interface. Quy tắc này là hướng thiết kế; source hiện có `canonical.py` import pandas/chuyển DataFrame và LEMMA application gọi concrete loader. CP1 từng dùng shared helpers nhưng không có source CP1 active trong checkout này.
+Trong module, ưu tiên domain ← application ← infrastructure/interface. Quy tắc này là hướng thiết kế; source hiện có `canonical.py` import pandas/chuyển DataFrame. CP1 từng dùng shared helpers nhưng không có source CP1 active trong checkout này.
 
 ## 2. Vai trò layer
 
 | Layer | Hiện trạng | Hướng mở rộng |
 | --- | --- | --- |
 | Domain | Incident/LogEvent/GroundTruth, profile entities, ports | Tách I/O/conversion khi phù hợp; không mặc định đã thuần Python |
-| Application | Profiling/LEMMA exploration use cases | Điều phối; không feed label metadata vào inference |
+| Application | Profiling use cases | Điều phối; không feed label metadata vào inference |
 | Infrastructure | Raw readers, canonical adapters, paths, regex | Mapping/time/provenance có evidence và validation |
 | Interface | CLI/notebook, registry composition | Entry points rõ scope/limits |
 | dataset.yaml | Metadata mô tả | Chưa được runtime loader dùng làm cấu hình |
@@ -31,4 +31,4 @@ Grouping, hierarchy, evidence relationships và service ranking là các bước
 
 ## 4. Những giới hạn cần đối chiếu
 
-Default raw path là `data/raw/`; `--data-root` override từng dataset. Export caps/Nezha iteration/LEMMA multi-target, raw payload và timestamp assumptions được liệt kê ở [implementation status](../../status/implementation_status.md). Không mô tả chúng đã được sửa trong lần cập nhật docs.
+Default raw path là `data/raw/`; `--data-root` override từng dataset. Export caps/Nezha iteration, raw payload và timestamp assumptions được liệt kê ở [implementation status](../../status/implementation_status.md). Không mô tả chúng đã được sửa trong lần cập nhật docs.

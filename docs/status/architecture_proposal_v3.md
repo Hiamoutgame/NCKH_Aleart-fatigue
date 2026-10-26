@@ -28,7 +28,6 @@ src/nckh/
 ├── datasets/                # RIÊNG theo dataset — chỉ import core
 │   ├── rcaeval/adapter.py
 │   ├── nezha/adapter.py
-│   └── lemma_rca/adapter.py
 ├── grouping/                # RIÊNG theo phương pháp — chỉ import core
 │   ├── template.py          # baseline: nhóm theo template_id
 │   └── kev_merge.py         # sau này: gọi integrations/kev để quyết định gộp cặp
@@ -77,7 +76,7 @@ ranking/kev_ranker, grouping/kev_merge ──▶ integrations/kev ──▶ kev 
 | `.../shared/infrastructure/normalization.py`, `severity.py` | `core/text.py` | |
 | `.../shared/infrastructure/paths.py` | `core/config.py` | Bỏ default `cp1`, đọc từ config/env |
 | `.../shared/infrastructure/loaders.py` | `core/` hoặc dataset dùng nó | Cần đọc để quyết định |
-| `.../datasets/{rcaeval,nezha,lemma_rca}` | `datasets/<tên>/` | Gộp các layer "sườn" rỗng về một adapter |
+| `.../datasets/{rcaeval,nezha}` | `datasets/<tên>/` | Gộp các layer "sườn" rỗng về một adapter |
 | `.../datasets/_template` | `docs/add_dataset.md` | |
 | `.../interface/datasets_cli.py` | `cli/main.py` | |
 | `.../legacy/explore_v0.py` | xóa khỏi nhánh chính (còn trong git history) | |

@@ -14,7 +14,7 @@ class BaseDatasetAdapter(ABC):
     @property
     @abstractmethod
     def dataset_source(self) -> str:
-        """The canonical dataset slug (e.g. 'rcaeval', 'nezha', 'lemma_rca')."""
+        """The canonical dataset slug (e.g. 'rcaeval', 'nezha')."""
         ...
 
     @abstractmethod

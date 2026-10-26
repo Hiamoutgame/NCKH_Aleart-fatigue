@@ -15,25 +15,23 @@ src/
 ├── datasets/
 │   ├── rcaeval/                  # Runtime ở infrastructure/adapter.py; layer khác là sườn
 │   ├── nezha/                    # Runtime ở infrastructure/adapter.py; layer khác là sườn
-│   ├── lemma_rca/                # Domain, use cases, loader/downloader/adapter, CLI/notebook
 │   └── _template/                # Sườn thêm dataset, không thuộc registry
-├── docs/                         # Architecture, exploration protocol, add dataset
-└── legacy/                       # Code cũ để đối chiếu
+└── docs/                         # Architecture, exploration protocol, add dataset
 ```
 
 ## Dependency rule và hiện trạng
 
 ```text
-interface/datasets_cli → datasets/{rcaeval,lemma_rca,nezha} → shared
+interface/datasets_cli → datasets/{rcaeval,nezha} → shared
 shared không import dataset cụ thể; adapters không import chéo dataset
 ```
 
-Định hướng layer: domain ← application ← infrastructure/interface. Đây là mục tiêu thiết kế, không phải khẳng định đã tuân thủ hoàn toàn: `shared/domain/canonical.py` import pandas và chứa DataFrame conversion; LEMMA use cases gọi concrete loader. CP1 từng dùng helpers shared nhưng source CP1 không có trong checkout active.
+Định hướng layer: domain ← application ← infrastructure/interface. Đây là mục tiêu thiết kế, không phải khẳng định đã tuân thủ hoàn toàn: `shared/domain/canonical.py` import pandas và chứa DataFrame conversion. CP1 từng dùng helpers shared nhưng source CP1 không có trong checkout active.
 
 | Layer | Hiện có | Quy tắc khi mở rộng |
 | --- | --- | --- |
 | domain | Canonical Incident/LogEvent/GroundTruth, ports, profile models | Tách đối tượng/quy tắc khỏi I/O khi có thể; ghi rõ dependency hiện hữu |
-| application | Profiling và LEMMA exploration use cases | Điều phối công việc; không đưa nhãn vào inference |
+| application | Profiling use case | Điều phối công việc; không đưa nhãn vào inference |
 | infrastructure | Source adapters/loaders, paths, regex | Mapping có provenance; không tự chứng nhận labels |
 | interface | CLI và notebook | Entry point mỏng, không lẫn proposed command với command đã có |
 | dataset.yaml | Nguồn/mapping mô tả | Không được coi là runtime config tự động |

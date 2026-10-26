@@ -10,7 +10,6 @@ Phạm vi đối chiếu: source active trong `src/`, metadata audit ở `script
 | Canonical schema | [canonical.py](../../src/shared/domain/canonical.py): `Incident`, `LogEvent`, `GroundTruth` | Không có Group/Edge/Ranking model; schema riêng chưa bảo đảm leakage-free |
 | CLI | [datasets_cli.py](../../src/interface/datasets_cli.py): registry ba adapters, list/inspect/normalize | Không có group/train/rank/evaluate commands; `all` không nhận `--data-root` |
 | RCAEval | [adapter.py](../../src/datasets/rcaeval/infrastructure/adapter.py): metadata/log loading, UTC conversion, regex severity, export | Default log cap 30 case; metadata/GT toàn bộ không tương đương coverage log |
-| LEMMA-RCA | [adapter.py](../../src/datasets/lemma_rca/infrastructure/adapter.py), [loader.py](../../src/datasets/lemma_rca/infrastructure/loader.py): JSON loading, bốn scenario hard-code, service mapping | Scenario/time/label nguồn cần đối chiếu; output giới hạn 50,000 logs/incident |
 | Nezha | [adapter.py](../../src/datasets/nezha/infrastructure/adapter.py): CSV/nested JSON, fault windows, pod mapping, trace/span fields | Lỗi vòng lặp metadata; export logs chỉ incident đầu; coverage nhiều ngày chưa được chứng minh |
 | Normalization | [normalization.py](../../src/shared/infrastructure/normalization.py): mask timestamp/UUID/thread/hex/numbers; adapter tạo MD5 12 ký tự | Chưa là parser Drain3/Spell được đánh giá; masking quá mạnh có thể gộp nhầm |
 | Grouping + hierarchy | Chưa tìm thấy module thực thi trong source active | Cần groups/members/tree, unknown bucket, raw reconstruction checks |
@@ -21,7 +20,7 @@ Phạm vi đối chiếu: source active trong `src/`, metadata audit ở `script
 
 ### 2.1 Path và phạm vi export
 
-**Cập nhật 25/10/2026:** [paths.py](../../src/shared/infrastructure/paths.py) đã trỏ raw vào `data/raw/` và canonical vào `data/normalized/`; `--data-root` vẫn override được. CP1 source/config/tests không hiện diện trong checkout active. Raw LEMMA-RCA hiện không có ở `data/raw/huggingface/lemma_rca/` trên máy local.
+**Cập nhật 25/10/2026:** [paths.py](../../src/shared/infrastructure/paths.py) đã trỏ raw vào `data/raw/` và canonical vào `data/normalized/`; `--data-root` vẫn override được. CP1 source/config/tests không hiện diện trong checkout active. **26/10/2026:** dataset LEMMA-RCA đã bị bỏ khỏi dự án; module, scripts và test LEMMA đã xóa, CLI chỉ còn `rcaeval` và `nezha`.
 
 RCAEval ghi Parquet theo case nhưng vẫn đọc nguyên `logs.parquet` của mỗi case và tạo list events/DataFrame. Vì vậy không gọi là streaming từng record với bộ nhớ bị chặn. `select_balanced_cases()` chọn prefix theo `ob/ss/tt`, không phải random/stratified split để đánh giá. CLI chưa expose `max_cases` hoặc `limit_per_incident`.
 
@@ -35,20 +34,17 @@ Trong `load_incidents()` và `load_ground_truth()`, phần tạo record bị đ�
 
 - `GroundTruth.mapping_status="verified"` được adapter gán theo quy tắc hiện tại; không phải kết quả xác minh độc lập.
 - `incidents.parquet` có `raw_label`, `fault_type`, `inject_time`; RCAEval `raw_label` chứa service đáp án. Không feed nguyên Incident/DataFrame vào model.
-- LEMMA `load_ground_truth()` lấy phần đầu trước dấu phẩy hoặc `/`, làm mất multi-target/resource context ở `canonical_target`; `original_target` còn giữ chuỗi. Không dùng target đầu để tự chứng nhận full-label RCA accuracy.
-- LEMMA scenarios và thời gian nằm trong code; `locate_log_files()` tìm theo tag/ngày trong path. Tên file không đủ xác minh event thuộc đúng time window.
-- Nezha pod regex có danh sách tên cố định và fallback lấy token đầu; LEMMA có pod-prefix rules. Cần đối chiếu alias/inventory thật trước ranking, không thêm service từ nhãn vào candidate.
-- LEMMA exploration `LemmaLoader.load_canonical_rows()` có cột `root_cause` gán từ service name. Đó là heuristic trong đường khám phá cũ, **không phải GT log-level** và không dùng làm feature/training label chính thống.
+- Nezha pod regex có danh sách tên cố định và fallback lấy token đầu. Cần đối chiếu alias/inventory thật trước ranking, không thêm service từ nhãn vào candidate.
 
 ### 2.4 Raw preservation và IDs
 
 Nezha `raw_message` giữ message đã tách từ nested `Log`, không giữ nguyên toàn CSV payload trong cột đó. Muốn tái dựng raw record phải giữ file nguồn và resolve đúng `source_file/source_row_id/raw_record_ref`.
 
-IDs hiện dựa trên incident và row/index hoặc Elasticsearch `_id`; chưa có snapshot/file hash registry. Nezha cùng raw record có thể vào nhiều windows; LEMMA `_id` có thể cần thêm source scope để tránh collision. Đây là rủi ro cần đo, chưa phải duplicate rate đã quan sát. Không claim traceability 100% chỉ vì có chuỗi reference.
+IDs hiện dựa trên incident và row/index hoặc Elasticsearch `_id`; chưa có snapshot/file hash registry. Nezha cùng raw record có thể vào nhiều windows. Đây là rủi ro cần đo, chưa phải duplicate rate đã quan sát. Không claim traceability 100% chỉ vì có chuỗi reference.
 
 ### 2.5 Timestamp và severity
 
-RCAEval code coi integer timestamp là epoch giây và đổi UTC; audit raw 20/10 vẫn để một số đơn vị/timezone/anomaly chưa xác nhận. Nezha chia nanoseconds qua số thực trước `datetime`, cần kiểm tra độ chính xác nếu dùng time differences nhỏ. LEMMA gán UTC khi timestamp không có timezone: đây là assumption code, không tự chứng minh timezone nguồn.
+RCAEval code coi integer timestamp là epoch giây và đổi UTC; audit raw 20/10 vẫn để một số đơn vị/timezone/anomaly chưa xác nhận. Nezha chia nanoseconds qua số thực trước `datetime`, cần kiểm tra độ chính xác nếu dùng time differences nhỏ.
 
 RCAEval severity fallback tìm token trên message, không chỉ header, nên token `ERROR/WARN` có thể là nội dung thông báo. Helper legacy `infer_severity()` mặc định INFO khi unknown; canonical adapters dùng đường khác và có thể để null. Không mô tả cả repo là explicit-header-only hoặc unknown-always-null. Không suy severity từ ground truth.
 
@@ -61,12 +57,12 @@ RCAEval severity fallback tìm token trên message, không chỉ header, nên to
 - Label/service mapping đúng nguồn hoặc model không leakage qua giá trị/path.
 - Split independence, inventory coverage hoặc Top-k accuracy.
 
-Sau restructure 25/10, test dùng raw mặc định `data/raw/` (25 pass, 4 fail: 3 entrypoints CP1 đã vắng mặt trong [test_dataset_workflow.py](../../tests/test_dataset_workflow.py), 1 do thiếu raw LEMMA). Báo cáo 32/32 ngày 19/10 là lịch sử. [Validation report](validation_report.md) ghi riêng những kiểm tra thực hiện trong lần cập nhật docs.
+Sau restructure 25/10, test dùng raw mặc định `data/raw/` (sau khi bỏ LEMMA ngày 26/10: `.venv/bin/python -m pytest -q` → 18 pass; test CP1 và LEMMA đã xóa khỏi [test_dataset_workflow.py](../../tests/test_dataset_workflow.py) và [test_canonical_validation.py](../../tests/test_canonical_validation.py)). Báo cáo 32/32 ngày 19/10 là lịch sử. [Validation report](validation_report.md) ghi riêng những kiểm tra thực hiện trong lần cập nhật docs.
 
 ## 4. Thứ tự công việc đề xuất
 
 1. Xác minh path, nguồn labels và case eligibility; không normalize đè file hiện có.
-2. Sửa/kiểm chứng iteration Nezha, label multiplicity LEMMA, time/window/service aliases, provenance và export scope.
+2. Sửa/kiểm chứng iteration Nezha, time/window/service aliases, provenance và export scope.
 3. Khóa inventory + split/group keys + feature allowlist; tạo run manifest.
 4. Baseline normalized-template groups/hierarchy, kiểm tra event membership và raw reconstruction.
 5. Simple service scores rồi ranker nếu đủ nhãn; held-out evaluation, ablation riêng.
