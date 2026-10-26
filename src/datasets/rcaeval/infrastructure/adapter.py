@@ -2,16 +2,31 @@
 
 from __future__ import annotations
 
-import hashlib
-import os
+import sys
+from dataclasses import asdict
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Optional, Sequence
 
+import numpy as np
 import pandas as pd
+import pyarrow.parquet as pq
 
-from src.shared.infrastructure.normalization import normalize_message
-from src.shared.infrastructure.paths import DATASET_PATHS, NORMALIZED_DIR, record_source_path
+from src.shared.infrastructure.drain import DrainConfig
+from src.shared.infrastructure.log_table import (
+    add_templates,
+    frame_to_events,
+    map_unique,
+    open_writer,
+    write_incident,
+)
+from src.shared.infrastructure.manifest import write_manifest
+from src.shared.infrastructure.paths import (
+    DATASET_PATHS,
+    NORMALIZED_DIR,
+    record_source_path,
+    resolve_source_path,
+)
 from src.shared.infrastructure.severity import DEBUG_RE, ERROR_RE, ERR_NULL_RE, INFO_RE, LOG4J_LEVEL_RE, WARN_RE
 from src.shared.domain.canonical import (
     GroundTruth,
@@ -19,9 +34,10 @@ from src.shared.domain.canonical import (
     LogEvent,
     ground_truths_to_dataframe,
     incidents_to_dataframe,
-    log_events_to_dataframe,
 )
 from src.shared.domain.ports import BaseDatasetAdapter
+
+RAW_LOG_COLUMNS = ["timestamp", "container_name", "message"]
 
 
 def extract_explicit_severity(message: object) -> Optional[str]:
@@ -47,14 +63,27 @@ def extract_explicit_severity(message: object) -> Optional[str]:
     return None
 
 
+def raw_columns(raw: pd.DataFrame) -> pd.DataFrame:
+    """raw_message, timestamp_utc and entity_id exactly as stored in log_events."""
+    seconds = raw["timestamp"].astype("Float64")
+    return pd.DataFrame({
+        "raw_message": raw["message"].astype(object).where(raw["message"].notna(), "").astype(str),
+        "timestamp_utc": pd.to_datetime(seconds, unit="s", utc=True),
+        "entity_id": raw["container_name"].astype("string").str.strip(),
+    }, index=raw.index)
+
+
 class RCAEvalAdapter(BaseDatasetAdapter):
     """Adapter for normalizing RCAEval data into Canonical Schema."""
 
-    def __init__(self, data_root: Optional[str | Path] = None) -> None:
+    def __init__(
+        self, data_root: Optional[str | Path] = None, drain_config: Optional[DrainConfig] = None
+    ) -> None:
         if data_root is None:
             self.data_root = DATASET_PATHS["rcaeval"]
         else:
             self.data_root = Path(data_root)
+        self.drain_config = drain_config or DrainConfig()
 
     @property
     def dataset_source(self) -> str:
@@ -165,77 +194,78 @@ class RCAEvalAdapter(BaseDatasetAdapter):
             ground_truths.append(gt)
         return ground_truths
 
+    def _log_path(self, source_case_id: str) -> Path:
+        log_path = self.data_root / source_case_id / "logs.parquet"
+        if log_path.exists():
+            return log_path
+        candidates = list(self.data_root.rglob(f"{source_case_id}/logs.parquet"))
+        if candidates:
+            return candidates[0]
+        raise FileNotFoundError(f"logs.parquet for {source_case_id} not found at {log_path}")
+
+    def load_log_frame(self, incident_id: str, limit: Optional[int] = None) -> pd.DataFrame:
+        """One incident's log_events as a frame (columns of LOG_EVENTS_SCHEMA)."""
+        source_case_id = incident_id.removeprefix("rcaeval_")
+        canonical_incident_id = f"rcaeval_{source_case_id}"
+        log_path = self._log_path(source_case_id)
+
+        raw = pd.read_parquet(log_path, columns=RAW_LOG_COLUMNS)
+        if limit is not None and limit > 0:
+            raw = raw.iloc[:limit]
+        row_ids = pd.Series(raw.index.astype(str), index=raw.index)
+        columns = raw_columns(raw)
+
+        frame = pd.DataFrame({
+            "log_id": f"{canonical_incident_id}_" + row_ids,
+            "incident_id": canonical_incident_id,
+            "raw_message": columns["raw_message"],
+            "source_file": record_source_path(log_path, self.data_root),
+            "source_row_id": row_ids,
+            "raw_record_ref": f"{source_case_id}/logs.parquet#row_" + row_ids,
+            "timestamp_utc": columns["timestamp_utc"],
+            # In RCAEval, container_name maps directly to service
+            "service_id": columns["entity_id"],
+            "entity_id": columns["entity_id"],
+            "entity_type": "container",
+            "severity": map_unique(columns["raw_message"], extract_explicit_severity),
+            "trace_id": None,
+            "span_id": None,
+        })
+        return add_templates(frame, self.drain_config)
+
     def load_logs(self, incident_id: str, limit: Optional[int] = None) -> list[LogEvent]:
         """Load and normalize log events for a given incident."""
-        source_case_id = (
-            incident_id[len("rcaeval_") :] if incident_id.startswith("rcaeval_") else incident_id
-        )
+        return frame_to_events(self.load_log_frame(incident_id, limit))
 
-        canonical_incident_id = (
-            incident_id if incident_id.startswith("rcaeval_") else f"rcaeval_{incident_id}"
-        )
+    def log_incident_ids(self) -> list[str]:
+        return [f"rcaeval_{case_id}" for case_id in self.list_available_log_cases()]
 
-        log_path = self.data_root / source_case_id / "logs.parquet"
-        if not log_path.exists():
-            candidates = list(self.data_root.rglob(f"{source_case_id}/logs.parquet"))
-            if candidates:
-                log_path = candidates[0]
-            else:
-                raise FileNotFoundError(f"logs.parquet for {source_case_id} not found at {log_path}")
+    def read_raw_records(self, source_file: str, source_row_ids: Sequence[str]) -> dict[str, dict[str, Any]]:
+        raw = pd.read_parquet(resolve_source_path(source_file, self.data_root), columns=RAW_LOG_COLUMNS)
+        picked = raw_columns(raw.iloc[[int(row_id) for row_id in source_row_ids]])
+        return {
+            row_id: {
+                "raw_message": record.raw_message,
+                "timestamp_utc": record.timestamp_utc,
+                "entity_id": None if pd.isna(record.entity_id) else record.entity_id,
+            }
+            for row_id, record in zip(source_row_ids, picked.itertuples(index=False))
+        }
 
-        df = pd.read_parquet(log_path)
-        if limit is not None and limit > 0:
-            df = df.iloc[:limit]
-
-        events: list[LogEvent] = []
-        rel_file = record_source_path(log_path, self.data_root)
-
-        for idx, row in df.iterrows():
-            row_idx_str = str(idx)
-            ts_val = row.get("timestamp")
-            dt_utc = (
-                datetime.fromtimestamp(int(ts_val), tz=timezone.utc)
-                if pd.notna(ts_val)
-                else None
-            )
-
-            container = (
-                str(row["container_name"]).strip()
-                if pd.notna(row.get("container_name"))
-                else None
-            )
-            service_id = container  # In RCAEval, container_name maps directly to service
-
-            raw_msg = str(row.get("message", "")) if pd.notna(row.get("message")) else ""
-            parsed_msg = normalize_message(raw_msg)
-            template_id = (
-                hashlib.md5(parsed_msg.encode("utf-8")).hexdigest()[:12]
-                if parsed_msg
-                else None
-            )
-
-            severity = extract_explicit_severity(raw_msg)
-
-            event = LogEvent(
-                log_id=f"{canonical_incident_id}_{row_idx_str}",
-                incident_id=canonical_incident_id,
-                raw_message=raw_msg,
-                source_file=rel_file,
-                source_row_id=row_idx_str,
-                raw_record_ref=f"{source_case_id}/logs.parquet#row_{row_idx_str}",
-                timestamp_utc=dt_utc,
-                service_id=service_id,
-                entity_id=container,
-                entity_type="container",
-                severity=severity,
-                parsed_message=parsed_msg,
-                template_id=template_id,
-                trace_id=None,
-                span_id=None,
-            )
-            events.append(event)
-
-        return events
+    def expected_log_rows(self, incidents: Sequence[Incident]) -> dict[str, Any]:
+        """Every raw row of each case's logs.parquet must appear once, in that case."""
+        per_incident: dict[str, int] = {}
+        rows_by_file: dict[str, np.ndarray] = {}
+        for incident in incidents:
+            log_path = self._log_path(incident.source_case_id)
+            n_rows = pq.ParquetFile(log_path).metadata.num_rows
+            per_incident[incident.incident_id] = n_rows
+            rows_by_file[record_source_path(log_path, self.data_root)] = np.arange(n_rows, dtype=np.int32)
+        return {
+            "per_incident": per_incident,
+            "rows_by_file": rows_by_file,
+            "summary": {"raw_rows": int(sum(per_incident.values()))},
+        }
 
     def select_balanced_cases(self, case_ids: list[str], max_cases: int) -> list[str]:
         """Select a representative balanced subset across systems."""
@@ -249,70 +279,46 @@ class RCAEvalAdapter(BaseDatasetAdapter):
         return selected
 
     def normalize(
-        self, output_dir: Optional[str | Path] = None, max_cases: Optional[int] = 30
+        self, output_dir: Optional[str | Path] = None, max_cases: Optional[int] = None
     ) -> dict[str, Any]:
-        """Normalize cases and export Parquet datasets using streaming for memory safety."""
-        import pyarrow as pa
-        import pyarrow.parquet as pq
-
-        if output_dir is None:
-            out_path = NORMALIZED_DIR / "rcaeval"
-        else:
-            out_path = Path(output_dir)
-
+        """Normalize every case with logs (or a balanced `max_cases` subset), one incident at a time."""
+        started = datetime.now(timezone.utc)
+        out_path = NORMALIZED_DIR / "rcaeval" if output_dir is None else Path(output_dir)
         out_path.mkdir(parents=True, exist_ok=True)
 
-        # 1. Export Incidents
-        incidents = self.load_incidents()
-        df_incidents = incidents_to_dataframe(incidents)
-        incidents_file = out_path / "incidents.parquet"
-        df_incidents.to_parquet(incidents_file, index=False)
+        df_incidents = incidents_to_dataframe(self.load_incidents())
+        df_incidents.to_parquet(out_path / "incidents.parquet", index=False)
+        df_gt = ground_truths_to_dataframe(self.load_ground_truth())
+        df_gt.to_parquet(out_path / "ground_truth.parquet", index=False)
 
-        # 2. Export Ground Truth
-        gts = self.load_ground_truth()
-        df_gt = ground_truths_to_dataframe(gts)
-        gt_file = out_path / "ground_truth.parquet"
-        df_gt.to_parquet(gt_file, index=False)
-
-        # 3. Export Log Events for locally available cases
         available_cases = self.list_available_log_cases()
         selected_cases = list(available_cases.keys())
         if max_cases is not None and max_cases > 0 and len(selected_cases) > max_cases:
             selected_cases = self.select_balanced_cases(selected_cases, max_cases)
 
-        logs_file = out_path / "log_events.parquet"
-        log_schema = pa.schema([
-            ("log_id", pa.string()),
-            ("incident_id", pa.string()),
-            ("raw_message", pa.string()),
-            ("source_file", pa.string()),
-            ("source_row_id", pa.string()),
-            ("raw_record_ref", pa.string()),
-            ("timestamp_utc", pa.timestamp("ns", tz="UTC")),
-            ("service_id", pa.string()),
-            ("entity_id", pa.string()),
-            ("entity_type", pa.string()),
-            ("severity", pa.string()),
-            ("parsed_message", pa.string()),
-            ("template_id", pa.string()),
-            ("trace_id", pa.string()),
-            ("span_id", pa.string()),
-        ])
-
-        writer = pq.ParquetWriter(logs_file, schema=log_schema, compression="snappy")
         total_logs = 0
+        writer = open_writer(out_path / "log_events.parquet")
         try:
-            for case_id in selected_cases:
-                events = self.load_logs(case_id)
-                if not events:
-                    continue
-                df_chunk = log_events_to_dataframe(events)
-                table = pa.Table.from_pandas(df_chunk, schema=log_schema, preserve_index=False)
-                writer.write_table(table)
-                total_logs += len(df_chunk)
+            for number, case_id in enumerate(selected_cases, start=1):
+                total_logs += write_incident(writer, self.load_log_frame(case_id))
+                print(f"[rcaeval] {number}/{len(selected_cases)} {case_id}: {total_logs:,} logs so far",
+                      file=sys.stderr, flush=True)
         finally:
             writer.close()
 
+        outputs = {
+            "incidents": len(df_incidents),
+            "ground_truth": len(df_gt),
+            "log_events": total_logs,
+            "incidents_with_logs": [f"rcaeval_{case_id}" for case_id in selected_cases],
+        }
+        write_manifest(
+            out_path, self.dataset_source, self.data_root,
+            inputs=[self._get_cases_path(), *(available_cases[case_id] for case_id in selected_cases)],
+            settings={"drain_config": asdict(self.drain_config), "max_cases": max_cases},
+            outputs=outputs,
+            started=started,
+        )
         return {
             "dataset_source": self.dataset_source,
             "output_dir": str(out_path),
@@ -320,4 +326,5 @@ class RCAEvalAdapter(BaseDatasetAdapter):
             "ground_truth_count": len(df_gt),
             "log_events_count": total_logs,
             "cases_normalized": selected_cases,
+            "drain_config": asdict(self.drain_config),
         }

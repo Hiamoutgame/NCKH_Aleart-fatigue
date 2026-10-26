@@ -40,7 +40,7 @@ data/runs/<run_id>/metrics.json   manifest.json
 
 | Bước | Đầu vào | Xử lý | Đầu ra | Kiểm tra |
 | --- | --- | --- | --- | --- |
-| 1 | File raw | Đọc theo từng dataset, đổi timestamp sang UTC, giữ `raw_message`, `source_file`, `source_row_id` | 3 bảng chuẩn | Số dòng khớp raw; không mất incident |
+| 1 | File raw | Đọc theo từng dataset, đổi timestamp sang UTC, giữ `raw_message`, `source_file`, `source_row_id`. Gắn template regex (`template_id`) và template Drain (`drain_template_id`, một cây mỗi incident) | 3 bảng chuẩn + `manifest.json` | Lệnh `verify` (đã có): số dòng khớp raw, không mất incident, mở lại dòng gốc ngẫu nhiên, template đúng; ghi `verification_report.json` |
 | 2 | 3 bảng chuẩn | Đánh dấu case dùng được và lý do loại; chia train/validation/test theo kịch bản (tên case bỏ hậu tố `_1`, `_2`...); lập danh sách service mỗi hệ thống từ log tập train | Audit, split, inventory | Không kịch bản nào nằm ở hai tập; coverage của đáp án trong inventory được báo riêng |
 | 3 | `log_events`, thời điểm lỗi | Log trước thời điểm lỗi là "before", từ thời điểm lỗi trở đi là "after" | Nhãn cửa sổ cho từng log | Log thiếu timestamp vẫn giữ, gắn "outside" |
 | 4 | Log của từng incident | Nhóm theo `(incident, service, template)`. Log thiếu service vào nhóm "chưa rõ service" | `groups`, `group_members` | Tổng số thành viên = số log; mỗi `log_id` đúng một nhóm |

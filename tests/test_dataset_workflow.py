@@ -52,15 +52,20 @@ def test_custom_input_and_output_roots_are_respected(tmp_path):
     script = REPOSITORY_ROOT / "scripts/run_datasets.py"
     result = run_cli([
         sys.executable, str(script), "normalize", "rcaeval",
-        "--data-root", str(raw), "--output-root", str(output),
+        "--data-root", str(raw), "--output-root", str(output), "--drain-st", "0.5",
     ], tmp_path)
-    assert json.loads(result.stdout)["rcaeval"]["table_rows"] == {
+    summary = json.loads(result.stdout)["rcaeval"]
+    assert summary["table_rows"] == {
         "incidents.parquet": 1, "ground_truth.parquet": 1, "log_events.parquet": 1,
     }
+    assert summary["drain_config"] == {"depth": 4, "st": 0.5, "max_child": 100}
     logs = pd.read_parquet(output / "rcaeval/log_events.parquet")
     assert logs.loc[0, "raw_message"] == message
     assert logs.loc[0, "source_file"] == "sample_case/logs.parquet"
     assert logs.loc[0, "incident_id"] == "rcaeval_sample_case"
+    assert logs.loc[0, "parsed_message"] == "WARN carts retry <N>"
+    assert logs.loc[0, "drain_template"] == "WARN carts retry <N>"
+    assert logs.loc[0, "drain_template_id"]
 
 
 def test_export_module_is_safe_to_import(tmp_path):

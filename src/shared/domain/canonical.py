@@ -58,6 +58,8 @@ class LogEvent:
     severity: Optional[str] = None
     parsed_message: Optional[str] = None
     template_id: Optional[str] = None
+    drain_template: Optional[str] = None
+    drain_template_id: Optional[str] = None
     trace_id: Optional[str] = None
     span_id: Optional[str] = None
 
@@ -131,6 +133,8 @@ def log_events_to_dataframe(events: Sequence[LogEvent]) -> pd.DataFrame:
                 "raw_message",
                 "parsed_message",
                 "template_id",
+                "drain_template",
+                "drain_template_id",
                 "trace_id",
                 "span_id",
                 "source_file",

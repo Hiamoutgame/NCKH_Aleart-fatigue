@@ -7,7 +7,7 @@ Cập nhật 26/10/2026. Mọi con số ghi **[REPO]** đã được đếm tr�
 | Dataset | Vai trò | Có log | Nhãn | Dùng để |
 | --- | --- | --- | --- | --- |
 | **RCAEval** (Pham et al., WWW Companion 2025) | Chính | 359 / 735 case | 1 service mỗi case | Train, chọn cấu hình, test |
-| **Nezha** (Yu et al., ESEC/FSE 2023) | Đánh giá ngoài | 101 lần tiêm lỗi | 1 pod mỗi lỗi → ánh xạ sang service | Chỉ test cuối, không dùng để chỉnh |
+| **Nezha** (Yu et al., ESEC/FSE 2023) | Đánh giá ngoài | 101 lần tiêm lỗi (101 incident) | 1 pod mỗi lỗi → ánh xạ sang service | Chỉ test cuối, không dùng để chỉnh |
 | LEMMA-RCA | Đã bỏ (26/10/2026) | — | — | Không dùng |
 
 ## 2. RCAEval
@@ -47,18 +47,38 @@ Cập nhật 26/10/2026. Mọi con số ghi **[REPO]** đã được đếm tr�
 | `2023-01-29`, `2023-01-30` | TrainTicket (pod `ts-*`) | 28 + 17 = 45 | return, exception, cpu_contention, network_delay |
 
 - Khớp với bài Nezha: OB 56 lỗi, TT 45 lỗi, mỗi lỗi 3 phút (tr. 560). MRCA cũng đánh giá trên dữ liệu này (tr. 1063–1064).
-- 100 `inject_timestamp` khác nhau trên 101 lỗi, 28 pod khác nhau.
+- 101 chuỗi `inject_time` khác nhau, nên có **101 incident**.
+- Log nằm trong 303 file CSV, mỗi file 1 phút, tên `HH_MM_log.csv` theo giờ UTC. Tổng 4,175,406 bản ghi, trong đó:
+  - 1 bản ghi hỏng: `2023-01-29/log/10_06_log.csv`, bản ghi số 629 tính từ 0, có 10 trường thay vì 8;
+  - 124 bản ghi không có `TimeUnixNano`.
 - Log có kèm TraceID/SpanID. Dự án **không dùng** trace để giữ điều kiện log-only giống RCAEval.
 - Nhãn ở mức pod. Adapter ánh xạ pod → service bằng regex và một danh sách tên cố định.
+- Phần log có sẵn quanh mỗi lần tiêm lỗi chỉ khoảng 1–1.5 phút trước và 1.5–2 phút sau (đo trên 3 incident đầu). RCAEval có khoảng 12 phút mỗi bên.
 
-### Lỗi adapter cần sửa trước khi dùng
+### Thời điểm tiêm lỗi: dùng chuỗi `inject_time`, không dùng epoch
 
-| Lỗi | Hậu quả | Vị trí |
+- Chuỗi `inject_time`, đọc theo giờ UTC, khớp với tên file log ở cả 101/101 bản ghi.
+- Số epoch `inject_timestamp` của ngày 2023-01-29 sai:
+  - 24/28 bản ghi sớm khoảng 8 giờ (lệch UTC+8);
+  - hai lần tiêm khác nhau (09:03:53 và 09:12:56, cùng `ts-basic-service`, `return`) bị ghi **cùng một** epoch `1674954273`.
+- Vì vậy adapter:
+  - lấy thời điểm và ID (`nezha_<epoch tính từ chuỗi inject_time>`) theo chuỗi `inject_time`;
+  - ghi độ lệch của epoch vào `manifest.json` (`epoch_mismatch_seconds`).
+
+  Với năm 2022, cách này cho ID trùng với ID cũ.
+
+### Lỗi adapter đã sửa (26/10/2026)
+
+| Lỗi | Hậu quả trước khi sửa | Cách sửa |
 | --- | --- | --- |
-| Phần tạo incident nằm ngoài vòng `for item in items` | Chỉ ra 21 incident (một mỗi khung giờ) thay vì khoảng 100 | `src/datasets/nezha/infrastructure/adapter.py`, `load_incidents`, `load_ground_truth` |
-| `normalize()` chỉ xuất log cho incident đầu tiên | Bảng log gần như rỗng so với dữ liệu thật | cùng file, `normalize` |
-| `system_id="onlineboutique"` cho mọi incident | 45 lỗi TrainTicket bị ghi sai hệ thống | cùng file, `load_incidents` |
-| Cửa sổ [-2 phút, +3 phút] quanh thời điểm tiêm lỗi | Là quy tắc tự đặt, chưa đối chiếu cửa sổ của bài báo | cùng file |
+| Phần tạo incident nằm ngoài vòng `for item in items` | Chỉ ra 21 incident | Tạo đủ trong vòng lặp; bỏ bản ghi trùng hoàn toàn; trùng thời điểm nhưng khác pod hoặc loại lỗi thì báo lỗi |
+| `normalize()` chỉ xuất log cho incident đầu tiên | Bảng log gần như rỗng | Xuất mọi incident, mỗi incident một row group |
+| `system_id="onlineboutique"` cho mọi incident | 45 lỗi TrainTicket bị ghi sai hệ thống | `SYSTEM_BY_DATE`: 2022 là `ob`, 2023 là `tt` |
+| `pd.read_csv` dừng cả file khi gặp 1 bản ghi hỏng | Không đọc được ngày 2023-01-29 | Đọc bằng module `csv`; bản ghi hỏng được ghi lại, không bỏ âm thầm |
+| Đọc cả file mẫu `03_53_log.csv` ở thư mục gốc (bản cắt 4,136 dòng của `2022-08-22/log/03_53_log.csv`) | Log của incident đầu bị lặp | Chỉ đọc `<ngày>/log/*.csv` |
+| Dùng epoch `inject_timestamp` | 24 incident TrainTicket ra 0 dòng log; 2 lần tiêm bị gộp làm một | Dùng chuỗi `inject_time` (xem trên) |
+
+Cửa sổ [−2 phút, +3 phút] quanh thời điểm tiêm lỗi vẫn là quy tắc tự đặt, chưa đối chiếu với bài báo. Một dòng log nằm trong hai cửa sổ sẽ xuất hiện ở cả hai incident; `verify` có đếm số dòng như vậy.
 
 ## 4. Chia tập
 
@@ -78,9 +98,13 @@ Cách này cho phép service không ghi log trong một case (như `productcatal
 
 ## 6. Việc cần làm trước khi thực nghiệm
 
-1. Sửa ba lỗi adapter Nezha, thêm test cho từng lỗi.
-2. Bỏ giới hạn 30 case mặc định của RCAEval khi export (`normalize(max_cases=30)`), hoặc cho chỉnh qua CLI.
-3. Sinh `data/normalized/` cho cả hai dataset (hiện chưa có trên máy).
+1. ~~Sửa lỗi adapter Nezha, thêm test cho từng lỗi.~~ Xong 26/10/2026 (`tests/test_normalization_pipeline.py`).
+2. ~~Bỏ giới hạn 30 case mặc định của RCAEval.~~ Xong: mặc định chuẩn hóa toàn bộ; `--max-cases` chỉ dùng để chạy thử.
+3. ~~Sinh `data/normalized/` cho cả hai dataset và chạy `verify`.~~ Xong 27/10/2026, `verify` đạt mọi kiểm tra:
+   - RCAEval: 359 incident có log, 49,652,771 dòng (khớp đúng số dòng raw), coverage 92.8%;
+   - Nezha: 101 incident, 4,176,325 dòng. Trong đó có 1,044 dòng nằm ở hai cửa sổ chồng nhau nên xuất hiện ở hai incident; 1 bản ghi hỏng và 124 dòng không có timestamp bị loại và có ghi lại. Coverage 100%.
+
+   Chi tiết trong `verification_report.json` của từng thư mục.
 4. Sinh `incident_audit.parquet` và `splits.parquet`, rồi khóa split.
 
 ## 7. Nguồn và license

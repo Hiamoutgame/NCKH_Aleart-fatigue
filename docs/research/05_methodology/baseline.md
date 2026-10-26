@@ -10,7 +10,7 @@ Cập nhật 26/10/2026. Mọi phương pháp dưới đây chạy trên **cùng
 | --- | --- | --- |
 | G0 | Không gom: mỗi dòng log là một mục | Mốc để tính mức giảm |
 | G1 | `(service, template_id)` với `template_id` = MD5 của chuỗi đã qua `normalize_message` | Đã có trong code. Đổi mọi số thành `<N>` nên có thể gộp nhầm `error 404` và `error 500` |
-| G2 | `(service, template Drain)` | Đề xuất chính. `depth` và `st` chỉnh trên tập train |
+| G2 | `(service, drain_template_id)` | Đề xuất chính. Đã có trong code (26/10/2026): Drain tự viết, một cây mỗi incident, tách header trước. `depth` và `st` đang để mặc định 4 / 0.4, sẽ chỉnh trên tập train |
 | G3 (tùy chọn) | G2 + Kev quyết định gộp các cặp nhóm gần ngưỡng | Xem [ai_model_integration.md](../04_proposed_system/ai_model_integration.md) mục 7 |
 
 Khi so G1, G2, G3 cho RQ2, giữ ranker cố định và chỉ đổi cách gom nhóm.

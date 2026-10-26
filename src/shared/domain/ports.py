@@ -11,6 +11,9 @@ from .canonical import GroundTruth, Incident, LogEvent
 class BaseDatasetAdapter(ABC):
     """Abstract base adapter for dataset normalization."""
 
+    # True when an incident's logs are cut from shared files by its time window.
+    logs_cut_to_window: bool = False
+
     @property
     @abstractmethod
     def dataset_source(self) -> str:
@@ -38,6 +41,20 @@ class BaseDatasetAdapter(ABC):
         ...
 
     @abstractmethod
-    def normalize(self, output_dir: Optional[str] = None) -> dict[str, Any]:
-        """Execute normalization across available incidents and export canonical datasets."""
+    def normalize(self, output_dir: Optional[str] = None, max_cases: Optional[int] = None) -> dict[str, Any]:
+        """Normalize every incident with logs (or the first `max_cases`) and export canonical tables."""
         ...
+
+    def log_incident_ids(self) -> list[str]:
+        """Incidents that have raw logs to normalize."""
+        raise NotImplementedError
+
+    def read_raw_records(self, source_file: str, source_row_ids: Sequence[str]) -> dict[str, dict[str, Any]]:
+        """Re-read raw rows by provenance: {row_id: {raw_message, timestamp_utc, entity_id}}."""
+        raise NotImplementedError
+
+    def expected_log_rows(self, incidents: Sequence[Incident]) -> dict[str, Any]:
+        """What log_events must contain for these incidents, counted from raw independently:
+        {"per_incident": {incident_id: n_rows}, "rows_by_file": {source_file: sorted row ids},
+        "summary": {...}}."""
+        raise NotImplementedError

@@ -46,7 +46,7 @@ shared không import dataset cụ thể; adapters không import chéo dataset
 
 `event_id`/`raw_log_id` trong research handoff tương ứng khái niệm `log_id`, chưa là cột trong code. Không có Group/Edge/Ranking schema hiện hành; [output contracts V3](../docs/research/research_protocol_v3.md) là đề xuất.
 
-Tách ground truth thành bảng riêng chưa loại leakage: Incident còn chứa đáp án/metadata lỗi. `template_id` hiện là MD5 chuỗi regex-normalized, không chứng minh đã tích hợp Drain3/Spell. `raw_message` Nezha là extracted message, muốn phục hồi full record phải resolve file/ref.
+Tách ground truth thành bảng riêng chưa loại leakage: Incident còn chứa đáp án/metadata lỗi. `template_id` là MD5 chuỗi regex-normalized (G1); `drain_template_id` là MD5 template Drain tự viết, một cây mỗi incident (G2, `shared/infrastructure/drain.py`). `raw_message` Nezha là extracted message, muốn phục hồi full record phải resolve file/ref.
 
 ## Path, lệnh và trạng thái
 

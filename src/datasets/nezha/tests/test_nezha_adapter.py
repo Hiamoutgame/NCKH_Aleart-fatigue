@@ -9,14 +9,15 @@ def test_nezha_inspect():
     adapter = NezhaAdapter()
     info = adapter.inspect()
     assert info["dataset_source"] == "nezha"
-    assert info["total_fault_incidents"] >= 24
-    assert info["log_csv_files_count"] >= 1
+    assert info["distinct_injections"] == 101
+    assert info["injections_by_system"] == {"ob": 56, "tt": 45}
+    assert info["log_csv_files_count"] == 303
 
 
 def test_nezha_load_incidents():
     adapter = NezhaAdapter()
     incidents = adapter.load_incidents()
-    assert len(incidents) >= 20
+    assert len(incidents) == 101
     inc0 = incidents[0]
     assert inc0.incident_id.startswith("nezha_")
     assert inc0.inject_time is not None

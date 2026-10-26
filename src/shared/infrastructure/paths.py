@@ -22,3 +22,14 @@ def record_source_path(path: Path, data_root: Path) -> str:
         except ValueError:
             continue
     return str(resolved)
+
+
+def resolve_source_path(source_file: str, data_root: Path) -> Path:
+    """Inverse of record_source_path: find the raw file a source_file value points to."""
+    path = Path(source_file)
+    if path.is_absolute():
+        return path
+    for root in (REPOSITORY_ROOT, data_root):
+        if (root / path).exists():
+            return root / path
+    raise FileNotFoundError(f"source file {source_file} not found under {REPOSITORY_ROOT} or {data_root}")
