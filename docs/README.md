@@ -18,6 +18,7 @@ Cấu trúc này có từ ngày 25/10/2026 (branch `restructure`). Đợt này *
 │   ├── context/                           # mindmap, handoff
 │   ├── research/                          # 01 proposal, 02 related work, 03 problem/gap/RQ, 04 hệ thống đề xuất, 05 phương pháp; protocol, requirement (Why)
 │   ├── status/                            # implementation status, audit, validation, kiến trúc đề xuất
+│   ├── plans/                             # kế hoạch triển khai giao cho agent (bước 3–6)
 │   ├── data/                              # dataset plan, README raw, explore_cards/ (data card)
 │   ├── notes/                             # ghi chú làm việc, hướng dẫn Kev/Colab, thiết kế training
 │   ├── code/                              # hướng dẫn CLI, src_docs/ (clean architecture, add dataset…)

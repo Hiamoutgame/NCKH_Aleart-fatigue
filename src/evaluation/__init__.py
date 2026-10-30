@@ -1,4 +1,4 @@
-"""Ranking metrics and improvement estimates shared by every ranker."""
+"""Evaluation metrics, splits, and improvement estimates shared across the project."""
 
 from .metrics import (
     ImprovementReport,
@@ -14,6 +14,21 @@ from .metrics import (
     relative_improvement,
     summarize,
 )
+from .split import (
+    SPLIT_MANIFEST_NAME,
+    SPLITS_PARQUET_NAME,
+    SPLITS_TABLE_SCHEMA,
+    SplitAssignment,
+    SplitPurpose,
+    SplitPurposeType,
+    create_nezha_splits,
+    extract_scenario_id,
+    load_split_incidents,
+    load_splits,
+    save_splits,
+    stratified_scenario_split,
+    verify_splits,
+)
 
 __all__ = [
     "ImprovementReport",
@@ -28,4 +43,17 @@ __all__ = [
     "reciprocal_rank",
     "relative_improvement",
     "summarize",
+    "SPLIT_MANIFEST_NAME",
+    "SPLITS_PARQUET_NAME",
+    "SPLITS_TABLE_SCHEMA",
+    "SplitAssignment",
+    "SplitPurpose",
+    "SplitPurposeType",
+    "create_nezha_splits",
+    "extract_scenario_id",
+    "load_split_incidents",
+    "load_splits",
+    "save_splits",
+    "stratified_scenario_split",
+    "verify_splits",
 ]

@@ -9,7 +9,8 @@ time on a small machine.
 
 from __future__ import annotations
 
-from typing import Any, Callable, Optional
+from pathlib import Path
+from typing import Any, Callable, Iterator, Optional, Sequence
 
 import pandas as pd
 import pyarrow as pa
@@ -99,3 +100,102 @@ def optional_text(value: Any) -> Optional[str]:
         return None
     text = str(value).strip()
     return text or None
+
+
+def incident_row_groups(parquet_file_path: Path | str) -> dict[str, int]:
+    """Map each incident_id to its Parquet row group index using column chunk statistics.
+
+    Raises ValueError if statistics are missing or if any row group mixes multiple incidents.
+    """
+    parquet_path = Path(parquet_file_path)
+    parquet_file = pq.ParquetFile(parquet_path)
+    file_metadata = parquet_file.metadata
+
+    incident_to_row_group_index: dict[str, int] = {}
+    total_row_groups = file_metadata.num_row_groups
+
+    for row_group_index in range(total_row_groups):
+        row_group_metadata = file_metadata.row_group(row_group_index)
+        incident_column_chunk = None
+        for column_index in range(row_group_metadata.num_columns):
+            column_chunk = row_group_metadata.column(column_index)
+            if column_chunk.path_in_schema == "incident_id":
+                incident_column_chunk = column_chunk
+                break
+
+        if incident_column_chunk is None or incident_column_chunk.statistics is None:
+            raise ValueError(
+                f"Row group {row_group_index} in {parquet_path} lacks column statistics for 'incident_id'"
+            )
+
+        column_statistics = incident_column_chunk.statistics
+        if not column_statistics.has_min_max:
+            raise ValueError(
+                f"Row group {row_group_index} in {parquet_path} lacks min/max statistics for 'incident_id'"
+            )
+
+        minimum_incident_id = column_statistics.min
+        maximum_incident_id = column_statistics.max
+
+        if minimum_incident_id != maximum_incident_id:
+            raise ValueError(
+                f"Row group {row_group_index} in {parquet_path} mixes incidents: "
+                f"min={minimum_incident_id!r}, max={maximum_incident_id!r}"
+            )
+
+        incident_identifier = str(minimum_incident_id)
+        if incident_identifier in incident_to_row_group_index:
+            previous_row_group_index = incident_to_row_group_index[incident_identifier]
+            raise ValueError(
+                f"Duplicate incident_id {incident_identifier!r} found across multiple row groups: "
+                f"{previous_row_group_index} and {row_group_index}"
+            )
+
+        incident_to_row_group_index[incident_identifier] = row_group_index
+
+    return incident_to_row_group_index
+
+
+def iter_incident_ids(parquet_file_path: Path | str) -> Iterator[tuple[str, int]]:
+    """Iterate over (incident_id, row_group_index) without reading table row data."""
+    incident_mapping = incident_row_groups(parquet_file_path)
+    for incident_identifier, row_group_index in incident_mapping.items():
+        yield incident_identifier, row_group_index
+
+
+def read_incident(
+    parquet_file_path: Path | str,
+    incident_identifier: str,
+    columns: Optional[Sequence[str]] = None,
+) -> pd.DataFrame:
+    """Read all log events for a single incident directly from its designated row group."""
+    parquet_path = Path(parquet_file_path)
+    row_group_mapping = incident_row_groups(parquet_path)
+    if incident_identifier not in row_group_mapping:
+        raise KeyError(
+            f"Incident {incident_identifier!r} not found in {parquet_path}. "
+            f"Available incidents: {len(row_group_mapping)}"
+        )
+
+    target_row_group_index = row_group_mapping[incident_identifier]
+    parquet_file = pq.ParquetFile(parquet_path)
+    selected_columns = list(columns) if columns is not None else None
+    arrow_table = parquet_file.read_row_group(target_row_group_index, columns=selected_columns)
+    return arrow_table.to_pandas()
+
+
+def iter_incident_batches(
+    parquet_file_path: Path | str,
+    row_group_index: int,
+    columns: Optional[Sequence[str]] = None,
+    batch_size: int = 20_000,
+) -> Iterator[pd.DataFrame]:
+    """Stream batches of log events for a given row group to minimize process memory RSS."""
+    parquet_path = Path(parquet_file_path)
+    parquet_file = pq.ParquetFile(parquet_path)
+    selected_columns = list(columns) if columns is not None else None
+    record_batch_iterator = parquet_file.iter_batches(
+        batch_size=batch_size, row_groups=[row_group_index], columns=selected_columns
+    )
+    for record_batch in record_batch_iterator:
+        yield record_batch.to_pandas()
